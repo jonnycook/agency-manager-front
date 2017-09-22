@@ -4,6 +4,8 @@ import axios from 'axios';
 
 import JSON2 from 'json-stringify-date';
 
+import config from './config';
+
 function _observeChanges(obj, path = [], observer) {
   if (XObject.isObject(obj)) {
     XObject.observe(obj, null, (type, prop, value) => {
@@ -54,7 +56,7 @@ function observeChanges(obj, observer) {
 export var db = null; 
 
 export async function initDb() {
-  var {data} = await axios.get('http://localhost:8000/v1/pull', {
+  var {data} = await axios.get(`${config.apiServer}pull`, {
     headers: {'Authentication': localStorage.getItem('authKey') },
     transformResponse(data) {
       return JSON2.parse(data);
@@ -69,7 +71,7 @@ export async function initDb() {
 
   function onDocument(collection, doc) {
     observeChanges(doc, (mutation) => {
-      axios.post('http://localhost:8000/v1/push', JSON2.stringify({
+      axios.post(`${config.apiServer}push`, JSON2.stringify({
         collection: collection,
         _id: doc._id,
         mutation: XStrip(mutation),
@@ -85,7 +87,7 @@ export async function initDb() {
     XObject.observe(collection, null, (mutation) => {
       if (mutation.type === 'insert') {
         onDocument(name, mutation.el);
-        axios.post('http://localhost:8000/v1/push', JSON2.stringify({
+        axios.post(`${config.apiServer}push`, JSON2.stringify({
           collection: name,
           mutation: {
             type: 'create',
@@ -94,7 +96,7 @@ export async function initDb() {
         }), { headers: { 'Authentication': localStorage.getItem('authKey'), 'Content-Type': 'application/json' }});
       }
       else if (mutation.type === 'remove') {
-        axios.post('http://localhost:8000/v1/push', JSON2.stringify({
+        axios.post(`${config.apiServer}push`, JSON2.stringify({
           collection: name,
           _id: mutation.els[0]._id,
           mutation: {

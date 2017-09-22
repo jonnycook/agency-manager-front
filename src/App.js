@@ -3,6 +3,7 @@ import { XMap, XObject, XComponent, XStrip } from './XObject';
 import { EditableValue, EntitySelector, Entity, ValueDisplay } from './UI';
 import { initDb, db, Models, Collection } from './db';
 import { Tasks } from './Tasks';
+import { Issues } from './Issues';
 import classNames from 'classnames';
 import ReactMarkdown from 'react-markdown';
 import pluralize from 'pluralize';
@@ -277,6 +278,7 @@ class App extends XComponent {
           </ul>
         </li>
         <li><Link to="/tasks">Tasks</Link></li>
+        <li><Link to="/issues">Issues</Link></li>
       </ul>
 
       <div className="main-column">
@@ -291,6 +293,7 @@ class App extends XComponent {
           <Route exact path="/entities/type/:type" component={({match}) => <Entities type={match.params.type} />} />
           <Route exact path="/entities/:id" component={({match}) => <Entity entity={Collection.findById('entities', match.params.id)} />}/>
           <Route exact path="/tasks" component={Tasks} />
+          <Route exact path="/issues" component={Issues} />
         </main>
       </div>
     </div>

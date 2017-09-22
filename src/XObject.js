@@ -95,12 +95,12 @@ export function XObject(obj) {
       if (!(prop in obj) && onAccessUnsetKey) {
         obj[prop] = onAccessUnsetKey();
         for (let observer of observers) {
-          observer(prop, obj[prop]);
+          observer('set', prop, obj[prop]);
         }
         
         if (propObservers[prop]) {
           for (let observer of propObservers[prop]) {
-            observer(obj[prop]);
+            observer('set', obj[prop]);
           }
         }
       }
