@@ -55,6 +55,7 @@ export var db = null;
 
 export async function initDb() {
   var {data} = await axios.get('http://localhost:8000/v1/pull', {
+    headers: {'Authentication': localStorage.getItem('authKey') },
     transformResponse(data) {
       return JSON2.parse(data);
     }
@@ -72,7 +73,7 @@ export async function initDb() {
         collection: collection,
         _id: doc._id,
         mutation: XStrip(mutation),
-      }), { headers: { 'Content-Type': 'application/json' }});
+      }), { headers: { 'Authentication': localStorage.getItem('authKey'), 'Content-Type': 'application/json' }});
     });
   }
 
@@ -90,7 +91,7 @@ export async function initDb() {
             type: 'create',
             document: XStrip(mutation.el)
           }
-        }), { headers: { 'Content-Type': 'application/json' }});
+        }), { headers: { 'Authentication': localStorage.getItem('authKey'), 'Content-Type': 'application/json' }});
       }
       else if (mutation.type === 'remove') {
         axios.post('http://localhost:8000/v1/push', JSON2.stringify({
@@ -99,7 +100,7 @@ export async function initDb() {
           mutation: {
             type: 'delete',
           }
-        }), { headers: { 'Content-Type': 'application/json' }});
+        }), { headers: { 'Authentication': localStorage.getItem('authKey'), 'Content-Type': 'application/json' }});
       }
     });
   }

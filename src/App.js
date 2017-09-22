@@ -11,6 +11,7 @@ import {
   Route,
   Link
 } from 'react-router-dom'
+import axios from 'axios';
 
 import './App.css';
 import Sugar from 'sugar';
@@ -219,8 +220,27 @@ class Overview extends XComponent {
 
 class App extends XComponent {
   constructor() {
-    super();
-    initDb().then(() => this.forceUpdate());
+    super({
+      actions: {
+        async login(e) {
+          e.preventDefault();
+
+          var {data} = await axios.post('http://localhost:8000/v1/login', {
+            email: this.refs.email.value,
+            password: this.refs.password.value,
+          });
+
+          if (data) {
+            localStorage.setItem('authKey', data);
+            await initDb();
+            this.forceUpdate();
+          }
+        }
+      }
+    });
+    if (localStorage.getItem('authKey')) {
+      initDb().then(() => this.forceUpdate());      
+    }
   }
 
   entityTypes() {
@@ -232,7 +252,20 @@ class App extends XComponent {
   }
 
   xRender() {
+
+    if (!localStorage.getItem('authKey')) {
+      return (<div>
+        <form onSubmit={this.actions.login}>
+        <input type="text" placeholder="Email" ref="email" />
+        <input type="text" placeholder="Password" ref="password" />
+        <input type="submit" />
+        </form>
+      </div>
+      );
+    }
+
     return db && <Router ref="router">
+
     <div>
       <ul className="side-bar">
         <li><Link to="/overview">Overview</Link></li>
@@ -250,7 +283,6 @@ class App extends XComponent {
         <div className="header">
           <EntitySelector className="search-bar"  hideButtons={true} editing={true} set={(entity) => this.refs.router.history.push(`/entities/${entity}`)} />
         </div>
-
         <main>
           <Route exact path="/" component={Entities}/>
           <Route exact path="/overview" component={Overview}/>
