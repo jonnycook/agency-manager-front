@@ -65,10 +65,6 @@ export class Tasks extends XComponent {
 											<PropertyField object={task} property="description" />
 											</div>
 
-											<div>
-											Due Date: 
-											<PropertyField className="task__due" object={task} property="dueDate" type="date" />
-											</div>
 
 											<div>
 												Deadline: 

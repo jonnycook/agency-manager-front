@@ -78,7 +78,7 @@ export class PropertyField extends XComponent {
 	// }
 
 	xRender() {
-		return <EditableValue type={this.props.type} className={this.props.className} get={() => this.props.object[this.props.property]} set={(value) => this.props.object[this.props.property] = value} />;
+		return <EditableValue type={this.props.type} className={this.props.className} get={() => this.props.object[this.props.property] ? this.props.object[this.props.property].toString() : null} set={(value) => this.props.object[this.props.property] = value} />;
 	}
 }
 
