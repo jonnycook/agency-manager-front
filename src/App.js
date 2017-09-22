@@ -17,6 +17,8 @@ import axios from 'axios';
 import './App.css';
 import Sugar from 'sugar';
 
+import config from './config';
+
 window.XMap = XMap;
 window.XStrip = XStrip;
 
@@ -226,7 +228,7 @@ class App extends XComponent {
         async login(e) {
           e.preventDefault();
 
-          var {data} = await axios.post('http://localhost:8000/v1/login', {
+          var {data} = await axios.post(`${config.apiServer}login`, {
             email: this.refs.email.value,
             password: this.refs.password.value,
           });
