@@ -401,11 +401,11 @@ export class Entity extends XComponent {
 }
 
 
-class ValueTypeSelector extends Component {
+class ValueTypeSelector extends XComponent {
   get value() {
     return this.refs.select.value;
   }
-  render() {
+  xRender() {
       return <select ref="select" {...this.props}>
         <option></option>
         <option>text/line</option>
@@ -417,8 +417,8 @@ class ValueTypeSelector extends Component {
   }
 }
 
-export class ValueDisplay extends Component {
-  render() {
+export class ValueDisplay extends XComponent {
+  xRender() {
     switch (this.props.type) {
       case 'text/block':
         return <ReactMarkdown className="value-text-block" source={this.props.value || ''} softBreak="br" />;
@@ -430,7 +430,7 @@ export class ValueDisplay extends Component {
   }
 }
 
-class ValueInput extends Component {
+class ValueInput extends XComponent {
   constructor() {
     super();
     this.state = { type: '' };
@@ -464,7 +464,7 @@ class ValueInput extends Component {
     }
   }
 
-  render() {
+  xRender() {
     return <span className="edit-value">
       <ValueTypeSelector ref="type" defaultValue={this.state.type} onChange={() => this.setState({type:this.refs.type.value})} />
       {this.input()}
@@ -472,14 +472,14 @@ class ValueInput extends Component {
   }
 }
 
-class EditDataContent extends Component {
+class EditDataContent extends XComponent {
   save() {
     this.props.datum.content.type = this.refs.valueInput.type;
     this.props.datum.content.body = this.refs.valueInput.value;
     this.props.done();
   }
 
-  render() {
+  xRender() {
     return (
       <span>
       <ValueInput ref="valueInput" type={() => this.props.datum.content.type} value={() => this.props.datum.content.body} onEnter={this.save.bind(this)} />
@@ -489,14 +489,14 @@ class EditDataContent extends Component {
   }
 }
 
-class ViewDataContent extends Component {
-  render() {
+class ViewDataContent extends XComponent {
+  xRender() {
     return this.props.datum.content && <ValueDisplay type={this.props.datum.content.type} value={this.props.datum.content.body} />
   }
 }
 
 
-class DataContent extends Component {
+class DataContent extends XComponent {
   constructor() {
     super();
     this.state = {
@@ -508,7 +508,7 @@ class DataContent extends Component {
     this.setState({ editing: !this.state.editing });
   }
 
-  render() {
+  xRender() {
     return <div className="content">
       {this.state.editing ? <EditDataContent ref="edit" done={() => this.setState({editing: false})} datum={this.props.datum} /> : <ViewDataContent datum={this.props.datum} />}
       <button onClick={this.action_toggleEdit.bind(this)}>{this.state.editing ? 'Cancel' : 'Edit'}</button>
@@ -644,7 +644,7 @@ class Datum extends XComponent {
   }
 }
 
-class Property extends Component {
+class Property extends XComponent {
   constructor() {
     super();
     this.state = {
@@ -672,7 +672,7 @@ class Property extends Component {
     return <ValueDisplay className="property__value" type={this.props.property.type} value={this.props.property.value} />;
   }
 
-  render() {
+  xRender() {
     return (
       this.state.editing ? (
         <div>
