@@ -66,7 +66,6 @@ export function XObject(obj) {
       if (prop === XObject._observeSymbol) {
         return function(prop, observer) {
           if (prop) {
-            console.log(prop);
             if (!propObservers[prop]) propObservers[prop] = [];
             propObservers[prop].push(observer);
           }

@@ -75,15 +75,17 @@ export class Income extends XComponent {
 										{(income.breakdown || []).map((el) => {
 											return (
 												<li key={el._id}>
-													<div className="field">
-														<span className="name">Recipient</span>
-														<PropertyField type="entity" object={el} property="recipient" />
+													<div className="item">
+														<div className="field">
+															<span className="name">Recipient</span>
+															<PropertyField type="entity" object={el} property="recipient" />
+														</div>
+														<div className="field">
+															<span className="name">Amount</span>
+															<PropertyField type="text" dataType="int" object={el} property="amount" />
+														</div>
+														<button onClick={this.actions.removeBreakdownEl(income, el)}>Remove</button>
 													</div>
-													<div className="field">
-														<span className="name">Amount</span>
-														<PropertyField type="text" dataType="int" object={el} property="amount" />
-													</div>
-													<button onClick={this.actions.removeBreakdownEl(income, el)}>Remove</button>
 												</li>
 											);
 										})}
@@ -100,15 +102,17 @@ export class Income extends XComponent {
 										{(income.allocation || []).map((el) => {
 											return (
 												<li key={el._id}>
-													<div className="field">
-														<span className="name">Recipient</span>
-														<PropertyField type="entity" object={el} property="recipient" />
+													<div className="item">
+														<div className="field">
+															<span className="name">Recipient</span>
+															<PropertyField type="entity" object={el} property="recipient" />
+														</div>
+														<div className="field">
+															<span className="name">Amount</span>
+															<PropertyField type="text" dataType="int" object={el} property="amount" />
+														</div>
+														<button onClick={this.actions.removeAllocationEl(income, el)}>Remove</button>
 													</div>
-													<div className="field">
-														<span className="name">Amount</span>
-														<PropertyField type="text" dataType="int" object={el} property="amount" />
-													</div>
-													<button onClick={this.actions.removeAllocationEl(income, el)}>Remove</button>
 												</li>
 											);
 										})}
