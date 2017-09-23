@@ -74,6 +74,10 @@ export class Tickets extends XComponent {
 												Type: 
 												<PropertyField object={task} property="type" />
 											</div>
+											<div className="ticket__title">
+												Schedule: 
+												<PropertyField object={task} property="schedule" />
+											</div>
 											{/*<div>
 												<span className="label">Project:</span>
 												<EntitySelector type="Project" set={(value) => task.project = value} entity={() => task.project} />
