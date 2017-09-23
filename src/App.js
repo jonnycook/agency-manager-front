@@ -227,7 +227,7 @@ var socket;
 var localClosed = false;
 
 function connect() {
-  socket = new WebSocket('ws://localhost:8080');
+  socket = new WebSocket(config.wsServer);
   window.g_socket = socket;
 
   // Connection opened
