@@ -20,16 +20,16 @@ export class Income extends XComponent {
 					income.breakdown.push(XMap({_id: XObject.id()}));
 				},
 				removeBreakdownEl(income, el) {
-					income.breakdown.splice(income.breakdown.findIndex(el => el._id === el._id), 1);
+					income.breakdown.splice(income.breakdown.findIndex(i => i._id === el._id), 1);
 				},
 				addAllocationEl(income) {
 					if (!income.allocation) {
 						income.allocation = XMap([]);
 					}
-					income.allocation.push(XMap({_id: XObject.id()}));
+					income.allocation.push(XMap({_id: XObject.id()}));  
 				},
 				removeAllocationEl(income, el) {
-					income.allocation.splice(income.allocation.findIndex(el => el._id === el._id), 1);
+					income.allocation.splice(income.allocation.findIndex(i => i._id === el._id), 1);
 				},
 				delete(income) {
 					Collection.removeDocument('income', income);
