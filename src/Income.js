@@ -33,6 +33,9 @@ export class Income extends XComponent {
 				},
 				delete(income) {
 					Collection.removeDocument('income', income);
+				},
+				archive(income) {
+					income.archived = true;
 				}
 			}
 		});
@@ -122,6 +125,7 @@ export class Income extends XComponent {
 									</ul>
 									<button onClick={this.actions.addAllocationEl(income)}>Add</button>
 								</div>
+								<button onClick={this.actions.archive(income)}>Archive Income</button>
 								<button onClick={this.actions.delete(income)}>Delete Income</button>
 							</li>
 						);
