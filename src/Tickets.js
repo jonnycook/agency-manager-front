@@ -14,7 +14,7 @@ export class Tickets extends XComponent {
 					task.completed = true;
 				},
 				done(ticket) {
-					Collection.removeDocument(ticket);
+					Collection.removeDocument('pm_tickets', ticket);
 				},
 			}
 		});

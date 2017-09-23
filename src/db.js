@@ -161,7 +161,7 @@ export async function initDb() {
         if (pauseObserving) return;
         pushToServer({
           collection: name,
-          _id: (mutation.els[0] || mutation.els)._id,
+          _id: mutation.els[0]._id,
           mutation: {
             type: 'delete',
           }
