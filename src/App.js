@@ -313,7 +313,7 @@ class App extends XComponent {
     return db && <Router ref="router">
 
     <div>
-      {!this.state.connected && 'Disconnected. Changes will not be saved.'}
+      {!this.state.connected && <span style={{position:'fixed', top: 0, left: 0}}>Disconnected. Changes will not be saved.</span>}
       <ul className="side-bar">
         <li><Link to="/overview">Overview</Link></li>
         <li><Link to="/calendar">Calendar</Link></li>
