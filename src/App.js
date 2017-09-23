@@ -4,6 +4,7 @@ import { EntitySelector, Entity, ValueDisplay } from './UI';
 import { initDb, db, Models, Collection, applyChanges } from './db';
 import { Tasks } from './Tasks';
 import { Issues } from './Issues';
+import { Tickets } from './Tickets';
 import classNames from 'classnames';
 import pluralize from 'pluralize';
 import {
@@ -328,6 +329,7 @@ class App extends XComponent {
         </li>
         <li><Link to="/tasks">Tasks</Link></li>
         <li><Link to="/issues">Issues</Link></li>
+        <li><Link to="/tickets">Tickets</Link></li>
       </ul>
 
       <div className="main-column">
@@ -343,6 +345,7 @@ class App extends XComponent {
           <Route exact path="/entities/:id" component={({match}) => <Entity entity={Collection.findById('entities', match.params.id)} />}/>
           <Route exact path="/tasks" component={Tasks} />
           <Route exact path="/issues" component={Issues} />
+          <Route exact path="/tickets" component={Tickets} />
         </main>
       </div>
     </div>
