@@ -105,7 +105,7 @@ export function XObject(obj) {
         }
       }
 
-      if (prop.indexOf('.') != -1) {
+      if (prop.indexOf && prop.indexOf('.') != -1) {
         var p = prop.substr(0, prop.indexOf('.'));
         XObject.onAccess(proxy, p);
         return obj[p][prop.substr(prop.indexOf('.') + 1)];
