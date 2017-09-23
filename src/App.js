@@ -283,6 +283,9 @@ class App extends XComponent {
         }
       }
     });
+    this.state = {
+      connected: false
+    }
     window.g_app = this;
     if (localStorage.getItem('authKey')) {
       initDb().then(() => this.forceUpdate());      
