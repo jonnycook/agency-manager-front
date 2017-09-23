@@ -91,6 +91,9 @@ export async function applyChanges(changes) {
         if (mutation.type === 'set') {
           obj[comp] = XMap(mutation.value);
         }
+        else if (mutation.type === 'unset') {
+          delete obj[comp];
+        }
         else if (mutation.type === 'remove') {
           obj[comp].splice(obj[comp].findIndex((el) => el._id === mutation.key), 1);
         }
