@@ -66,6 +66,10 @@ export class Tickets extends XComponent {
 												<PropertyField object={task} property="priority" />
 											</div>
 											<div className="ticket__title">
+												Status: 
+												<PropertyField object={task} property="status" />
+											</div>
+											<div className="ticket__title">
 												Type: 
 												<PropertyField object={task} property="type" />
 											</div>
