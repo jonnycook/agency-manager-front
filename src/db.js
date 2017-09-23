@@ -11,16 +11,6 @@ function _observeChanges(obj, path = [], observer) {
     XObject.observe(obj, null, (type, prop, value) => {
       var completePath = path.concat(prop);
       _observeChanges(value, completePath, observer);
-      // var changes = {};
-      // var c = changes;
-      // for (var i = 0; i < completePath.length; ++ i) {
-      //   if (i == completePath.length - 1) {
-      //     c[completePath[i]] = value;
-      //   }
-      //   else {
-      //     c = c[completePath[i]] = {};
-      //   }
-      // }
       observer({type:type, path:completePath, value:value});
     });
 
@@ -35,15 +25,26 @@ function _observeChanges(obj, path = [], observer) {
         observer({type:'insert', path: path.concat(mutation.index), el:mutation.el}); 
       }
       else if (mutation.type === 'remove') {
-        observer({type:'remove', path:path, index:mutation.index});
+        observer({type:'remove', path:path, key:mutation.els[0]._id});
       }
       else if (mutation.type === 'set') {
-        _observeChanges(mutation.value, path.concat(mutation.index), observer);
-        observer({type:'set', path:path.concat(mutation.index), value:mutation.value});
+        _observeChanges(mutation.value, path.concat('&' + mutation.el._id), observer);
+        observer({type:'set', path:path.concat('&' + mutation.el._id), value:mutation.value});
       }
+      // if (mutation.type === 'insert') {
+      //   _observeChanges(mutation.el, path.concat(mutation.index), observer);
+      //   observer({type:'insert', path: path.concat(mutation.index), el:mutation.el}); 
+      // }
+      // else if (mutation.type === 'remove') {
+      //   observer({type:'remove', path:path, index:mutation.index});
+      // }
+      // else if (mutation.type === 'set') {
+      //   _observeChanges(mutation.value, path.concat(mutation.index), observer);
+      //   observer({type:'set', path:path.concat(mutation.index), value:mutation.value});
+      // }
     });
     for (var i = 0; i < obj.length; ++ i) {
-      _observeChanges(obj[i], path.concat(i), observer);
+      _observeChanges(obj[i], path.concat('&' + obj[i]._id), observer);
     }
   }
 }
@@ -54,6 +55,62 @@ function observeChanges(obj, observer) {
 
 
 export var db = null; 
+
+
+function pushToServer(data) {
+  // console.log(JSON2.stringify(data));
+  if (0) {
+    axios.post(`${config.apiServer}push`, JSON2.stringify(data), { headers: { 'Authentication': localStorage.getItem('authKey'), 'Content-Type': 'application/json' }});    
+  }
+  else {
+    window.g_socket.send(JSON2.stringify({
+      type: 'push', 
+      authKey: localStorage.getItem('authKey'),
+      payload: data
+    }));
+  }
+}
+
+
+var pauseObserving = false;
+export async function applyChanges(changes) {
+  pauseObserving = true;
+  var mutation = changes.mutation;
+  if (['set', 'remove', 'insert'].includes(mutation.type)) {
+    var doc = Collection.findById(changes.collection, changes._id);
+    var obj = doc;
+    for (var i = 0; i < mutation.path.length; ++ i) {
+      let comp = mutation.path[i];
+      if (comp[0] == '&') {
+        var id = comp.substr(1);
+        var index = obj.findIndex((el) => el._id == id);
+        comp = index;
+      }
+
+      if (i == mutation.path.length - 1) {
+        if (mutation.type === 'set') {
+          obj[comp] = mutation.value;          
+        }
+        else if (mutation.type === 'remove') {
+          obj[comp].splice(obj[comp].findIndex((el) => el._id === mutation.key), 1);
+        }
+        else if (mutation.type == 'insert') {
+          obj.splice(comp, 0, XMap(mutation.el));
+        }
+      }
+      else {
+        obj = obj[comp];
+      }
+    }
+  }
+  else if (mutation.type === 'create') {
+    db[changes.collection].push(XMap(mutation.document));
+  }
+  else if (mutation.type === 'delete') {
+    Collection.removeDocument(changes.collection, changes._id);
+  }
+  pauseObserving = false;
+}
 
 export async function initDb() {
   var {data} = await axios.get(`${config.apiServer}pull`, {
@@ -71,11 +128,12 @@ export async function initDb() {
 
   function onDocument(collection, doc) {
     observeChanges(doc, (mutation) => {
-      axios.post(`${config.apiServer}push`, JSON2.stringify({
+      if (pauseObserving) return;
+      pushToServer({
         collection: collection,
         _id: doc._id,
         mutation: XStrip(mutation),
-      }), { headers: { 'Authentication': localStorage.getItem('authKey'), 'Content-Type': 'application/json' }});
+      });
     });
   }
 
@@ -87,22 +145,24 @@ export async function initDb() {
     XObject.observe(collection, null, (mutation) => {
       if (mutation.type === 'insert') {
         onDocument(name, mutation.el);
-        axios.post(`${config.apiServer}push`, JSON2.stringify({
+        if (pauseObserving) return;
+        pushToServer({
           collection: name,
           mutation: {
             type: 'create',
             document: XStrip(mutation.el)
           }
-        }), { headers: { 'Authentication': localStorage.getItem('authKey'), 'Content-Type': 'application/json' }});
+        });
       }
       else if (mutation.type === 'remove') {
-        axios.post(`${config.apiServer}push`, JSON2.stringify({
+        if (pauseObserving) return;
+        pushToServer({
           collection: name,
           _id: mutation.els[0]._id,
           mutation: {
             type: 'delete',
           }
-        }), { headers: { 'Authentication': localStorage.getItem('authKey'), 'Content-Type': 'application/json' }});
+        });
       }
     });
   }

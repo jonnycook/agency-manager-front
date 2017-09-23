@@ -273,7 +273,12 @@ export function XArray(list) {
       else if (prop === 'splice') {
         return function(start, deleteCount, ...items) {
           var ret = list.splice(start, deleteCount, ...items)
-          callObservers({type: 'remove', index: start, count: deleteCount, els: ret});
+          if (deleteCount) {
+            callObservers({type: 'remove', index: start, count: deleteCount, els: ret});            
+          }
+          else {
+            callObservers({type: 'insert', index: start, el: items[0]});
+          }
           return ret;
         }
       }

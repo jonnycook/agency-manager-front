@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { XComponent, XObject, XMap, XStrip } from './XObject';
+import { XComponent, XObject, XMap } from './XObject';
 import { db, Models, Collection } from './db';
 import classNames from 'classnames';
 
@@ -7,8 +7,6 @@ import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 
 import MarkdownEditor from 'react-md-editor';
-
-import pluralize from 'pluralize';
 
 import _ from 'lodash';
 
@@ -31,14 +29,15 @@ export class EditableValue extends XComponent {
 
   extractValue() {
     switch (this.props.type || 'text') {
+      default:
       case 'text': return this.refs.input.value;
-
       case 'date': return Date.create(this.refs.input.value);
     }
   }
 
   input() {
     switch (this.props.type || 'text') {
+      default:
       case 'text':
         return <input type="text" ref="input" onKeyPress={(e) => e.key === 'Enter' && this.action_save()} defaultValue={this.props.get()} />;
 
@@ -49,6 +48,7 @@ export class EditableValue extends XComponent {
 
   display() {
     switch (this.props.type || 'text') {
+      default:
       case 'text':
         return this.props.get() && this.props.get().toString();
 
@@ -185,7 +185,7 @@ export class EntitySelector extends XComponent {
 	entries() {
 		return this.state.filter ? db.entities.filter((entity) => {
 			if (this.props.type) {
-				if (entity.type != this.props.type) return false;
+				if (entity.type !== this.props.type) return false;
 			}
 
 			if (!Models.Entity.display(entity, !this.props.type).match(new RegExp('(\b|^)' + this.state.filter, 'i'))) {
@@ -447,7 +447,7 @@ class ValueInput extends Component {
       case 'text/block':
         return <MarkdownEditor ref="body" options={{lineWrapping:true}} value={this.state.value} onChange={(value) => this.setState({value})} />;
       default:
-        return <input ref="body" defaultValue={this.state.value} type="text" onKeyDown={(e) => e.key == 'Enter' && this.props.onEnter && this.props.onEnter()} />;
+        return <input ref="body" defaultValue={this.state.value} type="text" onKeyDown={(e) => e.key === 'Enter' && this.props.onEnter && this.props.onEnter()} />;
     }
   }
 

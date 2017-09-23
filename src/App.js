@@ -1,11 +1,10 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { XMap, XObject, XComponent, XStrip } from './XObject';
-import { EditableValue, EntitySelector, Entity, ValueDisplay } from './UI';
-import { initDb, db, Models, Collection } from './db';
+import { EntitySelector, Entity, ValueDisplay } from './UI';
+import { initDb, db, Models, Collection, applyChanges } from './db';
 import { Tasks } from './Tasks';
 import { Issues } from './Issues';
 import classNames from 'classnames';
-import ReactMarkdown from 'react-markdown';
 import pluralize from 'pluralize';
 import {
   BrowserRouter as Router,
@@ -18,6 +17,9 @@ import './App.css';
 import Sugar from 'sugar';
 
 import config from './config';
+
+import JSON2 from 'json-stringify-date';
+
 
 window.XMap = XMap;
 window.XStrip = XStrip;
@@ -179,7 +181,7 @@ class Overview extends XComponent {
   xRender() {
     return (
       <ul className="overview">
-        {db.entities.filter((entity) => entity.type == 'Client').map((client) => {
+        {db.entities.filter((entity) => entity.type === 'Client').map((client) => {
           var projects = Models.Entity.relatedEntities(client, 'Project')
 
           return (
@@ -219,6 +221,44 @@ class Overview extends XComponent {
     );
   }
 }
+
+
+var socket;
+var localClosed = false;
+
+function connect() {
+  socket = new WebSocket('ws://localhost:8080');
+  window.g_socket = socket;
+
+  // Connection opened
+  socket.addEventListener('open', function (event) {
+    socket.send(JSON.stringify({}));
+  });
+
+  // Listen for messages
+  socket.addEventListener('message', function (event) {
+    console.log('Message from server', event.data);
+    var message = JSON2.parse(event.data);
+    if (message.type === 'push') {
+      applyChanges(message.payload);
+    }
+  });
+
+
+  socket.addEventListener('close', (event) => {
+    console.log('closed', event.code);
+    if (!localClosed) {
+      setTimeout(connect, 1000);      
+    }
+  });
+
+  socket.addEventListener('error', (event) => {
+    console.log('error', event);
+  });
+}
+connect();
+
+
 
 
 class App extends XComponent {
