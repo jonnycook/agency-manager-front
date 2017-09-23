@@ -46,6 +46,10 @@ export class Income extends XComponent {
 						return (
 							<li key={income._id}>
 								<div className="field">
+									<span className="name">From</span>
+									<PropertyField type="text" object={income} property="from" />
+								</div>
+								<div className="field">
 									<span className="name">Amount</span>
 									<PropertyField type="text" object={income} property="amount" />
 								</div>
