@@ -36,7 +36,7 @@ export class XComponent extends Component {
     return XObject.captureAccesses(() => {
       return this.xRender();
     }, (obj, prop) => {
-      let observer = () => { this.forceUpdate(); }
+      let observer = () => { console.log('forcing updating'); this.forceUpdate(); }
       if (!this.observing.find(o => o.obj === obj && o.prop === prop)) {
         this.observing.push({obj, prop, observer});
         XObject.observe(obj, prop, observer);
