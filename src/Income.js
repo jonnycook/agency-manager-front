@@ -32,7 +32,7 @@ export class Income extends XComponent {
 					income.allocation.splice(income.allocation.findIndex(el => el._id === el._id), 1);
 				},
 				delete(income) {
-					Collection.deleteDocument('income', income);
+					Collection.removeDocument('income', income);
 				}
 			}
 		});
