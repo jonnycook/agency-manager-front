@@ -38,7 +38,7 @@ export class Income extends XComponent {
 		});
 	}
 	total(list) {
-		return (list || []).reduce((total, el) => parseInt(el.amount) + total, 0)
+		return (list || []).reduce((total, el) => parseInt(el.amount || 0) + total, 0)
 	}
 	xRender() {
 		return (
