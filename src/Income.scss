@@ -1,0 +1,10 @@
+.income {
+	.field {
+		.name {
+			&:after {
+				content: ':';
+			}
+			padding-right: 2px;
+		}
+	}
+}

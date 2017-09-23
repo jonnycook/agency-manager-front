@@ -36,7 +36,7 @@ export class XComponent extends Component {
     return XObject.captureAccesses(() => {
       return this.xRender();
     }, (obj, prop) => {
-      let observer = () => { console.log('forcing updating', obj, prop); this.forceUpdate(); }
+      let observer = () => { this.forceUpdate(); }
       if (!this.observing.find(o => o.obj === obj && o.prop === prop)) {
         this.observing.push({obj, prop, observer});
         XObject.observe(obj, prop, observer);
@@ -66,6 +66,7 @@ export function XObject(obj) {
       if (prop === XObject._observeSymbol) {
         return function(prop, observer) {
           if (prop) {
+            console.log(prop);
             if (!propObservers[prop]) propObservers[prop] = [];
             propObservers[prop].push(observer);
           }
@@ -105,13 +106,13 @@ export function XObject(obj) {
         }
       }
 
-      if (prop.indexOf && prop.indexOf('.') != -1) {
+      if (prop.indexOf && prop.indexOf('.') !== -1) {
         var p = prop.substr(0, prop.indexOf('.'));
         XObject.onAccess(proxy, p);
         return obj[p][prop.substr(prop.indexOf('.') + 1)];
       }
 
-      if (prop !== '_id') {
+      if (!['_id', 'valueOf', 'toString', Symbol.toPrimitive].includes(prop)) {
         XObject.onAccess(proxy, prop);
       }
 

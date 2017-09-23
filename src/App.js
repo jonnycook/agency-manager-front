@@ -5,6 +5,7 @@ import { initDb, db, Models, Collection, applyChanges } from './db';
 import { Tasks } from './Tasks';
 import { Issues } from './Issues';
 import { Tickets } from './Tickets';
+import { Income } from './Income';
 import classNames from 'classnames';
 import pluralize from 'pluralize';
 import {
@@ -330,6 +331,7 @@ class App extends XComponent {
         <li><Link to="/tasks">Tasks</Link></li>
         <li><Link to="/issues">Issues</Link></li>
         <li><Link to="/tickets">Tickets</Link></li>
+        <li><Link to="/income">Income</Link></li>
       </ul>
 
       <div className="main-column">
@@ -346,6 +348,7 @@ class App extends XComponent {
           <Route exact path="/tasks" component={Tasks} />
           <Route exact path="/issues" component={Issues} />
           <Route exact path="/tickets" component={Tickets} />
+          <Route exact path="/income" component={Income} />
         </main>
       </div>
     </div>

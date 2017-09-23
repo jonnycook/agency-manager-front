@@ -1,3 +1,8 @@
+.income .field .name {
+  padding-right: 2px; }
+  .income .field .name:after {
+    content: ':'; }
+
 .calendar .month-name {
   display: flex;
   justify-content: space-between; }

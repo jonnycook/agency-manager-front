@@ -31,7 +31,13 @@ export class EditableValue extends XComponent {
     switch (this.props.type || 'text') {
       default:
       case 'text': return this.refs.input.value;
-      case 'date': return Date.create(this.refs.input.value);
+      case 'date': 
+        try {
+          return Date.create(this.refs.input.value);          
+        }
+        catch (e) {
+          return null;
+        }
     }
   }
 
@@ -51,12 +57,14 @@ export class EditableValue extends XComponent {
       default:
       case 'text':
         return this.props.get() && this.props.get().toString();
-
       case 'date':
         return this.props.get() && this.props.get().format('{yyyy}-{MM}-{dd}');
     }
   }
   xRender() {
+    if (this.props.type == 'entity') {
+      return <EntitySelector entity={() => this.props.get()} set={this.props.set} />
+    }
     return (
       this.state.editing ?
         <span className={this.props.className}>
@@ -73,10 +81,6 @@ export class EditableValue extends XComponent {
 }
 
 export class PropertyField extends XComponent {
-	// constructor() {
-	// 	super();
-	// }
-
 	xRender() {
 		return <EditableValue type={this.props.type} className={this.props.className} get={() => this.props.object[this.props.property]} set={(value) => this.props.object[this.props.property] = value} />;
 	}
