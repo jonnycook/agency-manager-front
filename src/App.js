@@ -232,7 +232,8 @@ function connect() {
 
   // Connection opened
   socket.addEventListener('open', function (event) {
-    socket.send(JSON.stringify({}));
+    window.g_app.setState({connected:true});
+    
   });
 
   // Listen for messages
@@ -246,9 +247,10 @@ function connect() {
 
 
   socket.addEventListener('close', (event) => {
+    window.g_app.setState({connected:false});
     console.log('closed', event.code);
     if (!localClosed) {
-      setTimeout(connect, 1000);      
+      setTimeout(connect, 1000); 
     }
   });
 
@@ -281,6 +283,7 @@ class App extends XComponent {
         }
       }
     });
+    window.g_app = this;
     if (localStorage.getItem('authKey')) {
       initDb().then(() => this.forceUpdate());      
     }
@@ -310,6 +313,7 @@ class App extends XComponent {
     return db && <Router ref="router">
 
     <div>
+      {!this.state.connected && 'Disconnected. Changes will not be saved.'}
       <ul className="side-bar">
         <li><Link to="/overview">Overview</Link></li>
         <li><Link to="/calendar">Calendar</Link></li>
