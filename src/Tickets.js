@@ -12,7 +12,10 @@ export class Tickets extends XComponent {
 			actions: {
 				done(task) {
 					task.completed = true;
-				}
+				},
+				done(ticket) {
+					Collection.removeDocument(ticket);
+				},
 			}
 		});
 
@@ -71,6 +74,7 @@ export class Tickets extends XComponent {
 												<EntitySelector type="Project" set={(value) => task.project = value} entity={() => task.project} />
 											</div>*/}
 											<button onClick={this.actions.done(task)}>Done</button>
+											<button onClick={this.actions.done(task)}>Delete</button>
 										</div>
 									</li>
 								);
