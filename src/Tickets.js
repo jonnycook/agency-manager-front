@@ -49,6 +49,7 @@ export class Tickets extends XComponent {
 								return (
 									<li key={task._id}>
 										<div className="tickets__ticket item">
+											<a href={`http://jonnycook.com:3031/tickets/${task._id}`}>View In Ticket System</a>
 											<div className="ticket__title">
 												Brief: 
 												<PropertyField object={task} property="brief" />
