@@ -48,7 +48,7 @@ export class Income extends XComponent {
 			<div className="income">
 				<h1>Income</h1>
 				<ul>
-					{db.income.map(income => {
+					{db.income.filter(income => !income.archived).map(income => {
 						return (
 							<li key={income._id}>
 								<div className="field">
