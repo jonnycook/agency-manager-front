@@ -81,7 +81,7 @@ export class Income extends XComponent {
 											);
 										})}
 											<li>
-												Total: {this.total(income.breakdown)} {this.total(income.breakdown) < income.amount ? `(${income.amount - this.total(income.breakdown)})` : ''}
+												Total: {this.total(income.breakdown)} {this.total(income.breakdown) != income.amount ? `(${income.amount - this.total(income.breakdown)})` : ''}
 											</li>
 									</ul>
 									<button onClick={this.actions.addBreakdownEl(income)}>Add</button>
@@ -106,7 +106,7 @@ export class Income extends XComponent {
 											);
 										})}
 											<li>
-												Total: {this.total(income.allocation)} {this.total(income.allocation) < income.amount ? `(${income.amount - this.total(income.allocation)})` : ''}
+												Total: {this.total(income.allocation)} {this.total(income.allocation) != income.amount ? `(${income.amount - this.total(income.allocation)})` : ''}
 											</li>
 									</ul>
 									<button onClick={this.actions.addAllocationEl(income)}>Add</button>
