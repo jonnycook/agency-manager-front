@@ -28,8 +28,14 @@ function _observeChanges(obj, path = [], observer) {
         observer({type:'remove', path:path, key:mutation.els[0]._id});
       }
       else if (mutation.type === 'set') {
-        _observeChanges(mutation.value, path.concat('&' + mutation.el._id), observer);
-        observer({type:'set', path:path.concat('&' + mutation.el._id), value:mutation.value});
+        if (obj[mutation.index]._id) {
+          _observeChanges(mutation.value, path.concat('&' + obj[mutation.index]._id), observer);
+          observer({type:'set', path:path.concat('&' + obj[mutation.index]._id), value:mutation.value});          
+        }
+        else {
+          _observeChanges(mutation.value, path.concat(mutation.index), observer);
+          observer({type:'set', path:path.concat(mutation.index), value:mutation.value});
+        }
       }
       // if (mutation.type === 'insert') {
       //   _observeChanges(mutation.el, path.concat(mutation.index), observer);
