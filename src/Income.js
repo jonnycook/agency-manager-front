@@ -37,6 +37,9 @@ export class Income extends XComponent {
 	total(list) {
 		return (list || []).reduce((total, el) => parseInt(el.amount) + total, 0)
 	}
+	delete(income) {
+		Collection.deleteDocument('income', income);
+	}
 	xRender() {
 		return (
 			<div className="income">
@@ -115,6 +118,7 @@ export class Income extends XComponent {
 									</ul>
 									<button onClick={this.actions.addAllocationEl(income)}>Add</button>
 								</div>
+								<button onClick={this.actions.delete(income)}>Delete</button>
 							</li>
 						);
 					})}
