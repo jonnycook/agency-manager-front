@@ -118,7 +118,7 @@ export class Income extends XComponent {
 									</ul>
 									<button onClick={this.actions.addAllocationEl(income)}>Add</button>
 								</div>
-								<button onClick={this.actions.delete(income)}>Delete</button>
+								<button onClick={this.actions.delete(income)}>Delete Income</button>
 							</li>
 						);
 					})}
