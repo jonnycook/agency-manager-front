@@ -123,7 +123,7 @@ export class Income extends XComponent {
 						);
 					})}
 				</ul>
-				<button onClick={this.actions.add}>Add</button>
+				<button onClick={this.actions.add}>Add Income</button>
 			</div>
 		);
 	}
