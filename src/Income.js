@@ -31,14 +31,14 @@ export class Income extends XComponent {
 				removeAllocationEl(income, el) {
 					income.allocation.splice(income.allocation.findIndex(el => el._id === el._id), 1);
 				},
+				delete(income) {
+					Collection.deleteDocument('income', income);
+				}
 			}
 		});
 	}
 	total(list) {
 		return (list || []).reduce((total, el) => parseInt(el.amount) + total, 0)
-	}
-	delete(income) {
-		Collection.deleteDocument('income', income);
 	}
 	xRender() {
 		return (
