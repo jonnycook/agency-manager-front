@@ -17,7 +17,7 @@ export class Income extends XComponent {
 					if (!income.breakdown) {
 						income.breakdown = XMap([]);
 					}
-					income.breakdown.push(XMap({_id: XObject.id(), breakdown: [], allocation: []}));
+					income.breakdown.push(XMap({_id: XObject.id(), breakdown: [], allocation: [], receiptReceivedDate: {}}));
 				},
 				removeBreakdownEl(income, el) {
 					income.breakdown.splice(income.breakdown.findIndex(i => i._id === el._id), 1);
