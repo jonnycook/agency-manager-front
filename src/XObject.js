@@ -122,6 +122,13 @@ export function XObject(obj) {
         onAccessUnsetKey = value;
       }
 
+      if (prop.indexOf && prop.indexOf('.') !== -1) {
+        var p = prop.substr(0, prop.indexOf('.'));
+        obj[p][prop.substr(prop.indexOf('.') + 1)] = value;
+        return true;
+      }
+
+
       if (obj[prop] === value) return true;
 
       obj[prop] = value;
