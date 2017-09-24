@@ -10,14 +10,14 @@ export class Income extends XComponent {
 			actions: {
 				add() {
 					db.income.push(XMap({
-						_id: XObject.id()
+						_id: XObject.id(), breakdown: [], allocation: [], receiptReceivedDate: {}
 					}));
 				},
 				addBreakdownEl(income) {
 					if (!income.breakdown) {
 						income.breakdown = XMap([]);
 					}
-					income.breakdown.push(XMap({_id: XObject.id(), breakdown: [], allocation: [], receiptReceivedDate: {}}));
+					income.breakdown.push(XMap({_id: XObject.id()}));
 				},
 				removeBreakdownEl(income, el) {
 					income.breakdown.splice(income.breakdown.findIndex(i => i._id === el._id), 1);
