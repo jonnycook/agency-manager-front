@@ -17,8 +17,12 @@ export class WorkLog extends XComponent {
 						createdAt: new Date()
 					});
 				},
-				delete(issue) {
-					Collection.removeDocument('issues', issue);
+				delete(entry) {
+					if (entry.group) {
+						var group = Collection.findById('work_log_entry_groups', entry.group);
+						group.entries.splice(group.entries.indexOf(entry._id), 1);
+					}
+					Collection.removeDocument('work_log_entries', entry);
 				},
 				done(issue) {
 					issue.completed = true;
@@ -34,6 +38,19 @@ export class WorkLog extends XComponent {
 					}
 					this.selected = [];
 					this.forceUpdate();
+				},
+				unGroup(entry) {
+					if (entry.group) {
+						var group = Collection.findById('work_log_entry_groups', entry.group);
+						group.entries.splice(group.entries.indexOf(entry._id), 1);
+						delete entry.group;
+					}
+				},
+				deleteGroup(group) {
+					for (var id of group.entries) {
+						delete Collection.findById('work_log_entries', id).group;
+					}
+					Collection.removeDocument('work_log_entry_groups', group);
 				}
 			}
 		});
@@ -70,6 +87,8 @@ export class WorkLog extends XComponent {
 									<label>Object Entity: </label>
 									<PropertyField type="entity" object={entry} property="activity.object.entity" />
 								</div>}
+
+								<button onClick={this.actions.delete(entry)}>Delete</button>
 							</li>
 						);
 					})}
@@ -79,7 +98,7 @@ export class WorkLog extends XComponent {
 				<ul>
 					{db.work_log_entry_groups.map(group => {
 						return (
-							<li>
+							<li key={group._id}>
 								<div>
 									<label>Description: </label>
 									<PropertyField type="text" object={group} property="description" />
@@ -125,11 +144,15 @@ export class WorkLog extends XComponent {
 									<label>Object Entity: </label>
 									<PropertyField type="entity" object={entry} property="activity.object.entity" />
 								</div>}
+
+								<button onClick={this.actions.unGroup(entry)}>Ungroup</button>
 							</li>
 
 									)
 								})}
 								</ul>
+
+								<button onClick={this.actions.deleteGroup(group)}>Delete</button>
 							</li>
 						);
 					})}

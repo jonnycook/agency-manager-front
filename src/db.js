@@ -31,7 +31,12 @@ function _observeChanges(obj, path = [], observer) {
         }
       }
       else if (mutation.type === 'remove') {
-        observer({type:'remove', path:path, key:mutation.els[0]._id});
+        if (mutation.els[0]._id) {
+          observer({type:'remove', path:path, key:mutation.els[0]._id});  
+        }
+        else {
+          observer({type:'remove', path:path, index:mutation.index});  
+        }
       }
       else if (mutation.type === 'set') {
         if (obj[mutation.index]._id) {
