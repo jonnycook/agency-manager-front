@@ -6,6 +6,7 @@ import { Tasks } from './Tasks';
 import { Issues } from './Issues';
 import { Tickets } from './Tickets';
 import { Income } from './Income';
+import { WorkLog } from './WorkLog';
 import { YourIncome } from './YourIncome';
 import classNames from 'classnames';
 import pluralize from 'pluralize';
@@ -332,6 +333,7 @@ class App extends XComponent {
         <li><Link to="/tasks">Tasks</Link></li>
         <li><Link to="/issues">Issues</Link></li>
         <li><Link to="/tickets">Tickets</Link></li>
+        <li><Link to="/work-log">Work Log</Link></li>
         <li>
           <Link to="/income">Income</Link>
           <ul>
@@ -356,6 +358,7 @@ class App extends XComponent {
           <Route exact path="/tickets" component={Tickets} />
           <Route exact path="/income" component={Income} />
           <Route exact path="/your-income" component={YourIncome} />
+          <Route exact path="/work-log" component={WorkLog} />
         </main>
       </div>
     </div>
