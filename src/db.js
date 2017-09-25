@@ -27,7 +27,7 @@ function _observeChanges(obj, path = [], observer) {
         }
         else {
           _observeChanges(mutation.el, path.concat(mutation.index), observer);
-          observer({type:'insert', path: path.concat(mutation.index), el:mutation.el}); \
+          observer({type:'insert', path: path.concat(mutation.index), el:mutation.el});
         }
       }
       else if (mutation.type === 'remove') {
