@@ -21,8 +21,14 @@ function _observeChanges(obj, path = [], observer) {
   else if (XObject.isArray(obj)) {
     XObject.observe(obj, null, (mutation) => {
       if (mutation.type === 'insert') {
-        _observeChanges(mutation.el, path.concat(mutation.index), observer);
-        observer({type:'insert', path: path.concat(mutation.index), el:mutation.el}); 
+        if (mutation.el._id) {
+          _observeChanges(mutation.el, path.concat('&' + mutation.el._id), observer);
+          observer({type:'insert', path: path.concat('&' + mutation.el._id), el:mutation.el}); 
+        }
+        else {
+          _observeChanges(mutation.el, path.concat(mutation.index), observer);
+          observer({type:'insert', path: path.concat(mutation.index), el:mutation.el}); \
+        }
       }
       else if (mutation.type === 'remove') {
         observer({type:'remove', path:path, key:mutation.els[0]._id});
