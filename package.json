@@ -23,7 +23,7 @@
     "sugar": "^2.0.4"
   },
   "scripts": {
-    "deploy:staging": "git add -A; git commit -m \".\"; git push origin debug; ssh root@jonnycook.com \"cd apps/agency/front && git pull\"",
+    "deploy:staging": "git add -A; git commit -m \".\"; git push origin debug; ssh root@jonnycook.com \"cd apps/agency/front; git pull; yarn install\"",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
