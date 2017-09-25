@@ -96,7 +96,7 @@ export class WorkLog extends XComponent {
 								</div>
 								{group.timeOverride && <div>
 									<label>Time Override Explanation: </label>
-									<PropertyField type="duration" object={group} property="timeOverrideExplanation" />
+									<PropertyField type="text" object={group} property="timeOverrideExplanation" />
 								</div>}
 
 								<h3>Entries</h3>
