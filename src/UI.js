@@ -38,6 +38,13 @@ export class EditableValue extends XComponent {
         catch (e) {
           return null;
         }
+      case 'datetime': 
+        try {
+          return Date.create(this.refs.input.value);          
+        }
+        catch (e) {
+          return null;
+        }
       case 'bool':
         return this.refs.input.checked;
     }
