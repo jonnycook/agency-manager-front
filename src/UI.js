@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { XComponent, XObject, XMap } from './XObject';
+import { XComponent, XObject, XMap, XStrip } from './XObject';
 import { db, Models, Collection } from './db';
 import classNames from 'classnames';
 
@@ -30,7 +30,7 @@ export class EditableValue extends XComponent {
   extractValue() {
     switch (this.props.type || 'text') {
       default:
-      case 'text': return this.refs.input.value;
+        return this.refs.input.value;
       case 'date': 
         try {
           return Date.create(this.refs.input.value);          
@@ -38,6 +38,8 @@ export class EditableValue extends XComponent {
         catch (e) {
           return null;
         }
+      case 'bool':
+        return this.refs.input.checked;
     }
   }
 
@@ -49,6 +51,9 @@ export class EditableValue extends XComponent {
 
       case 'date':
         return <input type="date" ref="input" onKeyPress={(e) => e.key === 'Enter' && this.action_save()} defaultValue={this.props.get() && this.props.get().format('{yyyy}-{MM}-{dd}')} />;
+
+      case 'bool':
+        return <input ref="input" defaultChecked={this.props.get()} type="checkbox" />
     }
   }
 
@@ -59,6 +64,9 @@ export class EditableValue extends XComponent {
         return this.props.get() && this.props.get().toString();
       case 'date':
         return this.props.get() && this.props.get().format('{yyyy}-{MM}-{dd}');
+
+      case 'bool':
+        return this.props.get() ? 'Yes' : 'No';
     }
   }
   xRender() {
@@ -270,6 +278,16 @@ export class Entity extends XComponent {
             content: {}
           }));
         },
+
+        toggleStartPoint(rel, isStartPoint) {
+          var otherId = rel.entities[Models.Relationship.otherRelIndex(rel, this.props.entity)];
+          if (isStartPoint) {
+            rel.entities = [this.props.entity._id, otherId];
+          }
+          else {
+            rel.entities = [otherId, this.props.entity._id];
+          }
+        }
       }
     });
   }
@@ -319,7 +337,7 @@ export class Entity extends XComponent {
   }
 
   xRender() {
-    return <div className="entity">
+    return <div className="entity" key={this.props.entity._id}>
         <div className="entity__properties">
 	        <h2>Properties</h2>
 	        <ul>
@@ -392,8 +410,16 @@ export class Entity extends XComponent {
         <ul>
           {this.relationships().map(rel => {
             return (
-              <li key={rel._id}>
+              <li key={`${rel._id}`}>
                 <EntitySelector set={(value) => rel.entities[this.otherRelIndex(rel)] = value} entity={() => rel.entities[this.otherRelIndex(rel)]} />
+                <div>
+                  <label>Directed: </label>
+                  <PropertyField type="bool" object={rel} property="directed" />
+                </div>
+                {rel.directed && <div>
+                  <label>Start Point: </label>
+                  <EditableValue type="bool" get={() => rel.entities[0] === this.props.entity._id} set={v => this.actions.toggleStartPoint.invoke(rel, v)} />
+                </div>}
                 <button onClick={this.actions.deleteRelationship(rel)}>Delete</button>
               </li>
             );

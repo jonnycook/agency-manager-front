@@ -10,10 +10,10 @@ export class Tickets extends XComponent {
 	constructor() {
 		super({
 			actions: {
-				done(task) {
-					task.completed = true;
-				},
 				done(ticket) {
+					ticket.completed = true;
+				},
+				delete(ticket) {
 					Collection.removeDocument('pm_tickets', ticket);
 				},
 			}
@@ -82,8 +82,8 @@ export class Tickets extends XComponent {
 												<span className="label">Project:</span>
 												<EntitySelector type="Project" set={(value) => task.project = value} entity={() => task.project} />
 											</div>*/}
-											<button onClick={this.actions.done(task)}>Done</button>
-											<button onClick={this.actions.done(task)}>Delete</button>
+											<button onClick={this.actions.done.bind(task)}>Done</button>
+											<button onClick={this.actions.delete.bind(task)}>Delete</button>
 										</div>
 									</li>
 								);

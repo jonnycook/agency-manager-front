@@ -16,14 +16,19 @@ export class XComponent extends Component {
       for (let action of Object.keys(opts.actions)) {
         let func = opts.actions[action];
 
+
+
         this.actions[action] = (...args) => {
-          if (args[1] instanceof Event) {
-            return func.apply(this, args);
+          if ((args[1] instanceof Event) || (args[1] && (args[1].nativeEvent instanceof Event))) {
+            return func.call(this, args[1]);
           }
           else {
             return (...a) => func.apply(this, args.concat(a));
           }
         };
+
+        this.actions[action].invoke = (...args) => func.apply(this, args);
+        this.actions[action].bind = this.actions[action];
       }
     }
   }

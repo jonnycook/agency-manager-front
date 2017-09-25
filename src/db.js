@@ -50,7 +50,9 @@ function _observeChanges(obj, path = [], observer) {
       // }
     });
     for (var i = 0; i < obj.length; ++ i) {
-      _observeChanges(obj[i], path.concat('&' + obj[i]._id), observer);
+      if (obj[i] !== null && obj[i] !== undefined) {
+        _observeChanges(obj[i], path.concat('&' + obj[i]._id), observer);  
+      }
     }
   }
 }
@@ -193,6 +195,17 @@ export var Collection = {
 
 
 export var Models = {
+  Relationship: {
+    otherRelIndex(rel, entity) {
+      if (rel.entities[0] === entity._id) {
+        return 1;
+      }
+      else {
+        return 0;
+      }
+    }
+
+  },
   Entity: {
     relatedEntities(entity, type=null) {
 
@@ -202,17 +215,9 @@ export var Models = {
         });
       }
 
-      function otherRelIndex(rel) {
-        if (rel.entities[0] === entity._id) {
-          return 1;
-        }
-        else {
-          return 0;
-        }
-      }
 
       function relatedEntity(rel) {
-        var id = rel.entities[otherRelIndex(rel)];
+        var id = rel.entities[Models.Relationship.otherRelIndex(rel, entity)];
         // return id;
         if (id) {
           return Collection.findById('entities', id);
