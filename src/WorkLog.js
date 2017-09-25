@@ -71,6 +71,10 @@ export class WorkLog extends XComponent {
 									<PropertyField type="entity" object={entry} property="subject" />
 								</div>
 								<div>
+									<label>Description: </label>
+									<PropertyField type="text" object={entry} property="description" />
+								</div>
+								<div>
 									<label>Start: </label>
 									<PropertyField type="datetime" object={entry} property="start" />
 								</div>
