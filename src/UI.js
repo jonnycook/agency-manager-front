@@ -10,6 +10,7 @@ import MarkdownEditor from 'react-md-editor';
 
 import _ from 'lodash';
 
+import juration from 'juration';
 
 export class EditableValue extends XComponent {
   constructor() {
@@ -47,6 +48,9 @@ export class EditableValue extends XComponent {
         }
       case 'bool':
         return this.refs.input.checked;
+
+      case 'duration':
+        return juration.parse(this.refs.input.value);
     }
   }
 
@@ -55,6 +59,9 @@ export class EditableValue extends XComponent {
       default:
       case 'text':
         return <input type="text" ref="input" onKeyPress={(e) => e.key === 'Enter' && this.action_save()} defaultValue={this.props.get()} />;
+
+      case 'duration':
+        return <input type="text" ref="input" onKeyPress={(e) => e.key === 'Enter' && this.action_save()} defaultValue={this.props.get() ? juration.stringify(this.props.get()) : ''} />;
 
       case 'date':
         return <input type="date" ref="input" onKeyPress={(e) => e.key === 'Enter' && this.action_save()} defaultValue={this.props.get() && this.props.get().format('{yyyy}-{MM}-{dd}')} />;
@@ -78,6 +85,9 @@ export class EditableValue extends XComponent {
 
       case 'bool':
         return this.props.get() ? 'Yes' : 'No';
+
+      case 'duration':
+        return this.props.get() && juration.stringify(this.props.get());
     }
   }
   xRender() {
