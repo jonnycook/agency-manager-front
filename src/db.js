@@ -23,7 +23,7 @@ function _observeChanges(obj, path = [], observer) {
       if (mutation.type === 'insert') {
         if (mutation.el._id) {
           _observeChanges(mutation.el, path.concat('&' + mutation.el._id), observer);
-          observer({type:'insert', path: path.concat('&' + mutation.el._id), el:mutation.el}); 
+          observer({type:'insert', path: path.concat(mutation.index), el:mutation.el}); 
         }
         else {
           _observeChanges(mutation.el, path.concat(mutation.index), observer);
