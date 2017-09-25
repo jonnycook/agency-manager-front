@@ -51,6 +51,8 @@ export class EditableValue extends XComponent {
 
       case 'date':
         return <input type="date" ref="input" onKeyPress={(e) => e.key === 'Enter' && this.action_save()} defaultValue={this.props.get() && this.props.get().format('{yyyy}-{MM}-{dd}')} />;
+      case 'datetime':
+        return <input type="datetime" ref="input" onKeyPress={(e) => e.key === 'Enter' && this.action_save()} defaultValue={this.props.get() && this.props.get().format('{yyyy}-{MM}-{dd} {hh}:{mm}:{ss}')} />;
 
       case 'bool':
         return <input ref="input" defaultChecked={this.props.get()} type="checkbox" />
@@ -64,6 +66,8 @@ export class EditableValue extends XComponent {
         return this.props.get() && this.props.get().toString();
       case 'date':
         return this.props.get() && this.props.get().format('{yyyy}-{MM}-{dd}');
+      case 'datetime':
+        return this.props.get() && this.props.get().format('{yyyy}-{MM}-{dd} {hh}:{mm}:{ss}');
 
       case 'bool':
         return this.props.get() ? 'Yes' : 'No';

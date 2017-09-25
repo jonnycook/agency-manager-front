@@ -39,11 +39,11 @@ export class WorkLog extends XComponent {
 								</div>
 								<div>
 									<label>Start: </label>
-									<PropertyField type="date" object={entry} property="start" />
+									<PropertyField type="datetime" object={entry} property="start" />
 								</div>
 								<div>
 									<label>End: </label>
-									<PropertyField type="date" object={entry} property="end" />
+									<PropertyField type="datetime" object={entry} property="end" />
 								</div>
 								<div>
 									<label>Activity: </label>
