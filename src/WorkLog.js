@@ -51,9 +51,15 @@ export class WorkLog extends XComponent {
 						delete Collection.findById('work_log_entries', id).group;
 					}
 					Collection.removeDocument('work_log_entry_groups', group);
+				},
+				toggleEntries() {
+					this.setState({
+						showEntries: !this.state.showEntries
+					})
 				}
 			}
 		});
+		this.state = {};
 		this.selected = [];
 	}
 	xRender() {
@@ -122,44 +128,44 @@ export class WorkLog extends XComponent {
 									<PropertyField type="text" object={group} property="timeOverrideExplanation" />
 								</div>}
 
-								<h3>Entries</h3>
-								<ul>
+								<h3 onClick={this.actions.toggleEntries}>Entries</h3>
+								{this.state.showEntries && <ul>
 								{group.entries.map((id) => Collection.findById('work_log_entries', id)).map(entry => {
 									return (
-							<li key={entry._id}>
-								<div>
-									<label>Subject: </label>
-									<PropertyField type="entity" object={entry} property="subject" />
-								</div>
-								<div>
-									<label>Description: </label>
-									<PropertyField type="text" object={entry} property="description" />
-								</div>
+										<li key={entry._id}>
+											<div>
+												<label>Subject: </label>
+												<PropertyField type="entity" object={entry} property="subject" />
+											</div>
+											<div>
+												<label>Description: </label>
+												<PropertyField type="text" object={entry} property="description" />
+											</div>
 
-								<div>
-									<label>Start: </label>
-									<PropertyField type="datetime" object={entry} property="start" />
-								</div>
-								<div>
-									<label>End: </label>
-									<PropertyField type="datetime" object={entry} property="end" />
-								</div>
-								<div>
-									<label>Activity: </label>
-									<PropertyField type="text" object={entry} property="activity.activity" />
-								</div>
+											<div>
+												<label>Start: </label>
+												<PropertyField type="datetime" object={entry} property="start" />
+											</div>
+											<div>
+												<label>End: </label>
+												<PropertyField type="datetime" object={entry} property="end" />
+											</div>
+											<div>
+												<label>Activity: </label>
+												<PropertyField type="text" object={entry} property="activity.activity" />
+											</div>
 
-								{entry.activity.object.entity && <div>
-									<label>Object Entity: </label>
-									<PropertyField type="entity" object={entry} property="activity.object.entity" />
-								</div>}
+											{entry.activity.object.entity && <div>
+												<label>Object Entity: </label>
+												<PropertyField type="entity" object={entry} property="activity.object.entity" />
+											</div>}
 
-								<button onClick={this.actions.unGroup(entry)}>Ungroup</button>
-							</li>
+											<button onClick={this.actions.unGroup(entry)}>Ungroup</button>
+										</li>
 
 									)
 								})}
-								</ul>
+								</ul>}
 
 								<button onClick={this.actions.deleteGroup(group)}>Delete</button>
 							</li>
