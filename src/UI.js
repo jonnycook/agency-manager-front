@@ -475,6 +475,8 @@ export class ValueDisplay extends XComponent {
         return <ReactMarkdown className="value-text-block" source={this.props.value || ''} softBreak="br" />;
       case 'URL':
         return <a className="value-url" href={this.props.value} target="_blank">(link)</a>;
+      case 'date':
+        return <span className={this.props.className}>{this.props.value ? this.props.value.format('{yyyy}-{MM}-{dd}') : null}</span>
       default:
         return <span className={this.props.className}>{this.props.value}</span>;  
     }
@@ -497,6 +499,8 @@ class ValueInput extends XComponent {
     switch (this.state.type) {
       case 'text/block':
         return <MarkdownEditor ref="body" options={{lineWrapping:true}} value={this.state.value} onChange={(value) => this.setState({value})} />;
+      case 'date':
+        return <input ref="body" defaultValue={this.state.value && Date.create(this.state.value).format('{yyyy}-{MM}-{dd}')} type="date" onKeyDown={(e) => e.key === 'Enter' && this.props.onEnter && this.props.onEnter()} />;
       default:
         return <input ref="body" defaultValue={this.state.value} type="text" onKeyDown={(e) => e.key === 'Enter' && this.props.onEnter && this.props.onEnter()} />;
     }
@@ -510,6 +514,7 @@ class ValueInput extends XComponent {
     switch (this.state.type) {
       case 'text/block':
         return this.state.value;
+
       default:
         return this.refs.body.value;
     }

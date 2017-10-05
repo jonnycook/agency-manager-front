@@ -7,6 +7,7 @@ import { Issues } from './Issues';
 import { Tickets } from './Tickets';
 import { Income } from './Income';
 import { WorkLog } from './WorkLog';
+import { EntityWorkLog } from './EntityWorkLog';
 import { YourIncome } from './YourIncome';
 import classNames from 'classnames';
 import pluralize from 'pluralize';
@@ -37,12 +38,34 @@ class Day extends XComponent {
   tasks() {
     return db.tasks.filter((task) => !task.completed && task.dueDate && task.dueDate.isBetween(this.props.date.clone().beginningOfDay(), this.props.date.clone().endOfDay()));
   }
+  entities() {
+    return db.entities.filter((entity) => {
+      var dateProp = entity.properties.find((property) => property.type == 'date');
+      if (dateProp) {
+        var date = Date.create(dateProp.value);
+        if (date) {
+          return date.isBetween(this.props.date.clone().beginningOfDay(), this.props.date.clone().endOfDay());  
+        }        
+      }
+    }).map((entity) => {
+      var date = entity.properties.find((property) => property.type == 'date');
+      return {
+        name: Models.Entity.display(entity),
+        dateLabel: date.name,
+        date: date.value,
+        entity: entity
+      };
+    });
+  }
   xRender() {
     return (
       <div className={classNames(this.props.className, {today: this.isToday(), 'current-month': this.props.date.isThisMonth()})}>
         <span className="date">{this.props.date.getDate()}</span>
         <ul className="tasks">
           {this.tasks().map(task => <li key={task._id}><span className="task__entity">{Models.Entity.display(Collection.findById('entities', task.entity), false)}</span> {task.title} ({task.deadline}) <input type="checkbox" onClick={() => task.completed = 'true'} /></li>)}
+        </ul>
+        <ul className="entities">
+          {this.entities().map(entry => <li key={entry.entity._id}><Link to={`/entities/${entry.entity._id}`}>{entry.name}</Link> -- {entry.dateLabel}</li>)}
         </ul>
       </div>
     );
@@ -363,6 +386,7 @@ class App extends XComponent {
           <Route exact path="/income" component={Income} />
           <Route exact path="/your-income" component={YourIncome} />
           <Route exact path="/work-log" component={WorkLog} />
+          <Route exact path="/work-log/entities/:id" component={({match}) => <EntityWorkLog entity={Collection.findById('entities', match.params.id)} />} />
         </main>
       </div>
     </div>
