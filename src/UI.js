@@ -406,7 +406,7 @@ export class Entity extends XComponent {
 			          {group.map(datum => {
 			            return (
 			              <li key={datum._id}>
-			                <Datum/* hideDescription={key}*/ datum={datum} onDelete={this.actions.deleteDatum(datum)} />
+			                <Datum/* hideDescription={key}*/ entity={this.props.entity} datum={datum} onDelete={this.actions.deleteDatum(datum)} />
 			              </li>
 			            );
 			          })}
@@ -568,6 +568,7 @@ class DataContent extends XComponent {
     return <div className="content">
       {this.state.editing ? <EditDataContent ref="edit" done={() => this.setState({editing: false})} datum={this.props.datum} /> : <ViewDataContent datum={this.props.datum} />}
       <button onClick={this.action_toggleEdit.bind(this)}>{this.state.editing ? 'Cancel' : 'Edit'}</button>
+      <a href={`agency://entities/${this.props.entity._id}/data/${this.props.datum._id}`}>External Edit</a>
     </div>
   }
 }
@@ -693,7 +694,7 @@ class Datum extends XComponent {
     return (
       <div className="datum item">
         {this.description()}
-        <DataContent datum={this.props.datum} />
+        <DataContent entity={this.props.entity} datum={this.props.datum} />
         <button onClick={() => this.props.onDelete(this.props.datum)}>Remove</button>
       </div>
     );
