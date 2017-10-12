@@ -218,12 +218,24 @@ export var Models = {
 
   },
   Entity: {
-    relatedEntities(entity, type=null) {
+    relatedEntities(entity, type=null, startPoint=null) {
 
       function relationships() {
-        return db.relationships.filter((rel) => {
-          return rel.entities.includes(entity._id);
-        });
+        if (startPoint === null) {
+          return db.relationships.filter((rel) => {
+            return rel.entities.includes(entity._id);
+          });
+        }
+        else if (startPoint === true) {
+          return db.relationships.filter((rel) => {
+            return rel.entities[0] == entity._id;
+          });
+        }
+        else if (startPoint === false) {
+          return db.relationships.filter((rel) => {
+            return rel.entities[1] == entity._id;
+          });
+        }
       }
 
 
@@ -235,7 +247,7 @@ export var Models = {
         }
       }
 
-      var entities = relationships().map(relatedEntity);
+      var entities = relationships(startPoint).map(relatedEntity);
       if (type) {
         return entities.filter((e) => e.type === type);
       }
@@ -244,6 +256,8 @@ export var Models = {
       }
     },
 
+
+
     property(entity, name) {
       return (entity.properties.find((e) => e.name === name) || {}).value;
     },
@@ -251,13 +265,44 @@ export var Models = {
       return entity.state ? (entity.state.find((e) => e.name === name) || {}) : {}
     },
     display(entity, showType=true) {
+
       if (entity) {
+
+        var func = {
+          Call() {
+            var date = Models.Entity.property(entity, 'Date');
+            if (date.format) {
+              var parent = Models.Entity.relatedEntities(entity, null, false)[0];
+
+              var label = date.format('{yyyy}-{MM}-{dd}');
+              if (parent) {
+                return Models.Entity.display(parent, false) + '/' + label;
+              }
+            }
+          }
+        }[entity.type];
+
+        var label;
+
+
+
+        if (func) {
+          label = func();
+        }
+        
+
+        if (!label) {
           var properties = {};
           var e = entity;
           while (true) {
             for (var prop of e.properties) {
               if (!(prop.name in properties)) {
-                properties[prop.name] = prop.value;
+                if (prop.type == 'date') {
+                  properties[prop.name] = prop.value.format('{yyyy}-{MM}-{dd}');
+                }
+                else {
+                  properties[prop.name] = prop.value;                  
+                }
               }
             } 
             if (e.extends) {
@@ -273,9 +318,12 @@ export var Models = {
           //   label.push(`${propName}: ${properties[propName]}`);
           // }
 
-          var label = properties.Name ? properties.Name : Object.values(properties)[0];
+          label = properties.Name ? properties.Name : Object.values(properties)[0];
 
-          return showType ? `${label} (${entity.type})` : label;
+        }
+
+
+        return showType ? `${label} (${entity.type})` : label;
       }
       else {
         return '(none)';

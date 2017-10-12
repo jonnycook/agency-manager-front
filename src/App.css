@@ -13,7 +13,6 @@
   display: flex; }
   .calendar .week .day, .calendar .header .day {
     flex: 1 1 0;
-    height: 150px;
     padding: 5px;
     box-sizing: border-box; }
 
@@ -31,6 +30,12 @@
     border-color: black; }
     .calendar .week .day.today .date {
       font-weight: bold; }
+  .calendar .week .day .entities {
+    list-style-type: none;
+    margin: 0;
+    padding: 0; }
+    .calendar .week .day .entities li {
+      font-size: 11px; }
   .calendar .week .day .tasks {
     margin: 0;
     padding: 0;

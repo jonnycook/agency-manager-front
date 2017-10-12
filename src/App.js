@@ -65,7 +65,7 @@ class Day extends XComponent {
           {this.tasks().map(task => <li key={task._id}><span className="task__entity">{Models.Entity.display(Collection.findById('entities', task.entity), false)}</span> {task.title} ({task.deadline}) <input type="checkbox" onClick={() => task.completed = 'true'} /></li>)}
         </ul>
         <ul className="entities">
-          {this.entities().map(entry => <li key={entry.entity._id}><Link to={`/entities/${entry.entity._id}`}>{entry.name}</Link> -- {entry.dateLabel}</li>)}
+          {this.entities().map(entry => <li key={entry.entity._id}><Link to={`/entities/${entry.entity._id}`}>{entry.name}</Link> &mdash; {entry.dateLabel}</li>)}
         </ul>
       </div>
     );

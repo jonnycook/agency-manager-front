@@ -13,7 +13,7 @@
 		display: flex;
 		.day {
 			flex: 1 1 0;
-			height: 150px;
+			// height: 150px;
 			padding: 5px;
 			box-sizing: border-box;
 		}
@@ -46,6 +46,15 @@
 			border-color: black;
 			.date {
 				font-weight: bold;
+			}
+		}
+
+		.entities {
+			list-style-type: none;
+			margin: 0;
+			padding: 0;
+			li {
+				font-size: 11px
 			}
 		}
 
