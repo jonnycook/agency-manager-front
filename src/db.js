@@ -271,9 +271,8 @@ export var Models = {
         var func = {
           Call() {
             var date = Models.Entity.property(entity, 'Date');
-            if (date.format) {
+            if (date && date.format) {
               var parent = Models.Entity.relatedEntities(entity, null, false)[0];
-
               var label = date.format('{yyyy}-{MM}-{dd}');
               if (parent) {
                 return Models.Entity.display(parent, false) + '/' + label;

@@ -88,8 +88,6 @@ export class EntityWorkLog extends XComponent {
 			}
 		}
 
-
-
 		return {
 			totalTime: juration.stringify(Math.floor(totalTime)),
 			timeByActivity: _.mapValues(timeByActivity, (value) => juration.stringify(Math.floor(value)))
