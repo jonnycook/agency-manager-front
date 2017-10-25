@@ -228,12 +228,12 @@ export var Models = {
         }
         else if (startPoint === true) {
           return db.relationships.filter((rel) => {
-            return rel.entities[0] == entity._id;
+            return rel.entities[0] == entity._id && rel.directed;
           });
         }
         else if (startPoint === false) {
           return db.relationships.filter((rel) => {
-            return rel.entities[1] == entity._id;
+            return rel.entities[1] == entity._id && rel.directed;
           });
         }
       }

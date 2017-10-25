@@ -15,8 +15,8 @@ export class EntityWorkLog extends XComponent {
 			}
 		});
 	}
-	totalTime() {
-		var entity = this.props.entity;
+
+	_totalTime(entity) {
 		var entries = db.work_log_entries.filter((entry) => !entry.invoiced && entry.activity.object.entity === entity._id);
 		var groups = {};
 		
@@ -89,17 +89,81 @@ export class EntityWorkLog extends XComponent {
 		}
 
 		return {
-			totalTime: juration.stringify(Math.floor(totalTime)),
-			timeByActivity: _.mapValues(timeByActivity, (value) => juration.stringify(Math.floor(value)))
+			totalTime: Math.floor(totalTime),
+			timeByActivity: timeByActivity
 		};
 	}
+
+	totalTime(entity) {
+		var totalTime = this._totalTime(this.props.entity);
+		var entities = Models.Entity.relatedEntities(this.props.entity, null, true);
+		
+		for (var entity of entities) {
+			var t = this.totalTime(entity);
+			totalTime.totalTime += t;
+			for (var activity in t) {
+				if (!totalTime[activity]) {
+					totalTime[activity] = t[activity];
+				}
+				else {
+					totalTime[activity] += t[activity];
+				}
+			}
+		}
+
+		return totalTime;
+	}
+
+	totalTime(entity) {
+		var totalTime = this._totalTime(entity);
+		var entities = Models.Entity.relatedEntities(entity, null, true);
+
+		var allEntities = [entity];
+		
+		for (var e of entities) {
+			var t = this.totalTime(e);
+			totalTime.totalTime += t.totalTime;
+			allEntities = allEntities.concat(t.entities);
+
+			for (var activity in t.timeByActivity) {
+				if (!totalTime.timeByActivity[activity]) {
+					totalTime.timeByActivity[activity] = t.timeByActivity[activity];
+				}
+				else {
+					totalTime.timeByActivity[activity] += t.timeByActivity[activity];
+				}
+			}
+		}
+
+		totalTime.entities = allEntities;
+		return totalTime;
+	}
+
+	formattedTotalTime(entity) {
+		var totalTime = this.totalTime(entity);
+
+		return {
+			totalTime: juration.stringify(totalTime.totalTime),
+			timeByActivity: _.mapValues(totalTime.timeByActivity, juration.stringify),
+			entities: _.map(totalTime.entities, (entity) => Models.Entity.display(entity))
+		}
+	}
+
 	xRender() {
 		return (
 			<div className="work-log">
-				{this.totalTime().totalTime}
+				{this.formattedTotalTime(this.props.entity).totalTime}
 
 				<ul>
-					{_.map(this.totalTime().timeByActivity, (value, activity) => {
+					{this.formattedTotalTime(this.props.entity).entities.map(entity => {
+						return (
+							<li key={entity}>{entity}</li>
+						);
+					})}
+				</ul>
+
+				<ul>
+					{_.map(this.formattedTotalTime(this.props.entity).timeByActivity, (value, activity) => {
 						return (
 							<li key={activity}>{activity}: {value}</li>
 						);
