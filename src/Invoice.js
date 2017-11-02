@@ -5,25 +5,10 @@ import { PropertyField, EntitySelector } from './UI';
 import juration from 'juration';
 import _ from 'lodash';
 
-export class EntityWorkLog extends XComponent {
-	constructor() {
-		super({
-			actions: {
-				createInvoice() {
-					var entries = this.workLogEntries(this.props.entity);
-					var invoice = XMap({_id:XObject.id(), entity:this.props.entity._id});
-					for (var entry of entries) {
-						entry.invoice = invoice._id;
-					}
-					db.invoices.push(invoice);
-				}
-			}
-		});
-	}
+export class Invoice extends XComponent {
 
 	_totalTime(entity) {
 		var entries = this._workLogEntries(entity);
-		console.log(XStrip(entries));
 		var groups = {};
 
 		var entriesToRemove = [];
@@ -93,26 +78,14 @@ export class EntityWorkLog extends XComponent {
 	workLogEntries(entity) {
 		var workLogEntries = this._workLogEntries(entity);
 		var entities = Models.Entity.relatedEntities(entity, null, true);
-		for (var e of entities) {
-			workLogEntries = workLogEntries.concat(this._workLogEntries(e));
+		for (var entity of entities) {
+			entities = entities.concat(this._workLogEntries(entity));
 		}
-		return workLogEntries;
+		return entities;
 	}
 
 	_workLogEntries(entity) {
-		var entries = db.work_log_entries.filter((entry) => !entry.invoice && entry.activity.object.entity === entity._id);
-		
-		var tasks = db.tasks.filter((task) => task.entity === entity._id);
-		for (var task of tasks) {
-			entries = entries.concat(db.work_log_entries.filter((entry) => !entry.invoice && entry.activity.object.task === task._id));
-		}
-
-		var issues = db.issues.filter((issue) => issue.entity === entity._id);
-		for (var issue of issues) {
-			entries = entries.concat(db.work_log_entries.filter((entry) => !entry.invoice &&  entry.activity.object.issue === issue._id));
-		}
-
-		return entries;
+		return db.work_log_entries.filter((entry) => entry.invoice === this.props.invoice._id).filter((entry) => entry.activity.object.entity === entity._id);
 	}
 
 	totalTime(entity) {
@@ -161,6 +134,7 @@ export class EntityWorkLog extends XComponent {
 						);
 					})}
 				</ul>
+
 				<ul>
 					{this.totalTime(entity).entities.filter(e => e != entity).map(e => {
 						return (
@@ -170,16 +144,13 @@ export class EntityWorkLog extends XComponent {
 						);
 					})}
 				</ul>
+
 			</div>
 		);
 	}
 
+
 	xRender() {
-		return (
-			<div className="work-log">
-				<button onClick={this.actions.createInvoice}>Create Invoice</button>
-				{this.renderTotalTime(this.props.entity)}
-			</div>
-		);
+		return this.renderTotalTime(Collection.findById('entities', this.props.invoice.entity));
 	}
 }

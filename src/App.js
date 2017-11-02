@@ -3,6 +3,7 @@ import { XMap, XObject, XComponent, XStrip } from './XObject';
 import { EntitySelector, Entity, ValueDisplay } from './UI';
 import { initDb, db, Models, Collection, applyChanges } from './db';
 import { Tasks } from './Tasks';
+import { Invoice } from './Invoice';
 import { Issues } from './Issues';
 import { Tickets } from './Tickets';
 import { Income } from './Income';
@@ -368,7 +369,6 @@ class App extends XComponent {
           </ul>
         </li>
       </ul>
-
       <div className="main-column">
         <div className="header">
           <EntitySelector className="search-bar"  hideButtons={true} editing={true} set={(entity) => this.refs.router.history.push(`/entities/${entity}`)} />
@@ -387,6 +387,7 @@ class App extends XComponent {
           <Route exact path="/your-income" component={YourIncome} />
           <Route exact path="/work-log" component={WorkLog} />
           <Route exact path="/work-log/entities/:id" component={({match}) => <EntityWorkLog entity={Collection.findById('entities', match.params.id)} />} />
+          <Route exact path="/invoices/:id" component={({match}) => <Invoice invoice={Collection.findById('invoices', match.params.id)} />} />
         </main>
       </div>
     </div>
