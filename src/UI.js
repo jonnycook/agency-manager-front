@@ -462,6 +462,7 @@ class ValueTypeSelector extends XComponent {
         <option>text/line</option>
         <option>text/block</option>
         <option>file</option>
+        <option>local file</option>
         <option>URL</option>
         <option>date</option>
       </select>
@@ -477,8 +478,10 @@ export class ValueDisplay extends XComponent {
         return <a className="value-url" href={this.props.value} target="_blank">(link)</a>;
       case 'date':
         return <span className={this.props.className}>{this.props.value ? this.props.value.format('{yyyy}-{MM}-{dd}') : null}</span>
+      case 'local file':
+        return <span className={this.props.className}>{this.props.value && this.props.value[localStorage.getItem('context')]}</span>
       default:
-        return <span className={this.props.className}>{this.props.value}</span>;  
+        return <span className={this.props.className}>{this.props.value.toString()}</span>;  
     }
   }
 }
@@ -501,6 +504,8 @@ class ValueInput extends XComponent {
         return <MarkdownEditor ref="body" options={{lineWrapping:true}} value={this.state.value} onChange={(value) => this.setState({value})} />;
       case 'date':
         return <input ref="body" defaultValue={this.state.value && Date.create(this.state.value).format('{yyyy}-{MM}-{dd}')} type="date" onKeyDown={(e) => e.key === 'Enter' && this.props.onEnter && this.props.onEnter()} />;
+      case 'local file':
+        return <input ref="body" defaultValue={this.state.value && this.state.value[localStorage.getItem('context')]} type="text" onKeyDown={(e) => e.key === 'Enter' && this.props.onEnter && this.props.onEnter()} />;
       default:
         return <input ref="body" defaultValue={this.state.value} type="text" onKeyDown={(e) => e.key === 'Enter' && this.props.onEnter && this.props.onEnter()} />;
     }
@@ -514,7 +519,10 @@ class ValueInput extends XComponent {
     switch (this.state.type) {
       case 'text/block':
         return this.state.value;
-
+      case 'local file':
+        return Object.assign({}, this.state.value, {
+          [localStorage.getItem('context')]: this.refs.body.value,
+        });
       default:
         return this.refs.body.value;
     }
@@ -538,10 +546,10 @@ class EditDataContent extends XComponent {
   xRender() {
     return (
       <span>
-      <ValueInput ref="valueInput" type={() => this.props.datum.content.type} value={() => this.props.datum.content.body} onEnter={this.save.bind(this)} />
-      <button onClick={this.save.bind(this)}>Save</button>
-      </span>);
-
+        <ValueInput ref="valueInput" type={() => this.props.datum.content.type} value={() => this.props.datum.content.body} onEnter={this.save.bind(this)} />
+        <button onClick={this.save.bind(this)}>Save</button>
+      </span>
+    );
   }
 }
 
@@ -557,7 +565,7 @@ class DataContent extends XComponent {
     super();
     this.state = {
       editing: false
-    }
+    };
   }
 
   action_toggleEdit() {
@@ -603,7 +611,6 @@ class DatumDescriptionLine extends XComponent {
 		};
 	}
 	xRender() {
-
 		return (
 			this.state.editing ? 
 			 <div className="description-line">
@@ -618,7 +625,6 @@ class DatumDescriptionLine extends XComponent {
 				<button onClick={this.actions.edit}>Edit</button>
 			</h4>
 	  );
-
 	}
 }
 
