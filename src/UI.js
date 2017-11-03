@@ -481,7 +481,7 @@ export class ValueDisplay extends XComponent {
       case 'local file':
         return <span className={this.props.className}>{this.props.value && this.props.value[localStorage.getItem('context')]}</span>
       default:
-        return <span className={this.props.className}>{this.props.value.toString()}</span>;  
+        return <span className={this.props.className}>{this.props.value && this.props.value.toString()}</span>;  
     }
   }
 }
