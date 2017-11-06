@@ -10,6 +10,7 @@ import { Income } from './Income';
 import { WorkLog } from './WorkLog';
 import { EntityWorkLog } from './EntityWorkLog';
 import { YourIncome } from './YourIncome';
+import { Schedule } from './Schedule';
 import classNames from 'classnames';
 import pluralize from 'pluralize';
 import {
@@ -368,6 +369,7 @@ class App extends XComponent {
             <li><Link to="/your-income">Your Income</Link></li>
           </ul>
         </li>
+        <li><Link to="/schedule">Schedule</Link></li>
       </ul>
       <div className="main-column">
         <div className="header">
@@ -388,6 +390,7 @@ class App extends XComponent {
           <Route exact path="/work-log" component={WorkLog} />
           <Route exact path="/work-log/entities/:id" component={({match}) => <EntityWorkLog entity={Collection.findById('entities', match.params.id)} />} />
           <Route exact path="/invoices/:id" component={({match}) => <Invoice invoice={Collection.findById('invoices', match.params.id)} />} />
+          <Route exact path="/schedule" component={Schedule} />
         </main>
       </div>
     </div>

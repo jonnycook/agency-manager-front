@@ -457,15 +457,15 @@ class ValueTypeSelector extends XComponent {
     return this.refs.select.value;
   }
   xRender() {
-      return <select ref="select" {...this.props}>
-        <option></option>
-        <option>text/line</option>
-        <option>text/block</option>
-        <option>file</option>
-        <option>local file</option>
-        <option>URL</option>
-        <option>date</option>
-      </select>
+    return <select ref="select" {...this.props}>
+      <option></option>
+      <option>text/line</option>
+      <option>text/block</option>
+      <option>file</option>
+      <option>local file</option>
+      <option>URL</option>
+      <option>date</option>
+    </select>
   }
 }
 

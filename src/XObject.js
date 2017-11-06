@@ -219,6 +219,12 @@ XObject.captureAccesses = function(func, onAccess) {
   return result;
 }
 
+XObject.obj = function(obj={}) {
+  return XObject(Object.assign({
+    _id: XObject.id()
+  }, obj));
+}
+
 
 export function XArray(list) {
   var observers = [];
