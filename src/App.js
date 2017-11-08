@@ -348,12 +348,12 @@ class App extends XComponent {
     <div>
       {!this.state.connected && <span style={{position:'fixed', top: 0, left: 0}}>Disconnected. Changes will not be saved.</span>}
       <ul className="side-bar">
-        <li>
+        {/*<li>
           <Link to="/entities">All Entities</Link>
           <ul>
             {this.entityTypes().map((type) => <li key={type}><Link to={`/entities/type/${type}`}>{pluralize(type)}</Link></li>)}
           </ul>
-        </li>
+        </li>*/}
         <li>
           <Link to="/tasks">Tasks</Link>
           <ul>
