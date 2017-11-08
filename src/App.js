@@ -354,12 +354,8 @@ class App extends XComponent {
             {this.entityTypes().map((type) => <li key={type}><Link to={`/entities/type/${type}`}>{pluralize(type)}</Link></li>)}
           </ul>
         </li>*/}
-        <li>
-          <Link to="/tasks">Tasks</Link>
-          <ul>
-            <li><Link to="/calendar">Calendar</Link></li>
-          </ul>
-        </li>
+        <li><Link to="/tasks">Tasks</Link></li>
+        <li><Link to="/calendar">Calendar</Link></li>
         <li><Link to="/issues">Issues</Link></li>
         <li><Link to="/tickets">Tickets</Link></li>
         <li><Link to="/work-log">Work Log</Link></li>
