@@ -11,6 +11,7 @@ import { WorkLog } from './WorkLog';
 import { EntityWorkLog } from './EntityWorkLog';
 import { YourIncome } from './YourIncome';
 import { Schedule } from './Schedule';
+import { BatchEntityCreator } from './BatchEntityCreator';
 import classNames from 'classnames';
 import pluralize from 'pluralize';
 import {
@@ -347,7 +348,6 @@ class App extends XComponent {
     <div>
       {!this.state.connected && <span style={{position:'fixed', top: 0, left: 0}}>Disconnected. Changes will not be saved.</span>}
       <ul className="side-bar">
-        <li><Link to="/overview">Overview</Link></li>
         <li>
           <Link to="/entities">All Entities</Link>
           <ul>
@@ -391,6 +391,7 @@ class App extends XComponent {
           <Route exact path="/work-log/entities/:id" component={({match}) => <EntityWorkLog entity={Collection.findById('entities', match.params.id)} />} />
           <Route exact path="/invoices/:id" component={({match}) => <Invoice invoice={Collection.findById('invoices', match.params.id)} />} />
           <Route exact path="/schedule" component={Schedule} />
+          <Route exact path="/batch-entity-creator" component={BatchEntityCreator} />
         </main>
       </div>
     </div>

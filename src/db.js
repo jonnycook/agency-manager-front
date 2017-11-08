@@ -278,6 +278,16 @@ export var Models = {
                 return Models.Entity.display(parent, false) + '/' + label;
               }
             }
+          },
+          Workload() {
+            var month = Models.Entity.property(entity, 'Month');
+            var parent = Models.Entity.relatedEntities(entity, null, false)[0];
+            if (parent) {
+              return Models.Entity.display(parent, false) + '/' + month;
+            }
+            else {
+              return month;
+            }
           }
         }[entity.type];
 

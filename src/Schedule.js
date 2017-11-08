@@ -7,6 +7,47 @@ import _ from 'lodash';
 
 export class Schedule extends XComponent {
 	constructor() {
+		super();
+		this.schedule = db.schedules[0];
+		if (!this.schedule) {
+			this.schedule = XObject.obj();
+			db.schedules.push(this.schedule);
+		}
+	}
+	workHours(date) {
+		if (date.getDay() == 0 || date.getDay() == 6) {
+			return 0;
+		}
+		else {
+			return parseInt(this.schedule.dailyWorkHours);
+		}
+	}
+
+	workHoursLeft() {
+		var date = new Date().addDays(1);
+		var nextMonth = date.clone().addMonths(1).getMonth();
+		var hours = 0;
+
+		while (date.getMonth() != nextMonth) {
+			hours += this.workHours(date);
+			date.addDays(1);
+		}
+
+		return hours;
+	}
+
+	xRender() {
+		return (
+			<div>
+				<PropertyField object={this.schedule} property="dailyWorkHours" type="text/line" />
+				{this.workHoursLeft()}
+			</div>
+		);
+	}
+}
+
+export class Schedule2 extends XComponent {
+	constructor() {
 		super({
 			actions: {
 				addBlock() {
