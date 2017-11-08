@@ -434,7 +434,7 @@ export class Entity extends XComponent {
         <button onClick={this.actions.addDatum}>Add Data</button>
        	</div>
 
-        <h2>Relationships</h2>
+        <h2>Related Entities</h2>
         <ul>
           {this.relationships().map(rel => {
             return (
