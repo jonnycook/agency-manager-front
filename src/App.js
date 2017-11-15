@@ -360,6 +360,7 @@ class App extends XComponent {
         <li><Link to="/calendar">Calendar</Link></li>
         <li><Link to="/issues">Issues</Link></li>
         <li><Link to="/tickets">Tickets</Link></li>
+        <li><Link to="/work-periods">Work Periods</Link></li>
         <li><Link to="/work-log">Work Log</Link></li>
         <li>
           <Link to="/income">Income</Link>

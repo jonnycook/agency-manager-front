@@ -21,6 +21,16 @@ export class WorkPeriods extends XComponent {
 			}
 		});
 	}
+
+	display(workPeriod) {
+		if (workPeriod.baseEntity || workPeriod.startDate) {
+			return <span>{workPeriod.baseEntity && Models.Entity.display(Collection.findById('entities', workPeriod.baseEntity))} {workPeriod.startDate && workPeriod.startDate.format('{yyyy}-{MM}-{dd}')}</span>			
+		}
+		else {
+			return '(none)';
+		}
+	}
+
 	xRender() {
 		return (
 			<div>
@@ -28,7 +38,7 @@ export class WorkPeriods extends XComponent {
 					{db.work_periods.map((workPeriod) => {
 						return (
 							<li key={workPeriod._id}>
-								<Link to={`/work-periods/${workPeriod._id}`}>{workPeriod._id}</Link>
+								<Link to={`/work-periods/${workPeriod._id}`}>{this.display(workPeriod)}</Link>
 								<button onClick={this.actions.deleteWorkPeriod.bind(workPeriod)}>Delete</button>
 							</li>
 						);
