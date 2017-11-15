@@ -221,7 +221,7 @@ export class EntitySelector extends XComponent {
 				if (entity.type !== this.props.type) return false;
 			}
 
-			if (!Models.Entity.display(entity, !this.props.type).match(new RegExp('(\b|/|^)' + this.state.filter, 'i'))) {
+			if (!Models.Entity.display(entity, !this.props.type).match(new RegExp(/(\b|/|^)/ + this.state.filter, 'i'))) {
 				return false;
 			}
 
