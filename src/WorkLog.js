@@ -68,7 +68,7 @@ export class WorkLog extends XComponent {
 				<h1>Work Log</h1>
 				<button onClick={this.actions.group}>Group</button>
 				<ul>
-					{db.work_log_entries.filter(entry => !entry.group).map(entry => {
+					{db.work_log_entries.filter(entry => !entry.group && !entry.invoice).map(entry => {
 						return (
 							<li key={entry._id}>
 								<input type="checkbox" checked={this.selected.includes(entry)} onClick={(e) => {!this.selected.includes(entry) ? this.selected.push(entry) : this.selected.remove(entry); this.forceUpdate()}} />

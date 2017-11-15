@@ -59,7 +59,7 @@ export class XComponent extends Component {
 
 
 
-export function XObject(obj) {
+export function XObject(obj = {}) {
   // var id = objId++;
   var propObservers = {};
   var observers = [];

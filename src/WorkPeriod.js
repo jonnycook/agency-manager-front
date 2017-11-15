@@ -5,27 +5,34 @@ import { PropertyField, EntitySelector } from './UI';
 import juration from 'juration';
 import _ from 'lodash';
 
-export class EntityWorkLog extends XComponent {
+
+export class WorkPeriod extends XComponent {
 	constructor() {
 		super({
 			actions: {
-				createInvoice() {
-					var entries = this.workLogEntries(this.props.entity);
-					var invoice = XMap({_id:XObject.id(), entity:this.props.entity._id});
-					for (var entry of entries) {
-						entry.invoice = invoice._id;
+				addEntityExclusion() {
+					if (!this.props.workPeriod.entityExclusions) {
+						this.props.workPeriod.entityExclusions = XMap([]);
 					}
-					db.invoices.push(invoice);
+					this.props.workPeriod.entityExclusions.push(XObject.obj());
+				},
+				removeEntityExclusion(entityExclusion) {
+					this.props.workPeriod.entityExclusions.splice(this.props.workPeriod.entityExclusions.indexOf(entityExclusion), 1);
 				}
 			}
 		});
 
-		this.s = XObject();
 	}
 
 	_totalTime(entity) {
+		if ((this.props.workPeriod.entityExclusions || []).find((entityExclusion) => entityExclusion._value == entity._id)) {
+			return {
+				totalTime: 0,
+				timeByActivity: {}
+			}
+		}
+
 		var entries = this._workLogEntries(entity);
-		// console.log(XStrip(entries));
 		var groups = {};
 
 		var entriesToRemove = [];
@@ -102,16 +109,16 @@ export class EntityWorkLog extends XComponent {
 	}
 
 	_workLogEntries(entity) {
-		var entries = db.work_log_entries.filter((entry) => (this.s.startDate && entry.start.getTime() > this.s.startDate.getTime() || !this.s.startDate) && !entry.invoice && entry.activity.object.entity === entity._id);
+		var entries = db.work_log_entries.filter((entry) => (this.props.workPeriod.startDate && entry.start.getTime() > this.props.workPeriod.startDate.getTime() || !this.props.workPeriod.startDate) && !entry.invoice && entry.activity.object.entity === entity._id);
 		
 		var tasks = db.tasks.filter((task) => task.entity === entity._id);
 		for (var task of tasks) {
-			entries = entries.concat(db.work_log_entries.filter((entry) => (this.s.startDate && entry.start.getTime() > this.s.startDate.getTime() || !this.s.startDate) && !entry.invoice && entry.activity.object.task === task._id));
+			entries = entries.concat(db.work_log_entries.filter((entry) => (this.props.workPeriod.startDate && entry.start.getTime() > this.props.workPeriod.startDate.getTime() || !this.props.workPeriod.startDate) && !entry.invoice && entry.activity.object.task === task._id));
 		}
 
 		var issues = db.issues.filter((issue) => issue.entity === entity._id);
 		for (var issue of issues) {
-			entries = entries.concat(db.work_log_entries.filter((entry) => (this.s.startDate && entry.start.getTime() > this.s.startDate.getTime() || !this.s.startDate) && !entry.invoice &&  entry.activity.object.issue === issue._id));
+			entries = entries.concat(db.work_log_entries.filter((entry) => (this.props.workPeriod.startDate && entry.start.getTime() > this.props.workPeriod.startDate.getTime() || !this.props.workPeriod.startDate) && !entry.invoice &&  entry.activity.object.issue === issue._id));
 		}
 
 		return entries;
@@ -143,8 +150,10 @@ export class EntityWorkLog extends XComponent {
 	}
 
 	formattedTotalTime(entity) {
-		var totalTime = this.totalTime(entity);
+		return this.formatTotalTime(this.totalTime(entity));
+	}
 
+	formatTotalTime(totalTime) {
 		return {
 			totalTime: juration.stringify(Math.floor(totalTime.totalTime)),
 			timeByActivity: _.mapValues(totalTime.timeByActivity, (t) => juration.stringify(Math.floor(t))),
@@ -153,37 +162,57 @@ export class EntityWorkLog extends XComponent {
 	}
 
 	renderTotalTime(entity) {
-		return (
+		var totalTime = this.totalTime(entity);
+		var formattedTotalTime = this.formatTotalTime(totalTime);
+		return totalTime.totalTime ? (
 			<div>
-				{Models.Entity.display(entity)}: {this.formattedTotalTime(entity).totalTime}
+				<b>{Models.Entity.display(entity)}: {formattedTotalTime.totalTime}</b>
 				<ul>
-					{_.map(this.formattedTotalTime(entity).timeByActivity, (value, activity) => {
+					{_.map(formattedTotalTime.timeByActivity, (value, activity) => {
 						return (
-							<li key={activity}>{activity}: {value}</li>
+							<li key={activity}><i>{activity}: {value}</i></li>
 						);
 					})}
 				</ul>
 				<ul>
-					{this.totalTime(entity).entities.filter(e => e != entity).map(e => {
-						return (
+					{totalTime.entities.filter(e => e != entity).map(e => {
+						var el = this.renderTotalTime(e);
+						return el ? (
 							<li key={e._id}>
-								{this.renderTotalTime(e)}
+								{el}
+							</li>
+						) : null
+					})}
+				</ul>
+			</div> 
+		) : null;
+	}
+
+	xRender() {
+		return (
+			<div>
+				<div>
+					<label>Start Date:</label>
+					<PropertyField object={this.props.workPeriod} property="startDate" type="date" />
+				</div>
+				<div>
+					<label>Base Entity:</label>
+					<PropertyField object={this.props.workPeriod} property="baseEntity" type="entity" />
+				</div>
+
+				<ul>
+					{(this.props.workPeriod.entityExclusions || []).map((entityExclusion) => {
+						return (
+							<li key={entityExclusion._id}>
+								<PropertyField object={entityExclusion} property="_value" type="entity" />
+								<button onClick={this.actions.removeEntityExclusion.bind(entityExclusion)}>Remove</button>
 							</li>
 						);
 					})}
 				</ul>
-			</div>
-		);
-	}
+				<button onClick={this.actions.addEntityExclusion}>Exclude Entity</button>
 
-	xRender() {
-		console.log(this.s.startDate);
-		return (
-			<div className="work-log">
-				<PropertyField object={this.s} property="startDate" type="date" />
-
-				<button onClick={this.actions.createInvoice}>Create Invoice</button>
-				{this.renderTotalTime(this.props.entity)}
+				{this.renderTotalTime(Collection.findById('entities', this.props.workPeriod.baseEntity))}
 			</div>
 		);
 	}

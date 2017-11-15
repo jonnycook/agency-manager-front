@@ -11,6 +11,8 @@ import { WorkLog } from './WorkLog';
 import { EntityWorkLog } from './EntityWorkLog';
 import { YourIncome } from './YourIncome';
 import { Schedule } from './Schedule';
+import { WorkPeriods } from './WorkPeriods';
+import { WorkPeriod } from './WorkPeriod';
 import { BatchEntityCreator } from './BatchEntityCreator';
 import classNames from 'classnames';
 import pluralize from 'pluralize';
@@ -388,6 +390,8 @@ class App extends XComponent {
           <Route exact path="/invoices/:id" component={({match}) => <Invoice invoice={Collection.findById('invoices', match.params.id)} />} />
           <Route exact path="/schedule" component={Schedule} />
           <Route exact path="/batch-entity-creator" component={BatchEntityCreator} />
+          <Route exact path="/work-periods" component={WorkPeriods} />
+          <Route exact path="/work-periods/:id" component={({match}) => <WorkPeriod workPeriod={Collection.findById('work_periods', match.params.id)} />} />
         </main>
       </div>
     </div>
