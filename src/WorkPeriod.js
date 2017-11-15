@@ -212,7 +212,7 @@ export class WorkPeriod extends XComponent {
 				</ul>
 				<button onClick={this.actions.addEntityExclusion}>Exclude Entity</button>
 
-				{this.renderTotalTime(Collection.findById('entities', this.props.workPeriod.baseEntity))}
+				{this.props.workPeriod.baseEntity && this.renderTotalTime(Collection.findById('entities', this.props.workPeriod.baseEntity))}
 			</div>
 		);
 	}
