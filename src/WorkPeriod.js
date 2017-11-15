@@ -53,7 +53,7 @@ export class WorkPeriod extends XComponent {
 
 		var totalTime = 0;
 		for (var entry of entries) {
-			totalTime += (entry.end.getTime() - entry.start.getTime())/1000;
+			totalTime += ((entry.end || new Date()).getTime() - entry.start.getTime())/1000;
 		}
 
 		for (var group of groups) {
@@ -63,7 +63,7 @@ export class WorkPeriod extends XComponent {
 			else {
 				for (var entryId of group.entries) {
 					let entry = Collection.findById('work_log_entries', entryId);
-					totalTime += (entry.end.getTime() - entry.start.getTime())/1000;
+					totalTime += ((entry.end || new Date()).getTime() - entry.start.getTime())/1000;
 				}
 			}
 		}
@@ -74,7 +74,7 @@ export class WorkPeriod extends XComponent {
 			if (!timeByActivity[entry.activity.activity]) {
 				timeByActivity[entry.activity.activity] = 0;
 			}
-			timeByActivity[entry.activity.activity] += (entry.end.getTime() - entry.start.getTime())/1000;
+			timeByActivity[entry.activity.activity] += ((entry.end || new Date()).getTime() - entry.start.getTime())/1000;
 		}
 
 		for (var group of groups) {
@@ -88,7 +88,7 @@ export class WorkPeriod extends XComponent {
 			else {
 				for (let entryId of group.entries) {
 					let entry = Collection.findById('work_log_entries', entryId);
-					timeByActivity[entry.activity.activity] += (entry.end.getTime() - entry.start.getTime())/1000;	
+					timeByActivity[entry.activity.activity] += ((entry.end || new Date()).getTime() - entry.start.getTime())/1000;	
 				}
 			}
 		}
