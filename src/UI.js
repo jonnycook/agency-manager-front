@@ -384,12 +384,12 @@ export class Entity extends XComponent {
           <span>Type:</span>
           <EditableValue get={() => this.props.entity.type} set={(value) => this.props.entity.type = value} />
         </div>
-        <div>
+        {/*<div>
           <span>Extends:</span>
           <EditableValue get={() => this.props.entity.extends} set={(value) => this.props.entity.extends = value} />
 
           {this.props.entity.extends && <Entity entity={Collection.findById('entities', this.props.entity.extends)} />}
-        </div>
+        </div>*/}
 
 
         <h2>State</h2>
