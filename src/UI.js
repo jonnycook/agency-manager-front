@@ -379,7 +379,7 @@ export class Entity extends XComponent {
 	        <button onClick={this.actions.addProperty}>Add</button>
        	</div>
 
-        <h1><Link to={`/entities/${this.props.entity._id}`}>{Models.Entity.display(this.props.entity)}</Link></h1>
+        <h1><Link to={`/entities/${this.props.entity._id}`}>{Models.Entity.display(this.props.entity, false)}</Link></h1>
         <div>
           <span>Type:</span>
           <EditableValue get={() => this.props.entity.type} set={(value) => this.props.entity.type = value} />
