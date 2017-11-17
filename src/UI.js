@@ -377,6 +377,18 @@ export class Entity extends XComponent {
 	          })}
 	        </ul>
 	        <button onClick={this.actions.addProperty}>Add</button>
+
+          <h2>State</h2>
+          <ul>
+            {this.props.entity.state && this.props.entity.state.map(prop => {
+              return <li key={prop._id}>
+                <Property property={prop} />
+                <button onClick={this.actions.deleteState(prop)}>Delete</button>
+              </li>
+            })}
+          </ul>
+          <button onClick={this.actions.addState}>Add</button>
+
        	</div>
 
         <h1><Link to={`/entities/${this.props.entity._id}`}>{Models.Entity.display(this.props.entity, false)}</Link></h1>
@@ -392,16 +404,6 @@ export class Entity extends XComponent {
         </div>*/}
 
 
-        <h2>State</h2>
-        <ul>
-          {this.props.entity.state && this.props.entity.state.map(prop => {
-            return <li key={prop._id}>
-              <Property property={prop} />
-              <button onClick={this.actions.deleteState(prop)}>Delete</button>
-            </li>
-          })}
-        </ul>
-        <button onClick={this.actions.addState}>Add</button>
 
         <div className="data">
         <h2>Data</h2>
