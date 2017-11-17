@@ -101,6 +101,7 @@ h4 {
   background: #FFFFFF;
   overflow: hidden; }
   .entity .entity__properties {
+    max-width: 330px;
     float: right;
     margin-left: 10px;
     background-color: #F8F9FA;
