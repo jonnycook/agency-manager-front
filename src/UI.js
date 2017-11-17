@@ -402,7 +402,7 @@ export class Entity extends XComponent {
             {this.relationships().reduce((grouped, rel) => {
               var entity = Collection.findById('entities', rel.entities[this.otherRelIndex(rel)]);
 
-              var index = grouped.findIndex((g) => g.type == entity.type);
+              var index = grouped.findIndex((g) => g.type == (entity ? entity.type : '(none)'));
               if (index != -1) {
                 grouped[index].rels.push(rel);
               }

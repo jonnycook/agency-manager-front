@@ -98,7 +98,8 @@ h4 {
   margin-bottom: 40px;
   padding: 20px;
   border-radius: 2px;
-  background: #FFFFFF; }
+  background: #FFFFFF;
+  overflow: hidden; }
   .entity .entity__properties {
     float: right;
     margin-left: 10px;
