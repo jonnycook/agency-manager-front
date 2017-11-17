@@ -243,7 +243,7 @@ export class EntitySelector extends XComponent {
 						<button onClick={this.actions.saveNew}>Save</button>
 						<button onClick={this.actions.cancelNew}>Cancel</button>
 					</div> : <span>
-						<input ref="filter" onKeyDown={this.actions.keyPress} onChange={(e) => this.setState({filter:e.target.value})} type="text" /> {!this.props.hideButtons && <button onClick={this.actions.cancel}>Cancel</button>}
+						<input ref="filter" placeholder={this.props.placeholder} onKeyDown={this.actions.keyPress} onChange={(e) => this.setState({filter:e.target.value})} type="text" /> {!this.props.hideButtons && <button onClick={this.actions.cancel}>Cancel</button>}
 						{!this.props.hideButtons && <button onClick={this.actions.new}>New</button>}
 						<ul>
 							{this.entries().map((entry, i) => (
