@@ -711,9 +711,9 @@ class Datum extends XComponent {
   description() {
   	if (_.isString(this.props.datum.description) || !this.props.datum.description) {
   		// if (this.props.hideDescription == this.props.datum.description) return;
-  		return <div className="description string">
+  		return <div className="description string"><b>
   			<EditableValue get={() => this.props.datum.description} set={(value) => this.props.datum.description = value} />
-  			<button onClick={this.actions.addDescription}>Add</button>
+  			<button onClick={this.actions.addDescription}>Add</button></b>
   		</div>
   	}
   	else {
