@@ -393,6 +393,9 @@ export class Entity extends XComponent {
         <h1><Link to={`/entities/${this.props.entity._id}`}>{Models.Entity.display(this.props.entity)}</Link></h1>
         <div className="entity__properties">
           <h1>Entity</h1>
+          {this.props.entity._created && <div className="creation-info">
+            Created at {this.props.entity._created.timestamp.toString()} by {Models.Entity.display(Collection.findById('entities', Collection.findById('agency_users', this.props.entity._created.user).entity), false)}
+          </div>}
           <div>
             <label>Type: </label>
             <PropertyField object={this.props.entity} property="type" type="text/line" />

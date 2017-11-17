@@ -151,6 +151,7 @@ h4 {
 	overflow: hidden;
 
 	.entity__properties {
+		max-width: 330px
 		float: right;
 		margin-left: 10px;
 		background-color: #F8F9FA;
@@ -169,6 +170,11 @@ h4 {
 			margin: 0;
 			padding: 0;
 			list-style-type: none;
+		}
+
+		.creation-info {
+			font-style: italic;
+			margin-bottom: 6px;
 		}
 
 		.property {

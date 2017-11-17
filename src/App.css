@@ -118,6 +118,9 @@ h4 {
       margin: 0;
       padding: 0;
       list-style-type: none; }
+    .entity .entity__properties .creation-info {
+      font-style: italic;
+      margin-bottom: 6px; }
     .entity .entity__properties .property__name {
       margin-right: 5px;
       font-weight: bold; }
