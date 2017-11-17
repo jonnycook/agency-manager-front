@@ -375,7 +375,7 @@ class App extends XComponent {
           <EntitySelector className="search-bar"  hideButtons={true} editing={true} set={(entity) => this.refs.router.history.push(`/entities/${entity}`)} />
         </div>
         <main>
-          <Route exact path="/" component={Entities}/>
+          {/*<Route exact path="/" component={Entities}/>*/}
           <Route exact path="/overview" component={Overview}/>
           <Route exact path="/calendar" component={Calendar}/>
           <Route exact path="/entities" component={Entities}/>

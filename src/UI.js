@@ -367,7 +367,7 @@ export class Entity extends XComponent {
   xRender() {
     return <div className="entity" key={this.props.entity._id}>
         <h1><Link to={`/entities/${this.props.entity._id}`}>{Models.Entity.display(this.props.entity)}</Link></h1>
-    
+
         <div className="entity__properties">
           <h1>Entity</h1>
           <div>
@@ -408,7 +408,7 @@ export class Entity extends XComponent {
               }
               else {
                 grouped.push({
-                  type: entity.type,
+                  type: entity ? entity.type : '(none)',
                   rels: [rel]
                 })
               }
