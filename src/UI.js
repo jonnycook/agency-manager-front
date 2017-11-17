@@ -359,7 +359,6 @@ export class Entity extends XComponent {
   }
 
   componentWillMount() {
-    console.log(this.props.entity);
     if (!this.props.entity.data) {
       this.props.entity.data = [];
     }
@@ -367,7 +366,15 @@ export class Entity extends XComponent {
 
   xRender() {
     return <div className="entity" key={this.props.entity._id}>
+        <h1><Link to={`/entities/${this.props.entity._id}`}>{Models.Entity.display(this.props.entity)}</Link></h1>
+    
         <div className="entity__properties">
+          <h1>Entity</h1>
+          <div>
+            <label>Type: </label>
+            <PropertyField object={this.props.entity} property="type" type="text/line" />
+          </div>
+
 	        <h2>Properties</h2>
 	        <ul>
 	          {this.props.entity.properties.map(prop => {
@@ -441,7 +448,6 @@ export class Entity extends XComponent {
           <button onClick={this.actions.addRelationship}>Add</button>
        	</div>
 
-        <h1><Link to={`/entities/${this.props.entity._id}`}>{Models.Entity.display(this.props.entity, false)}</Link> (<EditableValue get={() => this.props.entity.type} set={(value) => this.props.entity.type = value} />)</h1>
         {/*<div>
           <span>Extends:</span>
           <EditableValue get={() => this.props.entity.extends} set={(value) => this.props.entity.extends = value} />
