@@ -11,6 +11,7 @@ import MarkdownEditor from 'react-md-editor';
 import _ from 'lodash';
 
 import juration from 'juration';
+import pluralize from 'pluralize';
 
 export class EditableValue extends XComponent {
   constructor() {
@@ -389,13 +390,58 @@ export class Entity extends XComponent {
           </ul>
           <button onClick={this.actions.addState}>Add</button>
 
+          <h2>Related Entities</h2>
+          <ul>
+            {this.relationships().reduce((grouped, rel) => {
+              var entity = Collection.findById('entities', rel.entities[this.otherRelIndex(rel)]);
+
+              var index = grouped.findIndex((g) => g.type == entity.type);
+              if (index != -1) {
+                grouped[index].rels.push(rel);
+              }
+              else {
+                grouped.push({
+                  type: entity.type,
+                  rels: [rel]
+                })
+              }
+              return grouped;
+            }, []).sort((a, b) => a.type < b.type ? -1 : 1).map(group => {
+              return (
+                <div key={group.type}>
+                  <h3>{group.rels.length == 1 ? group.type : pluralize(group.type)}</h3>
+                  <ul>
+                    {group.rels.sort((a, b) => {
+                      var aEntity = a.entities[this.otherRelIndex(a)];
+                      var bEntity = b.entities[this.otherRelIndex(b)];
+                      var aName = Models.Entity.display(Collection.findById('entities', aEntity));
+                      var bName = Models.Entity.display(Collection.findById('entities', bEntity));
+                      return aName < bName ? -1 : 1;
+                    }).map((rel) => {
+                      return (
+                        <li key={`${rel._id}`}>
+                          <EntitySelector set={(value) => rel.entities[this.otherRelIndex(rel)] = value} entity={() => rel.entities[this.otherRelIndex(rel)]} />
+                          <div>
+                            <label>Directed: </label>
+                            <PropertyField type="bool" object={rel} property="directed" />
+                          </div>
+                          {rel.directed && <div>
+                            <label>Start Point: </label>
+                            <EditableValue type="bool" get={() => rel.entities[0] === this.props.entity._id} set={v => this.actions.toggleStartPoint.invoke(rel, v)} />
+                          </div>}
+                          <button onClick={this.actions.deleteRelationship(rel)}>Delete</button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              );
+            })}
+          </ul>
+          <button onClick={this.actions.addRelationship}>Add</button>
        	</div>
 
-        <h1><Link to={`/entities/${this.props.entity._id}`}>{Models.Entity.display(this.props.entity, false)}</Link></h1>
-        <div>
-          <span>Type:</span>
-          <EditableValue get={() => this.props.entity.type} set={(value) => this.props.entity.type = value} />
-        </div>
+        <h1><Link to={`/entities/${this.props.entity._id}`}>{Models.Entity.display(this.props.entity, false)}</Link> (<EditableValue get={() => this.props.entity.type} set={(value) => this.props.entity.type = value} />)</h1>
         {/*<div>
           <span>Extends:</span>
           <EditableValue get={() => this.props.entity.extends} set={(value) => this.props.entity.extends = value} />
@@ -406,56 +452,34 @@ export class Entity extends XComponent {
 
 
         <div className="data">
-        <h2>Data</h2>
-        <ul>
-        	{_.map(this.groupedData(), (group, key) => {
-        		return <li className="data-group" key={key}>
-        			<h3>{key}</h3>
-			        <ul>
-			          {group.map(datum => {
-			            return (
-			              <li key={datum._id}>
-			                <Datum/* hideDescription={key}*/ entity={this.props.entity} datum={datum} onDelete={this.actions.deleteDatum(datum)} />
-			              </li>
-			            );
-			          })}
-			        </ul>
+          <ul>
+          	{_.map(this.groupedData(), (group, key) => {
+          		return <li className="data-group" key={key}>
+          			<h2>{key}</h2>
+  			        <ul>
+  			          {group.map(datum => {
+  			            return (
+  			              <li key={datum._id}>
+  			                <Datum/* hideDescription={key}*/ entity={this.props.entity} datum={datum} onDelete={this.actions.deleteDatum(datum)} />
+  			              </li>
+  			            );
+  			          })}
+  			        </ul>
 
-        		</li>;
-        	})}
-        </ul>
-        {/*<ul>
-          {this.props.entity.data.map(datum => {
-            return (
-              <li key={datum._id}>
-                <Datum datum={datum} onDelete={this.actions.deleteDatum(datum)} />
-              </li>
-            );
-          })}
-        </ul>*/}
-        <button onClick={this.actions.addDatum}>Add Data</button>
+          		</li>;
+          	})}
+          </ul>
+          {/*<ul>
+            {this.props.entity.data.map(datum => {
+              return (
+                <li key={datum._id}>
+                  <Datum datum={datum} onDelete={this.actions.deleteDatum(datum)} />
+                </li>
+              );
+            })}
+          </ul>*/}
+          <button onClick={this.actions.addDatum}>Add Data</button>
        	</div>
-
-        <h2>Related Entities</h2>
-        <ul>
-          {this.relationships().map(rel => {
-            return (
-              <li key={`${rel._id}`}>
-                <EntitySelector set={(value) => rel.entities[this.otherRelIndex(rel)] = value} entity={() => rel.entities[this.otherRelIndex(rel)]} />
-                <div>
-                  <label>Directed: </label>
-                  <PropertyField type="bool" object={rel} property="directed" />
-                </div>
-                {rel.directed && <div>
-                  <label>Start Point: </label>
-                  <EditableValue type="bool" get={() => rel.entities[0] === this.props.entity._id} set={v => this.actions.toggleStartPoint.invoke(rel, v)} />
-                </div>}
-                <button onClick={this.actions.deleteRelationship(rel)}>Delete</button>
-              </li>
-            );
-          })}
-        </ul>
-        <button onClick={this.actions.addRelationship}>Add</button>
       </div>;
   }
 }
