@@ -500,8 +500,10 @@ export class Entity extends XComponent {
           <button onClick={this.actions.addDatum}>Add Data</button>
        	</div>
 
+        {(workLogEntries.length > 0 || workPeriods.length > 0) && <div>
+        <h2>Work</h2>
         {workLogEntries.length > 0 && <div className="work-log-entries">
-          <h2>Work Log ({juration.stringify(this.workTime()/1000)})</h2>
+          <h3>Log ({juration.stringify(this.workTime()/1000)})</h3>
           <ul>
             {workLogEntries.map((entry) => {
               return (
@@ -535,7 +537,7 @@ export class Entity extends XComponent {
         </div>}
 
         {workPeriods.length > 0 && <div className="work-periods">
-          <h2>Work Periods</h2>
+          <h3>Periods</h3>
           <ul>
             {workPeriods.map((workPeriod) => {
               return (
@@ -543,6 +545,7 @@ export class Entity extends XComponent {
               );
             })}
           </ul>
+        </div>}
         </div>}
       </div>
     );
