@@ -10,7 +10,7 @@ import MarkdownEditor from 'react-md-editor';
 
 import _ from 'lodash';
 
-import juration from 'juration';
+import juration from './juration';
 import pluralize from 'pluralize';
 
 export class EditableValue extends XComponent {
@@ -309,6 +309,10 @@ export class Entity extends XComponent {
           else {
             rel.entities = [otherId, this.props.entity._id];
           }
+        },
+
+        deleteEntry(entry) {
+          db.work_log_entries.splice(db.work_log_entries.indexOf(entry), 1);
         }
       }
     });
@@ -364,10 +368,29 @@ export class Entity extends XComponent {
     }
   }
 
-  xRender() {
-    return <div className="entity" key={this.props.entity._id}>
-        <h1><Link to={`/entities/${this.props.entity._id}`}>{Models.Entity.display(this.props.entity)}</Link></h1>
+  workLogEntries() {
+    return db.work_log_entries.filter((workLogEntry) => {
+      return workLogEntry.activity.object.entity == this.props.entity._id
+    });
+  }
 
+  workTime() {
+    return this.workLogEntries().reduce((totalTime, entry) => {
+      return (entry.end || new Date()).getTime() - entry.start.getTime() + totalTime;
+    }, 0);
+  }
+
+  workPeriods() {
+    return db.work_periods.filter((workPeriod) => workPeriod.baseEntity == this.props.entity._id).sort((a, b) => a.startDate < b.startDate ? -1 : 1);
+  }
+
+  xRender() {
+    var workLogEntries = this.workLogEntries();
+    var workPeriods = this.workPeriods();
+
+    return (
+      <div className="entity" key={this.props.entity._id}>
+        <h1><Link to={`/entities/${this.props.entity._id}`}>{Models.Entity.display(this.props.entity)}</Link></h1>
         <div className="entity__properties">
           <h1>Entity</h1>
           <div>
@@ -451,42 +474,78 @@ export class Entity extends XComponent {
         {/*<div>
           <span>Extends:</span>
           <EditableValue get={() => this.props.entity.extends} set={(value) => this.props.entity.extends = value} />
-
           {this.props.entity.extends && <Entity entity={Collection.findById('entities', this.props.entity.extends)} />}
         </div>*/}
 
-
-
         <div className="data">
+          <h2>Data</h2>
           <ul>
           	{_.map(this.groupedData(), (group, key) => {
-          		return <li className="data-group" key={key}>
-          			<h2>{key}</h2>
-  			        <ul>
-  			          {group.map(datum => {
-  			            return (
-  			              <li key={datum._id}>
-  			                <Datum/* hideDescription={key}*/ entity={this.props.entity} datum={datum} onDelete={this.actions.deleteDatum(datum)} />
-  			              </li>
-  			            );
-  			          })}
-  			        </ul>
-
-          		</li>;
+          		return (
+                <li className="data-group" key={key}>
+            			<h3>{key}</h3>
+    			        <ul>
+    			          {group.map(datum => {
+    			            return (
+    			              <li key={datum._id}>
+    			                <Datum entity={this.props.entity} datum={datum} onDelete={this.actions.deleteDatum(datum)} />
+    			              </li>
+    			            );
+    			          })}
+    			        </ul>
+            		</li>
+              );
           	})}
           </ul>
-          {/*<ul>
-            {this.props.entity.data.map(datum => {
+          <button onClick={this.actions.addDatum}>Add Data</button>
+       	</div>
+
+        {workLogEntries.length > 0 && <div className="work-log-entries">
+          <h2>Work Log ({juration.stringify(this.workTime()/1000)})</h2>
+          <ul>
+            {workLogEntries.map((entry) => {
               return (
-                <li key={datum._id}>
-                  <Datum datum={datum} onDelete={this.actions.deleteDatum(datum)} />
+                <li key={entry._id}>
+                  <div>
+                    <label>Subject: </label>
+                    <PropertyField type="entity" object={entry} property="subject" />
+                  </div>
+                  <div>
+                    <label>Description: </label>
+                    <PropertyField type="text" object={entry} property="description" />
+                  </div>
+                  <div>
+                    <label>Start: </label>
+                    <PropertyField type="datetime" object={entry} property="start" />
+                  </div>
+                  <div>
+                    <label>End: </label>
+                    <PropertyField type="datetime" object={entry} property="end" />
+                  </div>
+                  <div>
+                    <label>Activity: </label>
+                    <PropertyField type="text" object={entry} property="activity.activity" />
+                  </div>
+
+                  <button onClick={this.actions.deleteEntry.bind(entry)}>Delete</button>
                 </li>
               );
             })}
-          </ul>*/}
-          <button onClick={this.actions.addDatum}>Add Data</button>
-       	</div>
-      </div>;
+          </ul>
+        </div>}
+
+        {workPeriods.length > 0 && <div className="work-periods">
+          <h2>Work Periods</h2>
+          <ul>
+            {workPeriods.map((workPeriod) => {
+              return (
+                <li key={workPeriods._id}><Link to={`/work-periods/${workPeriod._id}`}>{workPeriod.startDate.format('{yyyy}-{MM}-{dd}')}</Link></li>
+              );
+            })}
+          </ul>
+        </div>}
+      </div>
+    );
   }
 }
 
