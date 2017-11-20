@@ -2,7 +2,7 @@ import React from 'react';
 import { XMap, XObject, XStrip, XComponent } from './XObject';
 import { db, Models, Collection } from './db';
 import { PropertyField, EntitySelector } from './UI';
-import juration from 'juration';
+import juration from './juration';
 import _ from 'lodash';
 
 

@@ -394,7 +394,7 @@ export class Entity extends XComponent {
         <div className="entity__properties">
           <h1>Entity</h1>
           {this.props.entity._created && <div className="creation-info">
-            Created at {this.props.entity._created.timestamp.toString()} by {Models.Entity.display(Collection.findById('entities', Collection.findById('agency_users', this.props.entity._created.user).entity), false)}
+            Created on {this.props.entity._created.timestamp.toString()} by {Models.Entity.display(Collection.findById('entities', Collection.findById('agency_users', this.props.entity._created.user).entity), false)}
           </div>}
           <div>
             <label>Type: </label>
