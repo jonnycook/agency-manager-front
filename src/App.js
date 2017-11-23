@@ -13,6 +13,7 @@ import { YourIncome } from './YourIncome';
 import { Schedule } from './Schedule';
 import { WorkPeriods } from './WorkPeriods';
 import { WorkPeriod } from './WorkPeriod';
+import { Work } from './Work';
 import { BatchEntityCreator } from './BatchEntityCreator';
 import classNames from 'classnames';
 import pluralize from 'pluralize';
@@ -360,8 +361,13 @@ class App extends XComponent {
         <li><Link to="/calendar">Calendar</Link></li>
         <li><Link to="/issues">Issues</Link></li>
         <li><Link to="/tickets">Tickets</Link></li>
-        <li><Link to="/work-periods">Work Periods</Link></li>
-        <li><Link to="/work-log">Work Log</Link></li>
+        <li>
+          <Link to="/work">Work</Link>
+          <ul>
+            <li><Link to="/work-periods">Periods</Link></li>
+            <li><Link to="/work-log">Log</Link></li>
+          </ul>
+        </li>
         <li>
           <Link to="/income">Income</Link>
           <ul>
@@ -392,6 +398,7 @@ class App extends XComponent {
           <Route exact path="/schedule" component={Schedule} />
           <Route exact path="/batch-entity-creator" component={BatchEntityCreator} />
           <Route exact path="/work-periods" component={WorkPeriods} />
+          <Route exact path="/work" component={Work} />
           <Route exact path="/work-periods/:id" component={({match}) => <WorkPeriod workPeriod={Collection.findById('work_periods', match.params.id)} />} />
         </main>
       </div>

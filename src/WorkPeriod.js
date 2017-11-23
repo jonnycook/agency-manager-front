@@ -5,27 +5,13 @@ import { PropertyField, EntitySelector } from './UI';
 import juration from './juration';
 import _ from 'lodash';
 
-
-export class WorkPeriod extends XComponent {
-	constructor() {
-		super({
-			actions: {
-				addEntityExclusion() {
-					if (!this.props.workPeriod.entityExclusions) {
-						this.props.workPeriod.entityExclusions = XMap([]);
-					}
-					this.props.workPeriod.entityExclusions.push(XObject.obj());
-				},
-				removeEntityExclusion(entityExclusion) {
-					this.props.workPeriod.entityExclusions.splice(this.props.workPeriod.entityExclusions.indexOf(entityExclusion), 1);
-				}
-			}
-		});
-
+export class WorkPeriodHelper {
+	constructor(workPeriod) {
+		this.workPeriod = workPeriod;
 	}
 
 	_totalTime(entity) {
-		if ((this.props.workPeriod.entityExclusions || []).find((entityExclusion) => entityExclusion._value == entity._id)) {
+		if ((this.workPeriod.entityExclusions || []).find((entityExclusion) => entityExclusion._value == entity._id)) {
 			return {
 				totalTime: 0,
 				timeByActivity: {}
@@ -109,16 +95,16 @@ export class WorkPeriod extends XComponent {
 	}
 
 	_workLogEntries(entity) {
-		var entries = db.work_log_entries.filter((entry) => (this.props.workPeriod.startDate && entry.start.getTime() > this.props.workPeriod.startDate.getTime() || !this.props.workPeriod.startDate) && !entry.invoice && entry.activity.object.entity === entity._id);
+		var entries = db.work_log_entries.filter((entry) => (this.workPeriod.startDate && entry.start.getTime() > this.workPeriod.startDate.getTime() || !this.workPeriod.startDate) && !entry.invoice && entry.activity.object.entity === entity._id);
 		
 		var tasks = db.tasks.filter((task) => task.entity === entity._id);
 		for (var task of tasks) {
-			entries = entries.concat(db.work_log_entries.filter((entry) => (this.props.workPeriod.startDate && entry.start.getTime() > this.props.workPeriod.startDate.getTime() || !this.props.workPeriod.startDate) && !entry.invoice && entry.activity.object.task === task._id));
+			entries = entries.concat(db.work_log_entries.filter((entry) => (this.workPeriod.startDate && entry.start.getTime() > this.workPeriod.startDate.getTime() || !this.workPeriod.startDate) && !entry.invoice && entry.activity.object.task === task._id));
 		}
 
 		var issues = db.issues.filter((issue) => issue.entity === entity._id);
 		for (var issue of issues) {
-			entries = entries.concat(db.work_log_entries.filter((entry) => (this.props.workPeriod.startDate && entry.start.getTime() > this.props.workPeriod.startDate.getTime() || !this.props.workPeriod.startDate) && !entry.invoice &&  entry.activity.object.issue === issue._id));
+			entries = entries.concat(db.work_log_entries.filter((entry) => (this.workPeriod.startDate && entry.start.getTime() > this.workPeriod.startDate.getTime() || !this.workPeriod.startDate) && !entry.invoice &&  entry.activity.object.issue === issue._id));
 		}
 
 		return entries;
@@ -188,12 +174,42 @@ export class WorkPeriod extends XComponent {
 		) : null;
 	}
 
+
+}
+
+
+export class WorkPeriod extends XComponent {
+	constructor() {
+		super({
+			actions: {
+				addEntityExclusion() {
+					if (!this.props.workPeriod.entityExclusions) {
+						this.props.workPeriod.entityExclusions = XMap([]);
+					}
+					this.props.workPeriod.entityExclusions.push(XObject.obj());
+				},
+				removeEntityExclusion(entityExclusion) {
+					this.props.workPeriod.entityExclusions.splice(this.props.workPeriod.entityExclusions.indexOf(entityExclusion), 1);
+				}
+			}
+		});
+	}
+
 	xRender() {
+		var helper = new WorkPeriodHelper(this.props.workPeriod);
 		return (
 			<div>
 				<div>
 					<label>Start Date:</label>
 					<PropertyField object={this.props.workPeriod} property="startDate" type="date" />
+				</div>
+				<div>
+					<label>End Date:</label>
+					<PropertyField object={this.props.workPeriod} property="endDate" type="date" />
+				</div>
+				<div>
+					<label>Time Allocation:</label>
+					<PropertyField object={this.props.workPeriod} property="timeAllocation" type="duration" />
 				</div>
 				<div>
 					<label>Base Entity:</label>
@@ -212,7 +228,7 @@ export class WorkPeriod extends XComponent {
 				</ul>
 				<button onClick={this.actions.addEntityExclusion}>Exclude Entity</button>
 
-				{this.props.workPeriod.baseEntity && this.renderTotalTime(Collection.findById('entities', this.props.workPeriod.baseEntity))}
+				{this.props.workPeriod.baseEntity && helper.renderTotalTime(Collection.findById('entities', this.props.workPeriod.baseEntity))}
 			</div>
 		);
 	}
