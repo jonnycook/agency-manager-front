@@ -7,10 +7,9 @@ import _ from 'lodash';
 import { WorkPeriodHelper } from './WorkPeriod';
 
 export class Work extends XComponent {
-
-
 	xRender() {
 		// var helper = new WorkPeriodHelper
+
 		var totalTime = 0;
 		var totalTimeLeft = 0;
 		var totalAllocation = 0;
@@ -24,7 +23,7 @@ export class Work extends XComponent {
 		var endDate = db.work_periods[0].endDate.beginningOfDay();
 
 		var date = new Date().beginningOfDay();
-		date.addDays(1);
+		// date.addDays(1);
 
 		var workHoursLeft = 0;
 		var weekDayWorkHoursLeft = 0;

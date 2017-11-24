@@ -313,6 +313,17 @@ export class Entity extends XComponent {
 
         deleteEntry(entry) {
           db.work_log_entries.splice(db.work_log_entries.indexOf(entry), 1);
+        },
+
+        start() {
+          db.work_log_entries.push(XObject.obj({
+            activity: {
+              activity: this.refs.activity.value,
+              object: { entity: this.props.entity._id }
+            },
+            start: new Date(),
+            subject: db.agency_users.find((user) => user.authKey = localStorage.getItem('authKey')).entity
+          }));
         }
       }
     });
@@ -503,53 +514,61 @@ export class Entity extends XComponent {
           <button onClick={this.actions.addDatum}>Add Data</button>
        	</div>
 
-        {(workLogEntries.length > 0 || workPeriods.length > 0) && <div>
-        <h2>Work</h2>
-        {workLogEntries.length > 0 && <div className="work-log-entries">
-          <h3>Log ({juration.stringify(this.workTime()/1000)})</h3>
-          <ul>
-            {workLogEntries.map((entry) => {
+        <div>
+          <h2>Work</h2>
+          <select ref="activity">
+            {['Communication', 'Development', 'Management', 'Estimation', 'Scoping', 'Orienting'].map((activity) => {
               return (
-                <li key={entry._id}>
-                  <div>
-                    <label>Subject: </label>
-                    <PropertyField type="entity" object={entry} property="subject" />
-                  </div>
-                  <div>
-                    <label>Description: </label>
-                    <PropertyField type="text" object={entry} property="description" />
-                  </div>
-                  <div>
-                    <label>Start: </label>
-                    <PropertyField type="datetime" object={entry} property="start" />
-                  </div>
-                  <div>
-                    <label>End: </label>
-                    <PropertyField type="datetime" object={entry} property="end" />
-                  </div>
-                  <div>
-                    <label>Activity: </label>
-                    <PropertyField type="text" object={entry} property="activity.activity" />
-                  </div>
-
-                  <button onClick={this.actions.deleteEntry.bind(entry)}>Delete</button>
-                </li>
+                <option key={activity}>{activity}</option>
               );
-            })}
-          </ul>
-        </div>}
+            })} 
+          </select>
+          <button onClick={this.actions.start}>Start</button>
+          {workLogEntries.length > 0 && <div className="work-log-entries">
+            <h3>Log ({juration.stringify(this.workTime()/1000)})</h3>
+            <ul>
+              {workLogEntries.map((entry) => {
+                return (
+                  <li key={entry._id}>
+                    <div>
+                      <label>Subject: </label>
+                      <PropertyField type="entity" object={entry} property="subject" />
+                    </div>
+                    <div>
+                      <label>Description: </label>
+                      <PropertyField type="text" object={entry} property="description" />
+                    </div>
+                    <div>
+                      <label>Start: </label>
+                      <PropertyField type="datetime" object={entry} property="start" />
+                    </div>
+                    <div>
+                      <label>End: </label>
+                      <PropertyField type="datetime" object={entry} property="end" />
+                    </div>
+                    <div>
+                      <label>Activity: </label>
+                      <PropertyField type="text" object={entry} property="activity.activity" />
+                    </div>
 
-        {workPeriods.length > 0 && <div className="work-periods">
-          <h3>Periods</h3>
-          <ul>
-            {workPeriods.map((workPeriod) => {
-              return (
-                <li key={workPeriods._id}><Link to={`/work-periods/${workPeriod._id}`}>{workPeriod.startDate.format('{yyyy}-{MM}-{dd}')}</Link></li>
-              );
-            })}
-          </ul>
-        </div>}
-        </div>}
+                    <button onClick={this.actions.deleteEntry.bind(entry)}>Delete</button>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>}
+
+          {workPeriods.length > 0 && <div className="work-periods">
+            <h3>Periods</h3>
+            <ul>
+              {workPeriods.map((workPeriod) => {
+                return (
+                  <li key={workPeriods._id}><Link to={`/work-periods/${workPeriod._id}`}>{workPeriod.startDate.format('{yyyy}-{MM}-{dd}')}</Link></li>
+                );
+              })}
+            </ul>
+          </div>}
+        </div>
       </div>
     );
   }
