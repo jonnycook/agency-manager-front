@@ -45,7 +45,7 @@ export class Work extends XComponent {
 				</div>
 				<div>
 
-					{workHoursLeft} {weekDayWorkHoursLeft}
+					All Work Hours: {workHoursLeft}; Week Day Work Hours: {weekDayWorkHoursLeft}
 					
 				</div>
 			</div>
