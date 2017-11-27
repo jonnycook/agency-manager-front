@@ -17,7 +17,7 @@ export class WorkDay extends XComponent {
 		}).reduce((timeSpent, entry) => {
 			return timeSpent + (entry.end || new Date()).getTime() - entry.start.getTime();
 		}, 0)/1000);
-		var timeSinceStarted = Math.floor((new Date().getTime() - this.props.workDay.begin.getTime())/1000);
+		var timeSinceStarted = this.props.workDay.begin ? Math.floor((new Date().getTime() - this.props.workDay.begin.getTime())/1000) : 0;
 		return (
 			<div>
 				<div>Begin: <PropertyField object={this.props.workDay} property="begin" type="datetime" /></div>
