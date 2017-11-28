@@ -601,7 +601,7 @@ export class ValueDisplay extends XComponent {
       case 'date':
         return <span className={this.props.className}>{this.props.value ? this.props.value.format('{yyyy}-{MM}-{dd}') : null}</span>
       case 'datetime':
-        return <span className={this.props.className}>{this.props.value && this.props.valie.format('{yyyy}-{MM}-{dd} {HH}:{mm}:{ss}')}</span>
+        return <span className={this.props.className}>{this.props.value && this.props.value.format('{yyyy}-{MM}-{dd} {HH}:{mm}:{ss}')}</span>
       case 'local file':
         return <span className={this.props.className}>{this.props.value && this.props.value[localStorage.getItem('context')]}</span>
       default:
