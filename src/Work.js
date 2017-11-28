@@ -14,9 +14,14 @@ export class Work extends XComponent {
 		var totalTimeLeft = 0;
 		var totalAllocation = 0;
 		for (var workPeriod of db.work_periods) {
-			var helper = new WorkPeriodHelper(workPeriod);
-			var t = helper.totalTime(Collection.findById('entities', workPeriod.baseEntity)).totalTime;
-			totalTime += t;
+			if (workPeriod.finished) {
+				totalTime += workPeriod.timeAllocation;
+			}
+			else {
+				var helper = new WorkPeriodHelper(workPeriod);
+				var t = helper.totalTime(Collection.findById('entities', workPeriod.baseEntity)).totalTime;
+				totalTime += t;
+			}
 			totalAllocation += workPeriod.timeAllocation;
 		}
 
