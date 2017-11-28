@@ -587,7 +587,7 @@ class ValueTypeSelector extends XComponent {
       <option>file</option>
       <option>local file</option>
       <option>URL</option>
-      <option>date</option>
+      <option>datetime</option>
     </select>
   }
 }
