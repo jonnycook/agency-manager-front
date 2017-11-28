@@ -201,11 +201,11 @@ export class WorkPeriod extends XComponent {
 			<div>
 				<div>
 					<label>Start Date:</label>
-					<PropertyField object={this.props.workPeriod} property="startDate" type="date" />
+					<PropertyField object={this.props.workPeriod} property="startDate" type="datetime" />
 				</div>
 				<div>
 					<label>End Date:</label>
-					<PropertyField object={this.props.workPeriod} property="endDate" type="date" />
+					<PropertyField object={this.props.workPeriod} property="endDate" type="datetime" />
 				</div>
 				<div>
 					<label>Time Allocation:</label>
