@@ -42,7 +42,7 @@ export class EditableValue extends XComponent {
         }
       case 'datetime': 
         try {
-          return Date.create(this.refs.input.value);          
+          return Date.create(this.refs.input.value);
         }
         catch (e) {
           return null;
@@ -83,7 +83,6 @@ export class EditableValue extends XComponent {
         return this.props.get() && this.props.get().format('{yyyy}-{MM}-{dd}');
       case 'datetime':
         return this.props.get() && this.props.get().format('{yyyy}-{MM}-{dd} {HH}:{mm}:{ss}');
-
       case 'bool':
         return this.props.get() ? 'Yes' : 'No';
 
@@ -601,6 +600,8 @@ export class ValueDisplay extends XComponent {
         return <a className="value-url" href={this.props.value} target="_blank">(link)</a>;
       case 'date':
         return <span className={this.props.className}>{this.props.value ? this.props.value.format('{yyyy}-{MM}-{dd}') : null}</span>
+      case 'datetime':
+        return <span className={this.props.className}>{this.props.value && this.props.valie.format('{yyyy}-{MM}-{dd} {HH}:{mm}:{ss}')}</span>
       case 'local file':
         return <span className={this.props.className}>{this.props.value && this.props.value[localStorage.getItem('context')]}</span>
       default:
@@ -629,6 +630,8 @@ class ValueInput extends XComponent {
         return <input ref="body" defaultValue={this.state.value && Date.create(this.state.value).format('{yyyy}-{MM}-{dd}')} type="date" onKeyDown={(e) => e.key === 'Enter' && this.props.onEnter && this.props.onEnter()} />;
       case 'local file':
         return <input ref="body" defaultValue={this.state.value && this.state.value[localStorage.getItem('context')]} type="text" onKeyDown={(e) => e.key === 'Enter' && this.props.onEnter && this.props.onEnter()} />;
+      case 'datetime':
+        return <input type="text" ref="input" onKeyDown={(e) => e.key === 'Enter' && this.props.onEnter && this.props.onEnter()} defaultValue={this.state.value && this.state.value.format('{yyyy}-{MM}-{dd} {HH}:{mm}:{ss}')} />;
       default:
         return <input ref="body" defaultValue={this.state.value} type="text" onKeyDown={(e) => e.key === 'Enter' && this.props.onEnter && this.props.onEnter()} />;
     }
@@ -646,6 +649,8 @@ class ValueInput extends XComponent {
         return Object.assign({}, this.state.value, {
           [localStorage.getItem('context')]: this.refs.body.value,
         });
+      case 'datetime':
+        return Date.create(this.refs.input.value);
       default:
         return this.refs.body.value;
     }
