@@ -95,16 +95,19 @@ export class WorkPeriodHelper {
 	}
 
 	_workLogEntries(entity) {
-		var entries = db.work_log_entries.filter((entry) => (this.workPeriod.startDate && entry.start.getTime() > this.workPeriod.startDate.getTime() || !this.workPeriod.startDate) && !entry.invoice && entry.activity.object.entity === entity._id);
+		var allEntries =  db.work_log_entries.filter((entry) => this.workPeriod.startDate && (entry.start.getTime() >= this.workPeriod.startDate.getTime() && (!this.workPeriod.endDate || entry.start.getTime() <= this.workPeriod.endDate.getTime())));
+
+
+		var entries = allEntries.filter((entry) => entry.activity.object.entity === entity._id);
 		
 		var tasks = db.tasks.filter((task) => task.entity === entity._id);
 		for (var task of tasks) {
-			entries = entries.concat(db.work_log_entries.filter((entry) => (this.workPeriod.startDate && entry.start.getTime() > this.workPeriod.startDate.getTime() || !this.workPeriod.startDate) && !entry.invoice && entry.activity.object.task === task._id));
+			entries = entries.concat(allEntries.filter((entry) => entry.activity.object.task === task._id));
 		}
 
 		var issues = db.issues.filter((issue) => issue.entity === entity._id);
 		for (var issue of issues) {
-			entries = entries.concat(db.work_log_entries.filter((entry) => (this.workPeriod.startDate && entry.start.getTime() > this.workPeriod.startDate.getTime() || !this.workPeriod.startDate) && !entry.invoice &&  entry.activity.object.issue === issue._id));
+			entries = entries.concat(allEntries.filter((entry) => entry.activity.object.issue === issue._id));
 		}
 
 		return entries;
@@ -173,10 +176,7 @@ export class WorkPeriodHelper {
 			</div> 
 		) : null;
 	}
-
-
 }
-
 
 export class WorkPeriod extends XComponent {
 	constructor() {
