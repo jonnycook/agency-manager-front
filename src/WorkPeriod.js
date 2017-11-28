@@ -212,6 +212,10 @@ export class WorkPeriod extends XComponent {
 					<PropertyField object={this.props.workPeriod} property="timeAllocation" type="duration" />
 				</div>
 				<div>
+					<label>Finished:</label>
+					<PropertyField object={this.props.workPeriod} property="finished" type="bool" />
+				</div>
+				<div>
 					<label>Base Entity:</label>
 					<PropertyField object={this.props.workPeriod} property="baseEntity" type="entity" />
 				</div>
