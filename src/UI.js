@@ -399,12 +399,14 @@ export class Entity extends XComponent {
     for (var entity of db.entities) {
       for (var datum of entity.data) {
         if (datum.content.type == 'entity notes') {
-          for (var note of datum.content.body) {
-            if (note.entity == this.props.entity._id) {
-              notes.push({
-                entity: entity,
-                notes: note.value
-              });
+          if (datum.content.body) {
+            for (var note of datum.content.body) {
+              if (note.entity == this.props.entity._id) {
+                notes.push({
+                  entity: entity,
+                  notes: note.value
+                });
+              }
             }
           }
         }
