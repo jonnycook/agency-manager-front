@@ -149,6 +149,10 @@ export async function initDb() {
   });
 
   function onDocument(collection, doc) {
+    if (!Collection._collections[collection]) {
+      Collection._collections[collection] = {};
+    }
+    Collection._collections[collection][doc._id] = doc;
     observeChanges(doc, (mutation) => {
       if (pauseObserving) return;
       pushToServer({
@@ -196,11 +200,13 @@ export async function initDb() {
 }
 
 export var Collection = {
+  _collections: {},
   removeDocument(name, doc) {
     db[name].splice(db[name].findIndex(d => d._id === doc._id), 1);
   },
   findById(name, id) {
-    return db[name].find((doc) => doc._id === id);
+    return this._collections[name][id];
+    // return db[name].find((doc) => doc._id === id);
   }
 }
 

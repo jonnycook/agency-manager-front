@@ -13,7 +13,26 @@ export class Work extends XComponent {
 		var totalTime = 0;
 		var totalTimeLeft = 0;
 		var totalAllocation = 0;
+
+
+		var workPeriods = [];
+		var endDate;// = db.work_periods[0].endDate.beginningOfDay();
+
 		for (var workPeriod of db.work_periods) {
+			if (workPeriod.endDate && new Date().isBetween(workPeriod.startDate, workPeriod.endDate) || new Date().isAfter(workPeriod.dateDate)) {
+				workPeriods.push(workPeriod);
+				if (!endDate || workPeriod.endDate && workPeriod.endDate.isAfter(endDate)) {
+					endDate = workPeriod.endDate;
+				}
+			}
+		}
+		if (endDate) {
+			endDate = endDate.beginningOfDay();
+		}
+
+		console.log(XStrip(workPeriods));
+
+		for (var workPeriod of workPeriods) {
 			if (workPeriod.finished) {
 				totalTime += workPeriod.timeAllocation;
 			}
@@ -25,18 +44,19 @@ export class Work extends XComponent {
 			totalAllocation += workPeriod.timeAllocation;
 		}
 
-		var endDate = db.work_periods[0].endDate.beginningOfDay();
+
+
 
 		var date = new Date().beginningOfDay();
-		// date.addDays(1);
 
 		var workHoursLeft = 0;
 		var weekDayWorkHoursLeft = 0;
+		var hoursPerDay = 8;
 
 		while (true) {
-			workHoursLeft += 8;
+			workHoursLeft += hoursPerDay;
 			if (date.getDay() != 0 && date.getDay() != 6) {
-				weekDayWorkHoursLeft += 8;
+				weekDayWorkHoursLeft += hoursPerDay;
 			}
 			if (date.format('{yyyy}-{MM}-{dd}') == endDate.format('{yyyy}-{MM}-{dd}')) break;
 			date.addDays(1);
@@ -50,7 +70,7 @@ export class Work extends XComponent {
 				</div>
 				<div>
 
-					All Work Hours: {workHoursLeft}; Week Day Work Hours: {weekDayWorkHoursLeft}
+					All Work Hours Left: {workHoursLeft}; Week Day Work Hours: {weekDayWorkHoursLeft}
 					
 				</div>
 			</div>

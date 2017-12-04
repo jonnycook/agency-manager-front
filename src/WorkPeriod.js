@@ -113,9 +113,17 @@ export class WorkPeriodHelper {
 		return entries;
 	}
 
+	_touched = {};
+
 	totalTime(entity) {
 		var totalTime = this._totalTime(entity);
 		var entities = Models.Entity.relatedEntities(entity, null, true);
+
+		// if (this._touched[entity._id]) {
+		// 	throw new Error('touched ' + entity._id);
+
+		// }
+		// this._touched[entity._id] = true;
 
 		var allEntities = [entity];
 		
