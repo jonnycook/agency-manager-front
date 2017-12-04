@@ -227,6 +227,10 @@ export class WorkPeriod extends XComponent {
 					<label>Base Entity:</label>
 					<PropertyField object={this.props.workPeriod} property="baseEntity" type="entity" />
 				</div>
+				<div>
+					<label>Workload:</label>
+					<PropertyField object={this.props.workPeriod} property="workload" type="entity" />
+				</div>
 
 				<ul>
 					{(this.props.workPeriod.entityExclusions || []).map((entityExclusion) => {
