@@ -394,9 +394,29 @@ export class Entity extends XComponent {
     return db.work_periods.filter((workPeriod) => workPeriod.baseEntity == this.props.entity._id).sort((a, b) => a.startDate < b.startDate ? -1 : 1);
   }
 
+  notes() {
+    var notes = [];
+    for (var entity of db.entities) {
+      for (var datum of entity.data) {
+        if (datum.content.type == 'entity notes') {
+          for (var note of datum.content.body) {
+            if (note.entity == this.props.entity._id) {
+              notes.push({
+                entity: entity,
+                notes: note.value
+              });
+            }
+          }
+        }
+      }
+    }
+    return notes;
+  }
+
   xRender() {
     var workLogEntries = this.workLogEntries();
     var workPeriods = this.workPeriods();
+    var notes = this.notes();
 
     return (
       <div className="entity" key={this.props.entity._id}>
@@ -489,6 +509,20 @@ export class Entity extends XComponent {
           <EditableValue get={() => this.props.entity.extends} set={(value) => this.props.entity.extends = value} />
           {this.props.entity.extends && <Entity entity={Collection.findById('entities', this.props.entity.extends)} />}
         </div>*/}
+
+        {notes.length > 0 && <div>
+          <h2>Notes</h2>
+          <ul>
+          {notes.map((note) => {
+            return (
+              <li key={note.entity._id}>
+                <Link to={`/entities/${note.entity._id}`}>{Models.Entity.display(note.entity)}</Link>
+                <ReactMarkdown className="value-text-block" source={note.notes} softBreak="br" />
+              </li>
+            );
+          })} 
+          </ul>  
+        </div>}
 
         <div className="data">
           <h2>Data</h2>
@@ -632,7 +666,7 @@ class EntityNotesInput extends XComponent {
           this.value.push(XObject.obj());
         },
         deleteEntry(entry) {
-
+          this.value.splice(this.value.indexOf(entry), 1);
         }
       }
     });
