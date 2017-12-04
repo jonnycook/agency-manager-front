@@ -16,11 +16,9 @@ export class XComponent extends Component {
       for (let action of Object.keys(opts.actions)) {
         let func = opts.actions[action];
 
-
-
         this.actions[action] = (...args) => {
-          if ((args[1] instanceof Event) || (args[1] && (args[1].nativeEvent instanceof Event))) {
-            return func.call(this, args[1]);
+          if ((args[0] instanceof Event) || (args[0] && (args[0].nativeEvent instanceof Event))) {
+            return func.call(this, args[0]);
           }
           else {
             return (...a) => func.apply(this, args.concat(a));

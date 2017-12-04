@@ -1,9 +1,6 @@
 import { XMap, XObject, XStrip } from './XObject';
-
 import axios from 'axios';
-
 import JSON2 from 'json-stringify-date';
-
 import config from './config';
 
 function _observeChanges(obj, path = [], observer) {

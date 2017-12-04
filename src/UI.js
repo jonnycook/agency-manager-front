@@ -587,6 +587,7 @@ class ValueTypeSelector extends XComponent {
       <option>local file</option>
       <option>URL</option>
       <option>datetime</option>
+      <option>entity notes</option>
     </select>
   }
 }
@@ -604,9 +605,60 @@ export class ValueDisplay extends XComponent {
         return <span className={this.props.className}>{this.props.value && this.props.value.format('{yyyy}-{MM}-{dd} {HH}:{mm}:{ss}')}</span>
       case 'local file':
         return <span className={this.props.className}>{this.props.value && this.props.value[localStorage.getItem('context')]}</span>
+      case 'entity notes':
+        return (
+          <ul>
+            {(this.props.value || []).map((entry) => {
+              return (
+                <li key={entry._id}>
+                  <Link to={`/entities/${entry.entity}`}>{Models.Entity.display(Collection.findById('entities', entry.entity))}</Link>
+                  <ReactMarkdown className="value-text-block" source={entry.value} softBreak="br" />
+                </li>
+              );
+            })}
+          </ul>
+        );
       default:
         return <span className={this.props.className}>{this.props.value && this.props.value.toString()}</span>;  
     }
+  }
+}
+
+class EntityNotesInput extends XComponent {
+  constructor() {
+    super({
+      actions: {
+        addEntry() {
+          this.value.push(XObject.obj());
+        },
+        deleteEntry(entry) {
+
+        }
+      }
+    });
+  }
+
+  componentWillMount() {
+    this.value = this.props.value || XMap([]);
+  }
+
+  xRender() {
+    return (
+      <div>
+        <ul>
+          {this.value.map((entry) => {
+            return (
+              <li key={entry._id}>
+                <PropertyField object={entry} property="entity" type="entity" />
+                <MarkdownEditor options={{lineWrapping:true}} value={entry.value} onChange={(value) => entry.value = value} />
+                <button onClick={this.actions.deleteEntry.bind(entry)}>Delete</button>
+              </li>
+            );
+          })}
+        </ul>
+        <button onClick={this.actions.addEntry.bind()}>Add</button>
+      </div>
+    );
   }
 }
 
@@ -632,6 +684,8 @@ class ValueInput extends XComponent {
         return <input ref="body" defaultValue={this.state.value && this.state.value[localStorage.getItem('context')]} type="text" onKeyDown={(e) => e.key === 'Enter' && this.props.onEnter && this.props.onEnter()} />;
       case 'datetime':
         return <input type="text" ref="input" onKeyDown={(e) => e.key === 'Enter' && this.props.onEnter && this.props.onEnter()} defaultValue={this.state.value && this.state.value.format('{yyyy}-{MM}-{dd} {HH}:{mm}:{ss}')} />;
+      case 'entity notes':
+        return <EntityNotesInput ref="input" value={this.state.value} />
       default:
         return <input ref="body" defaultValue={this.state.value} type="text" onKeyDown={(e) => e.key === 'Enter' && this.props.onEnter && this.props.onEnter()} />;
     }
@@ -651,6 +705,8 @@ class ValueInput extends XComponent {
         });
       case 'datetime':
         return Date.create(this.refs.input.value);
+      case 'entity notes':
+        return this.refs.input.value;
       default:
         return this.refs.body.value;
     }
@@ -702,7 +758,9 @@ class DataContent extends XComponent {
 
   xRender() {
     return <div className="content">
-      {this.state.editing ? <EditDataContent ref="edit" done={() => this.setState({editing: false})} datum={this.props.datum} /> : <ViewDataContent datum={this.props.datum} />}
+      {this.state.editing ?
+        <EditDataContent ref="edit" done={() => this.setState({editing: false})} datum={this.props.datum} /> :
+        <ViewDataContent datum={this.props.datum} />}
       <button onClick={this.action_toggleEdit.bind(this)}>{this.state.editing ? 'Cancel' : 'Edit'}</button>
       <a href={`agency://entities/${this.props.entity._id}/data/${this.props.datum._id}`}>External Edit</a>
     </div>
