@@ -1,88 +1,16 @@
 @import 'Income.scss';
+@import 'styles/calendar.scss';
+@import 'styles/code-mirror.scss';
 
-.calendar {
-	.month-name {
-		display: flex;
-		justify-content: space-between;
-
-		.current-month {
-			font-weight: bold;
-		}
-	}
-	.week, .header {
-		display: flex;
-		.day {
-			flex: 1 1 0;
-			// height: 150px;
-			padding: 5px;
-			box-sizing: border-box;
-		}
-	}
-
-	// .header + .week .day {
-
-	// 		border-top: 1px solid #aaaaaa;
-
-	// }
-	.week .day {
-		border: 1px solid #aaaaaa;
-		margin-bottom: -1px;			
-		&:not(:first-child) {
-			margin-left: -1px;
-		}
-
-		&:not(.current-month) {
-			// opacity: .6;
-			.date {
-				color: gray;
-			}
-		}
-
-		position: relative;
-		z-index: 0;
-
-		&.today {
-			z-index: 1;
-			border-color: black;
-			.date {
-				font-weight: bold;
-			}
-		}
-
-		.entities {
-			list-style-type: none;
-			margin: 0;
-			padding: 0;
-			li {
-				font-size: 11px
-			}
-		}
-
-		.tasks {
-			margin: 0;
-			padding: 0;
-			list-style-type: none;
-			font-size: 11px;
-
-			.task__entity {
-				font-size: 9px;
-				display: block;
-
-			}
-
-			li {
-				line-height: 10px;
-			}
-
-			button {
-				font-size: 9px;
-			}
-		}
-	}
-
-	.header .day {
-		height: 30px;
-	}
+.disconnected {
+	background-color: red;
+	color: white;
+	position:fixed;
+	right: 0;
+	bottom: 0;
+	z-index: 1000;
+	padding: 5px;
+	border-top-left-radius: 4px;
 }
 
 
@@ -340,33 +268,64 @@ h4 {
 	h2 { font-size: 20px*.9; }
 }
 
-
 .value-url {
 	padding-right: 15px;
-	background: linear-gradient(transparent,transparent), no-repeat top right url(data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%20standalone%3D%22no%22%3F%3E%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%3E%3Cpath%20fill%3D%22%23fff%22%20stroke%3D%22%2306c%22%20d%3D%22M1.5%204.518h5.982V10.5H1.5z%22%2F%3E%3Cpath%20d%3D%22M5.765%201H11v5.39L9.427%207.937l-1.31-1.31L5.393%209.35l-2.69-2.688%202.81-2.808L4.2%202.544z%22%20fill%3D%22%2306f%22%2F%3E%3Cpath%20d%3D%22M9.995%202.004l.022%204.885L8.2%205.07%205.32%207.95%204.09%206.723l2.882-2.88-1.85-1.852z%22%20fill%3D%22%23fff%22%2F%3E%3C%2Fsvg%3E)
+	// background: linear-gradient(transparent,transparent), no-repeat top right url(data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%20standalone%3D%22no%22%3F%3E%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%3E%3Cpath%20fill%3D%22%23fff%22%20stroke%3D%22%2306c%22%20d%3D%22M1.5%204.518h5.982V10.5H1.5z%22%2F%3E%3Cpath%20d%3D%22M5.765%201H11v5.39L9.427%207.937l-1.31-1.31L5.393%209.35l-2.69-2.688%202.81-2.808L4.2%202.544z%22%20fill%3D%22%2306f%22%2F%3E%3Cpath%20d%3D%22M9.995%202.004l.022%204.885L8.2%205.07%205.32%207.95%204.09%206.723l2.882-2.88-1.85-1.852z%22%20fill%3D%22%23fff%22%2F%3E%3C%2Fsvg%3E)
 }
-
 
 .side-bar {
 	position: absolute;
 	left: 0;
-
 }
 
+.header {	
+	height: 30px;
+	.entity-menu {
+		position: absolute;
+		right: 30px;
 
+		.create {
+			margin-right: 10px;
+		}
 
-.header {
+		.search-bar {
+		input[type="text"] {
+			padding: 0.2em 0 0.2em 0.2em;
+			font-size: 13px;
+			width: 200px;
 
+			background-image: url('data:image/svg+xml,%3C%3Fxml version=%221.0%22 encoding=%22UTF-8%22%3F%3E%0A%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2213%22%3E%0A%09%3Cg fill=%22none%22 stroke=%22%2354595d%22 stroke-width=%222%22%3E%0A%09%09%3Cpath d=%22M11.29 11.71l-4-4%22/%3E%0A%09%09%3Ccircle cx=%225%22 cy=%225%22 r=%224%22/%3E%0A%09%3C/g%3E%0A%3C/svg%3E%0A');
+			background-position: center right 3px;
+			background-repeat: no-repeat;
+			border: 1px solid #a2a9b1;
+			position: relative;
+			z-index: 1;
+		}
+
+		ul {
+			z-index: 0;
+			width: 330px;
+			background-color: white;
+			position: absolute;
+			right: 0;
+			top: 22px;
+			margin: 0;
+			list-style-type: none;
+			padding: 0;
+			li {
+				padding: 5px;
+			}
+			border: 1px solid #a2a9b1;
+		}
+		}
+	}
 }
-
 
 .main-column { 
 	margin-left: 170px;
-
 }
 
 main {
-
 	border: 1px solid rgb(167, 215, 249);
 	background-color: white;
 	border-radius: 2px;
@@ -378,418 +337,5 @@ main {
 	border-top-right-radius: 0;
 
 	padding-right: 30px
-
-}
-/**
- * Markdown Editor
- */
-.MDEditor_editor {
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  overflow: hidden;
-  position: relative;
-}
-.MDEditor_toolbar {
-  margin-bottom: 4px;
-  margin-top: 4px;
-}
-.MDEditor_toolbarButton {
-  background: #eee;
-  border: 1px solid transparent;
-  border-radius: 4px;
-  cursor: pointer;
-  display: inline-block;
-  margin-right: 4px;
-  padding: 10px 0;
-  text-align: center;
-  vertical-align: middle;
-  width: 40px;
-  transition: all 180ms;
-  -webkit-transition: all 180ms;
-}
-.MDEditor_toolbarButton:hover,
-.MDEditor_toolbarButton:focus {
-  background-color: white;
-  border-color: rgba(0, 0, 0, 0.1);
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
-  outline: none;
-  transition: none;
-  -webkit-transition: none;
-}
-.MDEditor_toolbarButton:active,
-.MDEditor_toolbarButton--pressed {
-  background-color: rgba(0, 0, 0, 0.15);
-  border-color: rgba(0, 0, 0, 0.1);
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.1);
-}
-.MDEditor_toolbarButton:active:hover,
-.MDEditor_toolbarButton--pressed:hover {
-  background: rgba(0, 0, 0, 0.2);
-}
-.MDEditor_toolbarButton_icon {
-  display: inline-block;
-  height: 16px;
-  width: 16px;
-}
-.MDEditor_toolbarButton_icon > svg {
-  height: 16px;
-  width: 16px;
-}
-.MDEditor_toolbarButton_label {
-  display: none;
-}
-.MDEditor_toolbarButton_label-icon {
-  display: inline-block;
-  font-size: 16px;
-  font-weight: bold;
-  line-height: .9;
-  height: 16px;
-  text-transform: uppercase;
-}
-/* BASICS */
-
-.CodeMirror {
-  /* Set height, width, borders, and global font properties here */
-  font-family: monospace;
-  height: 300px;
-  color: black;
 }
 
-/* PADDING */
-
-.CodeMirror-lines {
-  padding: 4px 0; /* Vertical padding around content */
-}
-.CodeMirror pre {
-  padding: 0 4px; /* Horizontal padding of content */
-}
-
-.CodeMirror-scrollbar-filler, .CodeMirror-gutter-filler {
-  background-color: white; /* The little square between H and V scrollbars */
-}
-
-/* GUTTER */
-
-.CodeMirror-gutters {
-  border-right: 1px solid #ddd;
-  background-color: #f7f7f7;
-  white-space: nowrap;
-}
-.CodeMirror-linenumbers {}
-.CodeMirror-linenumber {
-  padding: 0 3px 0 5px;
-  min-width: 20px;
-  text-align: right;
-  color: #999;
-  white-space: nowrap;
-}
-
-.CodeMirror-guttermarker { color: black; }
-.CodeMirror-guttermarker-subtle { color: #999; }
-
-/* CURSOR */
-
-.CodeMirror-cursor {
-  border-left: 1px solid black;
-  border-right: none;
-  width: 0;
-}
-/* Shown when moving in bi-directional text */
-.CodeMirror div.CodeMirror-secondarycursor {
-  border-left: 1px solid silver;
-}
-.cm-fat-cursor .CodeMirror-cursor {
-  width: auto;
-  border: 0 !important;
-  background: #7e7;
-}
-.cm-fat-cursor div.CodeMirror-cursors {
-  z-index: 1;
-}
-
-.cm-animate-fat-cursor {
-  width: auto;
-  border: 0;
-  -webkit-animation: blink 1.06s steps(1) infinite;
-  -moz-animation: blink 1.06s steps(1) infinite;
-  animation: blink 1.06s steps(1) infinite;
-  background-color: #7e7;
-}
-@-moz-keyframes blink {
-  0% {}
-  50% { background-color: transparent; }
-  100% {}
-}
-@-webkit-keyframes blink {
-  0% {}
-  50% { background-color: transparent; }
-  100% {}
-}
-@keyframes blink {
-  0% {}
-  50% { background-color: transparent; }
-  100% {}
-}
-
-/* Can style cursor different in overwrite (non-insert) mode */
-.CodeMirror-overwrite .CodeMirror-cursor {}
-
-.cm-tab { display: inline-block; text-decoration: inherit; }
-
-.CodeMirror-rulers {
-  position: absolute;
-  left: 0; right: 0; top: -50px; bottom: -20px;
-  overflow: hidden;
-}
-.CodeMirror-ruler {
-  border-left: 1px solid #ccc;
-  top: 0; bottom: 0;
-  position: absolute;
-}
-
-/* DEFAULT THEME */
-
-.cm-s-default .cm-header {color: blue;}
-.cm-s-default .cm-quote {color: #090;}
-.cm-negative {color: #d44;}
-.cm-positive {color: #292;}
-.cm-header, .cm-strong {font-weight: bold;}
-.cm-em {font-style: italic;}
-.cm-link {text-decoration: underline;}
-.cm-strikethrough {text-decoration: line-through;}
-
-.cm-s-default .cm-keyword {color: #708;}
-.cm-s-default .cm-atom {color: #219;}
-.cm-s-default .cm-number {color: #164;}
-.cm-s-default .cm-def {color: #00f;}
-.cm-s-default .cm-variable,
-.cm-s-default .cm-punctuation,
-.cm-s-default .cm-property,
-.cm-s-default .cm-operator {}
-.cm-s-default .cm-variable-2 {color: #05a;}
-.cm-s-default .cm-variable-3 {color: #085;}
-.cm-s-default .cm-comment {color: #a50;}
-.cm-s-default .cm-string {color: #a11;}
-.cm-s-default .cm-string-2 {color: #f50;}
-.cm-s-default .cm-meta {color: #555;}
-.cm-s-default .cm-qualifier {color: #555;}
-.cm-s-default .cm-builtin {color: #30a;}
-.cm-s-default .cm-bracket {color: #997;}
-.cm-s-default .cm-tag {color: #170;}
-.cm-s-default .cm-attribute {color: #00c;}
-.cm-s-default .cm-hr {color: #999;}
-.cm-s-default .cm-link {color: #00c;}
-
-.cm-s-default .cm-error {color: #f00;}
-.cm-invalidchar {color: #f00;}
-
-.CodeMirror-composing { border-bottom: 2px solid; }
-
-/* Default styles for common addons */
-
-div.CodeMirror span.CodeMirror-matchingbracket {color: #0f0;}
-div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
-.CodeMirror-matchingtag { background: rgba(255, 150, 0, .3); }
-.CodeMirror-activeline-background {background: #e8f2ff;}
-
-/* STOP */
-
-/* The rest of this file contains styles related to the mechanics of
-   the editor. You probably shouldn't touch them. */
-
-.CodeMirror {
-  position: relative;
-  overflow: hidden;
-  background: white;
-}
-
-.CodeMirror-scroll {
-  overflow: scroll !important; /* Things will break if this is overridden */
-  /* 30px is the magic margin used to hide the element's real scrollbars */
-  /* See overflow: hidden in .CodeMirror */
-  margin-bottom: -30px; margin-right: -30px;
-  padding-bottom: 30px;
-  height: 100%;
-  outline: none; /* Prevent dragging from highlighting the element */
-  position: relative;
-}
-.CodeMirror-sizer {
-  position: relative;
-  border-right: 30px solid transparent;
-}
-
-/* The fake, visible scrollbars. Used to force redraw during scrolling
-   before actual scrolling happens, thus preventing shaking and
-   flickering artifacts. */
-.CodeMirror-vscrollbar, .CodeMirror-hscrollbar, .CodeMirror-scrollbar-filler, .CodeMirror-gutter-filler {
-  position: absolute;
-  z-index: 6;
-  display: none;
-}
-.CodeMirror-vscrollbar {
-  right: 0; top: 0;
-  overflow-x: hidden;
-  overflow-y: scroll;
-}
-.CodeMirror-hscrollbar {
-  bottom: 0; left: 0;
-  overflow-y: hidden;
-  overflow-x: scroll;
-}
-.CodeMirror-scrollbar-filler {
-  right: 0; bottom: 0;
-}
-.CodeMirror-gutter-filler {
-  left: 0; bottom: 0;
-}
-
-.CodeMirror-gutters {
-  position: absolute; left: 0; top: 0;
-  min-height: 100%;
-  z-index: 3;
-}
-.CodeMirror-gutter {
-  white-space: normal;
-  height: 100%;
-  display: inline-block;
-  vertical-align: top;
-  margin-bottom: -30px;
-  /* Hack to make IE7 behave */
-  *zoom:1;
-  *display:inline;
-}
-.CodeMirror-gutter-wrapper {
-  position: absolute;
-  z-index: 4;
-  background: none !important;
-  border: none !important;
-}
-.CodeMirror-gutter-background {
-  position: absolute;
-  top: 0; bottom: 0;
-  z-index: 4;
-}
-.CodeMirror-gutter-elt {
-  position: absolute;
-  cursor: default;
-  z-index: 4;
-}
-.CodeMirror-gutter-wrapper {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  user-select: none;
-}
-
-.CodeMirror-lines {
-  cursor: text;
-  min-height: 1px; /* prevents collapsing before first draw */
-}
-.CodeMirror pre {
-  /* Reset some styles that the rest of the page might have set */
-  -moz-border-radius: 0; -webkit-border-radius: 0; border-radius: 0;
-  border-width: 0;
-  background: transparent;
-  font-family: inherit;
-  font-size: inherit;
-  margin: 0;
-  white-space: pre;
-  word-wrap: normal;
-  line-height: inherit;
-  color: inherit;
-  z-index: 2;
-  position: relative;
-  overflow: visible;
-  -webkit-tap-highlight-color: transparent;
-  -webkit-font-variant-ligatures: none;
-  font-variant-ligatures: none;
-}
-.CodeMirror-wrap pre {
-  word-wrap: break-word;
-  white-space: pre-wrap;
-  word-break: normal;
-}
-
-.CodeMirror-linebackground {
-  position: absolute;
-  left: 0; right: 0; top: 0; bottom: 0;
-  z-index: 0;
-}
-
-.CodeMirror-linewidget {
-  position: relative;
-  z-index: 2;
-  overflow: auto;
-}
-
-.CodeMirror-widget {}
-
-.CodeMirror-code {
-  outline: none;
-}
-
-/* Force content-box sizing for the elements where we expect it */
-.CodeMirror-scroll,
-.CodeMirror-sizer,
-.CodeMirror-gutter,
-.CodeMirror-gutters,
-.CodeMirror-linenumber {
-  -moz-box-sizing: content-box;
-  box-sizing: content-box;
-}
-
-.CodeMirror-measure {
-  position: absolute;
-  width: 100%;
-  height: 0;
-  overflow: hidden;
-  visibility: hidden;
-}
-
-.CodeMirror-cursor {
-  position: absolute;
-  pointer-events: none;
-}
-.CodeMirror-measure pre { position: static; }
-
-div.CodeMirror-cursors {
-  visibility: hidden;
-  position: relative;
-  z-index: 3;
-}
-div.CodeMirror-dragcursors {
-  visibility: visible;
-}
-
-.CodeMirror-focused div.CodeMirror-cursors {
-  visibility: visible;
-}
-
-.CodeMirror-selected { background: #d9d9d9; }
-.CodeMirror-focused .CodeMirror-selected { background: #d7d4f0; }
-.CodeMirror-crosshair { cursor: crosshair; }
-.CodeMirror-line::selection, .CodeMirror-line > span::selection, .CodeMirror-line > span > span::selection { background: #d7d4f0; }
-.CodeMirror-line::-moz-selection, .CodeMirror-line > span::-moz-selection, .CodeMirror-line > span > span::-moz-selection { background: #d7d4f0; }
-
-.cm-searching {
-  background: #ffa;
-  background: rgba(255, 255, 0, .4);
-}
-
-/* IE7 hack to prevent it from returning funny offsetTops on the spans */
-.CodeMirror span { *vertical-align: text-bottom; }
-
-/* Used to force a border model for a node */
-.cm-force-border { padding-right: .1px; }
-
-@media print {
-  /* Hide the cursor when printing */
-  .CodeMirror div.CodeMirror-cursors {
-    visibility: hidden;
-  }
-}
-
-/* See issue #2901 */
-.cm-tab-wrap-hack:after { content: ''; }
-
-/* Help users use markselection to safely style text background */
-span.CodeMirror-selectedtext { background: none; }

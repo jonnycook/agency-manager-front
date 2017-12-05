@@ -244,11 +244,11 @@ export class EntitySelector extends XComponent {
 					</div> : <span>
 						<input ref="filter" placeholder={this.props.placeholder} onKeyDown={this.actions.keyPress} onChange={(e) => this.setState({filter:e.target.value})} type="text" /> {!this.props.hideButtons && <button onClick={this.actions.cancel}>Cancel</button>}
 						{!this.props.hideButtons && <button onClick={this.actions.new}>New</button>}
-						<ul>
+						{this.entries().length > 0 && <ul>
 							{this.entries().map((entry, i) => (
 								<li className={classNames({selected: i === this.state.selectedIndex})} key={entry.entity._id}>{entry.label}</li>
 							))}
-						</ul>
+						</ul>}
 					</span>) :
 					<span><Link to={`/entities/${this.props.entity()}`}>{Models.Entity.display(Collection.findById('entities', this.props.entity()), !this.props.type)}</Link> <button onClick={this.actions.edit}>Edit</button></span>}
 			</span>

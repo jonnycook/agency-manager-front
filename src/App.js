@@ -351,7 +351,7 @@ class App extends XComponent {
     return db && <Router ref="router">
 
     <div>
-      {!this.state.connected && <span style={{position:'fixed', top: 0, left: 0}}>Disconnected. Changes will not be saved.</span>}
+      {!this.state.connected && <span className="disconnected">Disconnected. Changes will not be saved.</span>}
       <ul className="side-bar">
         {/*<li>
           <Link to="/entities">All Entities</Link>
@@ -381,7 +381,10 @@ class App extends XComponent {
       </ul>
       <div className="main-column">
         <div className="header">
-          <EntitySelector className="search-bar" placeholder="Entity Lookup"  hideButtons={true} editing={true} set={(entity) => this.refs.router.history.push(`/entities/${entity}`)} />
+          <div className="entity-menu">
+            <a className="create" href="#">Create</a>
+            <EntitySelector className="search-bar" placeholder="Entity Lookup"  hideButtons={true} editing={true} set={(entity) => this.refs.router.history.push(`/entities/${entity}`)} />
+          </div>
         </div>
         <main>
           {/*<Route exact path="/" component={Entities}/>*/}

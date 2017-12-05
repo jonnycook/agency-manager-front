@@ -1,0 +1,85 @@
+.calendar {
+	.month-name {
+		display: flex;
+		justify-content: space-between;
+
+		.current-month {
+			font-weight: bold;
+		}
+	}
+	.week, .header {
+		display: flex;
+		.day {
+			flex: 1 1 0;
+			// height: 150px;
+			padding: 5px;
+			box-sizing: border-box;
+		}
+	}
+
+	// .header + .week .day {
+
+	// 		border-top: 1px solid #aaaaaa;
+
+	// }
+	.week .day {
+		border: 1px solid #aaaaaa;
+		margin-bottom: -1px;			
+		&:not(:first-child) {
+			margin-left: -1px;
+		}
+
+		&:not(.current-month) {
+			// opacity: .6;
+			.date {
+				color: gray;
+			}
+		}
+
+		position: relative;
+		z-index: 0;
+
+		&.today {
+			z-index: 1;
+			border-color: black;
+			.date {
+				font-weight: bold;
+			}
+		}
+
+		.entities {
+			list-style-type: none;
+			margin: 0;
+			padding: 0;
+			li {
+				font-size: 11px
+			}
+		}
+
+		.tasks {
+			margin: 0;
+			padding: 0;
+			list-style-type: none;
+			font-size: 11px;
+
+			.task__entity {
+				font-size: 9px;
+				display: block;
+
+			}
+
+			li {
+				line-height: 10px;
+			}
+
+			button {
+				font-size: 9px;
+			}
+		}
+	}
+
+	.header .day {
+		height: 30px;
+	}
+}
+

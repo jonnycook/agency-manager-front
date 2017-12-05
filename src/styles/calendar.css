@@ -1,0 +1,48 @@
+.calendar .month-name {
+  display: flex;
+  justify-content: space-between; }
+  .calendar .month-name .current-month {
+    font-weight: bold; }
+
+.calendar .week, .calendar .header {
+  display: flex; }
+  .calendar .week .day, .calendar .header .day {
+    flex: 1 1 0;
+    padding: 5px;
+    box-sizing: border-box; }
+
+.calendar .week .day {
+  border: 1px solid #aaaaaa;
+  margin-bottom: -1px;
+  position: relative;
+  z-index: 0; }
+  .calendar .week .day:not(:first-child) {
+    margin-left: -1px; }
+  .calendar .week .day:not(.current-month) .date {
+    color: gray; }
+  .calendar .week .day.today {
+    z-index: 1;
+    border-color: black; }
+    .calendar .week .day.today .date {
+      font-weight: bold; }
+  .calendar .week .day .entities {
+    list-style-type: none;
+    margin: 0;
+    padding: 0; }
+    .calendar .week .day .entities li {
+      font-size: 11px; }
+  .calendar .week .day .tasks {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    font-size: 11px; }
+    .calendar .week .day .tasks .task__entity {
+      font-size: 9px;
+      display: block; }
+    .calendar .week .day .tasks li {
+      line-height: 10px; }
+    .calendar .week .day .tasks button {
+      font-size: 9px; }
+
+.calendar .header .day {
+  height: 30px; }
