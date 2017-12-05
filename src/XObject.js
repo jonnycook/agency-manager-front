@@ -220,7 +220,7 @@ XObject.captureAccesses = function(func, onAccess) {
 XObject.obj = function(obj={}) {
   return XObject(Object.assign({
     _id: XObject.id()
-  }, obj));
+  }, XMap(obj)));
 }
 
 

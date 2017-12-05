@@ -321,7 +321,7 @@ export class Entity extends XComponent {
               object: { entity: this.props.entity._id }
             },
             start: new Date(),
-            subject: db.agency_users.find((user) => user.authKey = localStorage.getItem('authKey')).entity
+            subject: db.agency_users.find((user) => user.authKey == localStorage.getItem('authKey')).entity
           }));
         }
       }
@@ -381,6 +381,7 @@ export class Entity extends XComponent {
   workLogEntries() {
         var authKey = localStorage.getItem('authKey');
     var user = db.agency_users.find((user) => user.authKey == authKey);
+    console.log(XStrip(user));
 
     return db.work_log_entries.filter((workLogEntry) => {
       return workLogEntry.activity.object.entity == this.props.entity._id && workLogEntry.subject == user.entity

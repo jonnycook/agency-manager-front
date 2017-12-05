@@ -69,12 +69,12 @@ export class WorkLog extends XComponent {
 		return (
 			<div className="work-log">
 				<h1>Work Log</h1>
-				<button onClick={this.actions.group}>Group</button>
+				{/*<button onClick={this.actions.group}>Group</button>*/}
 				<ul>
 					{db.work_log_entries.filter(entry => !entry.group && !entry.invoice && entry.subject == user.entity).map(entry => {
 						return (
 							<li key={entry._id}>
-								<input type="checkbox" checked={this.selected.includes(entry)} onClick={(e) => {!this.selected.includes(entry) ? this.selected.push(entry) : this.selected.remove(entry); this.forceUpdate()}} />
+								{/*<input type="checkbox" checked={this.selected.includes(entry)} onClick={(e) => {!this.selected.includes(entry) ? this.selected.push(entry) : this.selected.remove(entry); this.forceUpdate()}} />*/}
 								<div>
 									<label>Subject: </label>
 									<PropertyField type="entity" object={entry} property="subject" />
@@ -107,7 +107,7 @@ export class WorkLog extends XComponent {
 					})}
 				</ul>
 
-				<h2>Groups</h2>
+				{/*<h2>Groups</h2>
 				<ul>
 					{db.work_log_entry_groups.map(group => {
 						return (
@@ -174,7 +174,7 @@ export class WorkLog extends XComponent {
 							</li>
 						);
 					})}
-				</ul>
+				</ul>*/}
 			</div>
 		);
 	}
