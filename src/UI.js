@@ -379,8 +379,11 @@ export class Entity extends XComponent {
   }
 
   workLogEntries() {
+        var authKey = localStorage.getItem('authKey');
+    var user = db.agency_users.find((user) => user.authKey == authKey);
+
     return db.work_log_entries.filter((workLogEntry) => {
-      return workLogEntry.activity.object.entity == this.props.entity._id
+      return workLogEntry.activity.object.entity == this.props.entity._id && workLogEntry.subject == user.entity
     });
   }
 

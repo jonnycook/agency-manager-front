@@ -711,10 +711,15 @@ h4 {
   left: 0; }
 
 .header {
-  height: 30px; }
+  height: 30px;
+  position: relative;
+  padding-top: 1px; }
+  .header .timer {
+    margin-top: 5px; }
   .header .entity-menu {
     position: absolute;
-    right: 30px; }
+    right: 30px;
+    top: 0; }
     .header .entity-menu .create {
       margin-right: 10px; }
     .header .entity-menu .search-bar {

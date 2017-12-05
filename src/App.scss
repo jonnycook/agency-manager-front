@@ -280,9 +280,16 @@ h4 {
 
 .header {	
 	height: 30px;
+	position: relative;
+	padding-top: 1px;
+
+	.timer {
+		margin-top: 5px;
+	}
 	.entity-menu {
 		position: absolute;
 		right: 30px;
+		top: 0;
 
 		.create {
 			margin-right: 10px;

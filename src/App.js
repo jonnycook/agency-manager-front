@@ -1,6 +1,6 @@
 import React from 'react';
 import { XMap, XObject, XComponent, XStrip } from './XObject';
-import { EntitySelector, Entity, ValueDisplay } from './UI';
+import { EntitySelector, Entity, ValueDisplay, PropertyField } from './UI';
 import { initDb, db, Models, Collection, applyChanges } from './db';
 import { Tasks } from './Tasks';
 import { Invoice } from './Invoice';
@@ -296,7 +296,58 @@ function connect() {
 connect();
 
 
+class CurrentWorkLogEntry extends XComponent {
+  constructor() {
+    super({
+      actions: {
+        stop() {
+          this.entry().end = new Date();
+        }
+      }
+    });
+  }
 
+  entry() {
+    if (this._entry && !this._entry.end) {
+      return this._entry;
+    }
+
+    var authKey = localStorage.getItem('authKey');
+    var user = db.agency_users.find((user) => user.authKey == authKey);
+    this._entry = db.work_log_entries.find((entry) => entry.subject == user.entity && !entry.end);
+
+    if (this._entry) {
+      this._timerId = setInterval(() => {
+        this.forceUpdate();
+      }, 1000);
+    }
+    else {
+      clearInterval(this._timerId);
+    }
+  }
+
+  xRender() {
+    var entry = this.entry();
+
+    if (entry) {
+      var duration = Math.floor((new Date().getTime() - entry.start.getTime())/1000);
+      var seconds = duration % 60;
+      var minutes = Math.floor(duration/60) % 60;
+      var hours = Math.floor(duration/60/60);
+      return (
+        <div className="timer">
+          <button onClick={this.actions.stop}>Stop</button>
+          <span className="item">{hours}:{minutes.toString().padLeft(2, '0')}:{seconds.toString().padLeft(2, '0')}</span>
+
+          <PropertyField object={entry.activity.object} property="entity" type="entity" />
+        </div>
+      );
+    }
+    else {
+      return null;
+    }
+  }
+}
 
 class App extends XComponent {
   constructor() {
@@ -381,6 +432,7 @@ class App extends XComponent {
       </ul>
       <div className="main-column">
         <div className="header">
+          <CurrentWorkLogEntry />
           <div className="entity-menu">
             <a className="create" href="#">Create</a>
             <EntitySelector className="search-bar" placeholder="Entity Lookup"  hideButtons={true} editing={true} set={(entity) => this.refs.router.history.push(`/entities/${entity}`)} />

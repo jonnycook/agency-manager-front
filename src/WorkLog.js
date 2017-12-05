@@ -63,12 +63,15 @@ export class WorkLog extends XComponent {
 		this.selected = [];
 	}
 	xRender() {
+		    var authKey = localStorage.getItem('authKey');
+    var user = db.agency_users.find((user) => user.authKey == authKey);
+
 		return (
 			<div className="work-log">
 				<h1>Work Log</h1>
 				<button onClick={this.actions.group}>Group</button>
 				<ul>
-					{db.work_log_entries.filter(entry => !entry.group && !entry.invoice).map(entry => {
+					{db.work_log_entries.filter(entry => !entry.group && !entry.invoice && entry.subject == user.entity).map(entry => {
 						return (
 							<li key={entry._id}>
 								<input type="checkbox" checked={this.selected.includes(entry)} onClick={(e) => {!this.selected.includes(entry) ? this.selected.push(entry) : this.selected.remove(entry); this.forceUpdate()}} />
