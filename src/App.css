@@ -717,29 +717,32 @@ h4 {
     right: 30px; }
     .header .entity-menu .create {
       margin-right: 10px; }
-    .header .entity-menu .search-bar input[type="text"] {
-      padding: 0.2em 0 0.2em 0.2em;
-      font-size: 13px;
-      width: 200px;
-      background-image: url("data:image/svg+xml,%3C%3Fxml version=%221.0%22 encoding=%22UTF-8%22%3F%3E%0A%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2213%22%3E%0A%09%3Cg fill=%22none%22 stroke=%22%2354595d%22 stroke-width=%222%22%3E%0A%09%09%3Cpath d=%22M11.29 11.71l-4-4%22/%3E%0A%09%09%3Ccircle cx=%225%22 cy=%225%22 r=%224%22/%3E%0A%09%3C/g%3E%0A%3C/svg%3E%0A");
-      background-position: center right 3px;
-      background-repeat: no-repeat;
-      border: 1px solid #a2a9b1;
-      position: relative;
-      z-index: 1; }
-    .header .entity-menu .search-bar ul {
-      z-index: 0;
-      width: 330px;
-      background-color: white;
-      position: absolute;
-      right: 0;
-      top: 22px;
-      margin: 0;
-      list-style-type: none;
-      padding: 0;
-      border: 1px solid #a2a9b1; }
-      .header .entity-menu .search-bar ul li {
-        padding: 5px; }
+    .header .entity-menu .search-bar {
+      z-index: 9999;
+      position: relative; }
+      .header .entity-menu .search-bar input[type="text"] {
+        padding: 0.2em 0 0.2em 0.2em;
+        font-size: 13px;
+        width: 200px;
+        background-image: url("data:image/svg+xml,%3C%3Fxml version=%221.0%22 encoding=%22UTF-8%22%3F%3E%0A%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%2213%22%3E%0A%09%3Cg fill=%22none%22 stroke=%22%2354595d%22 stroke-width=%222%22%3E%0A%09%09%3Cpath d=%22M11.29 11.71l-4-4%22/%3E%0A%09%09%3Ccircle cx=%225%22 cy=%225%22 r=%224%22/%3E%0A%09%3C/g%3E%0A%3C/svg%3E%0A");
+        background-position: center right 3px;
+        background-repeat: no-repeat;
+        border: 1px solid #a2a9b1;
+        position: relative;
+        z-index: 1; }
+      .header .entity-menu .search-bar ul {
+        z-index: 0;
+        width: 330px;
+        background-color: white;
+        position: absolute;
+        right: 0;
+        top: 22px;
+        margin: 0;
+        list-style-type: none;
+        padding: 0;
+        border: 1px solid #a2a9b1; }
+        .header .entity-menu .search-bar ul li {
+          padding: 5px; }
 
 .main-column {
   margin-left: 170px; }
