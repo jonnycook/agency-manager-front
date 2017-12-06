@@ -589,6 +589,8 @@ h4 {
   border-radius: 2px;
   background: #FFFFFF;
   overflow: hidden; }
+  .entity h1 .start-timer {
+    float: right; }
   .entity .entity__properties {
     max-width: 330px;
     float: right;

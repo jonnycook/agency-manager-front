@@ -78,6 +78,12 @@ h4 {
 	background: #FFFFFF;
 	overflow: hidden;
 
+	h1 {
+		.start-timer {
+			float: right;
+		}
+	}
+
 	.entity__properties {
 		max-width: 330px;
 		float: right;

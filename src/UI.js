@@ -379,10 +379,8 @@ export class Entity extends XComponent {
   }
 
   workLogEntries() {
-        var authKey = localStorage.getItem('authKey');
+    var authKey = localStorage.getItem('authKey');
     var user = db.agency_users.find((user) => user.authKey == authKey);
-    console.log(XStrip(user));
-
     return db.work_log_entries.filter((workLogEntry) => {
       return workLogEntry.activity.object.entity == this.props.entity._id && workLogEntry.subject == user.entity
     });
@@ -426,7 +424,21 @@ export class Entity extends XComponent {
 
     return (
       <div className="entity" key={this.props.entity._id}>
-        <h1><Link to={`/entities/${this.props.entity._id}`}>{Models.Entity.display(this.props.entity)}</Link></h1>
+        <h1>
+          <Link to={`/entities/${this.props.entity._id}`}>{Models.Entity.display(this.props.entity)}</Link>
+          <span className="start-timer">
+            <select ref="activity">
+              {['Communication', 'Development', 'Management', 'Estimation', 'Scoping', 'Orienting'].map((activity) => {
+                return (
+                  <option key={activity}>{activity}</option>
+                );
+              })} 
+            </select>
+            <button onClick={this.actions.start}>Start</button>
+          </span>
+        </h1>
+          
+
         <div className="entity__properties">
           <h1>Entity</h1>
           {this.props.entity._created && <div className="creation-info">
@@ -555,14 +567,6 @@ export class Entity extends XComponent {
 
         <div>
           <h2>Work</h2>
-          <select ref="activity">
-            {['Communication', 'Development', 'Management', 'Estimation', 'Scoping', 'Orienting'].map((activity) => {
-              return (
-                <option key={activity}>{activity}</option>
-              );
-            })} 
-          </select>
-          <button onClick={this.actions.start}>Start</button>
           {workLogEntries.length > 0 && <div className="work-log-entries">
             <h3>Log ({juration.stringify(this.workTime()/1000)})</h3>
             <ul>
@@ -602,7 +606,7 @@ export class Entity extends XComponent {
             <ul>
               {workPeriods.map((workPeriod) => {
                 return (
-                  <li key={workPeriods._id}><Link to={`/work-periods/${workPeriod._id}`}>{workPeriod.startDate.format('{yyyy}-{MM}-{dd}')}</Link></li>
+                  <li key={workPeriod._id}><Link to={`/work-periods/${workPeriod._id}`}>{workPeriod.startDate.format('{yyyy}-{MM}-{dd}')}</Link></li>
                 );
               })}
             </ul>
