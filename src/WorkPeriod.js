@@ -89,7 +89,7 @@ export class WorkPeriodHelper {
 		var workLogEntries = this._workLogEntries(entity);
 		var entities = Models.Entity.relatedEntities(entity, null, true);
 		for (var e of entities) {
-			workLogEntries = workLogEntries.concat(this._workLogEntries(e));
+			workLogEntries = workLogEntries.concat(this.workLogEntries(e));
 		}
 		return workLogEntries;
 	}
@@ -203,8 +203,14 @@ export class WorkPeriod extends XComponent {
 		});
 	}
 
+
+
 	xRender() {
 		var helper = new WorkPeriodHelper(this.props.workPeriod);
+		var workLogEntries = helper.workLogEntries(Collection.findById('entities', this.props.workPeriod.baseEntity));
+		workLogEntries.sort((a, b) => {
+			return a.start.getTime() - b.start.getTime();
+		})
 		return (
 			<div>
 				<div>
@@ -245,6 +251,46 @@ export class WorkPeriod extends XComponent {
 				<button onClick={this.actions.addEntityExclusion}>Exclude Entity</button>
 
 				{this.props.workPeriod.baseEntity && helper.renderTotalTime(Collection.findById('entities', this.props.workPeriod.baseEntity))}
+
+
+        <ul>
+          {workLogEntries.map((entry) => {
+            return (
+              <li key={entry._id}>
+                <div>
+                  <label>Subject: </label>
+                  <PropertyField type="entity" object={entry} property="subject" />
+                </div>
+                <div>
+                  <label>Description: </label>
+                  <PropertyField type="text" object={entry} property="description" />
+                </div>
+                <div>
+                  <label>Start: </label>
+                  <PropertyField type="datetime" object={entry} property="start" />
+                </div>
+                <div>
+                  <label>End: </label>
+                  <PropertyField type="datetime" object={entry} property="end" />
+                </div>
+                <div>
+                  <label>Duration: </label>
+                  <span>{juration.stringify(Math.floor((entry.end || new Date()).getTime() - entry.start.getTime())/1000)}</span>
+                </div>
+                <div>
+                  <label>Activity: </label>
+                  <PropertyField type="text" object={entry} property="activity.activity" />
+                </div>
+                <div>
+                  <label>Entity: </label>
+                  <PropertyField type="entity" object={entry} property="activity.object.entity" />
+                </div>
+
+              </li>
+            );
+          })}
+        </ul>
+
 			</div>
 		);
 	}

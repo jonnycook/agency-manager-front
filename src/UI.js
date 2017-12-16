@@ -323,6 +323,20 @@ export class Entity extends XComponent {
             start: new Date(),
             subject: db.agency_users.find((user) => user.authKey == localStorage.getItem('authKey')).entity
           }));
+        },
+
+        addToTimeline() {
+          if (!this.props.entity.timeline) {
+            this.props.entity.timeline = [];
+          }
+
+          this.props.entity.timeline.push(XObject.obj({
+            type: 'state'
+          }));
+        },
+
+        deleteTimelineEvent(event) {
+          this.props.entity.timeline.splice(this.props.entity.timeline.indexOf(event), 1);
         }
       }
     });
@@ -382,7 +396,7 @@ export class Entity extends XComponent {
     var authKey = localStorage.getItem('authKey');
     var user = db.agency_users.find((user) => user.authKey == authKey);
     return db.work_log_entries.filter((workLogEntry) => {
-      return workLogEntry.activity.object.entity == this.props.entity._id && workLogEntry.subject == user.entity
+      return workLogEntry.activity.object.entity == this.props.entity._id// && workLogEntry.subject == user.entity
     });
   }
 
@@ -449,6 +463,11 @@ export class Entity extends XComponent {
             <PropertyField object={this.props.entity} property="type" type="text/line" />
           </div>
 
+          <div>
+            <label>Descriptor: </label>
+            <PropertyField object={this.props.entity} property="descriptor" type="text/line" />
+          </div>
+
 	        <h2>Properties</h2>
 	        <ul>
 	          {this.props.entity.properties.map(prop => {
@@ -470,6 +489,23 @@ export class Entity extends XComponent {
             })}
           </ul>
           <button onClick={this.actions.addState}>Add</button>
+
+          <h2>Timeline</h2>
+          <ul>
+            {this.props.entity.timeline && this.props.entity.timeline.map((event) => {
+              return (
+                <li key={event._id}>
+                  <div>
+                    <label>Time: </label>
+                    <PropertyField object={event} property="time" type="datetime" />
+                    <Property property={event.state ? event.state : event.state = XObject.obj()} />
+                  </div>
+                  <button onClick={this.actions.deleteTimelineEvent.bind(event)}>Delete</button>
+                </li>
+              );
+            })}
+          </ul>
+          <button onClick={this.actions.addToTimeline}>Add</button>
 
           <h2>Related Entities</h2>
           <ul>

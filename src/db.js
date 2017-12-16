@@ -268,9 +268,7 @@ export var Models = {
       return entity.state ? (entity.state.find((e) => e.name === name) || {}) : {}
     },
     display(entity, showType=true) {
-
       if (entity) {
-
         var func = {
           Call() {
             var date = Models.Entity.property(entity, 'Date');
@@ -296,12 +294,13 @@ export var Models = {
 
         var label;
 
-
-
         if (func) {
           label = func();
         }
-        
+
+        if (!label && entity.descriptor) {
+          label = entity.descriptor;
+        }
 
         if (!label) {
           var properties = {};
@@ -334,8 +333,12 @@ export var Models = {
 
         }
 
+        if (!label) {
+          label = '';
+        }
 
-        return showType ? `${label} (${entity.type})` : label;
+
+        return showType && entity.type ? `${label} (${entity.type})` : label;
       }
       else {
         return '(none)';
