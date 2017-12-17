@@ -700,6 +700,7 @@ export class Entity extends XComponent {
             );
           })}
         </ul>
+        <button onClick={this.actions.addToTargetTimeline}>Add</button>
 
         {/*<h2>Timeline</h2>
         <ul>
@@ -734,7 +735,6 @@ export class Entity extends XComponent {
         </ul>
         <button onClick={this.actions.createEvent}>Create</button>
 
-        <button onClick={this.actions.addToTargetTimeline}>Add</button>
 
 
         {notes.length > 0 && <div>
