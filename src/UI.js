@@ -617,8 +617,8 @@ export class Entity extends XComponent {
           <ul>
             {this.relationships().reduce((grouped, rel) => {
               var entity = Collection.findById('entities', rel.entities[this.otherRelIndex(rel)]);
-              if (entity && entity.timeframe) return grouped;
-              
+              if (entity && entity.timeframe && parseInt(entity.timeframe)) return grouped;
+
               var index = grouped.findIndex((g) => g.type == (entity ? entity.type : '(none)'));
               if (index != -1) {
                 grouped[index].rels.push(rel);
