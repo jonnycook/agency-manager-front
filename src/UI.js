@@ -13,6 +13,13 @@ import _ from 'lodash';
 import juration from './juration';
 import pluralize from 'pluralize';
 
+function withRef(ref, component) {
+      return new Proxy({}, {
+        get(target, prop) { return prop == 'ref' ? ref : component[prop] }
+      });
+
+}
+
 export class EditableValue extends XComponent {
   constructor() {
     super();
@@ -30,47 +37,60 @@ export class EditableValue extends XComponent {
   }
 
   extractValue() {
-    switch (this.props.type || 'text') {
-      default:
-        return this.refs.input.value;
-      case 'date': 
-        try {
-          return Date.create(this.refs.input.value);          
-        }
-        catch (e) {
-          return null;
-        }
-      case 'datetime': 
-        try {
-          return Date.create(this.refs.input.value);
-        }
-        catch (e) {
-          return null;
-        }
-      case 'bool':
-        return this.refs.input.checked;
+    if (this.props.input) {
+      return this.refs.input.selectedValue();
+    }
+    else {
+      switch (this.props.type || 'text') {
+        default:
+          return this.refs.input.value;
+        case 'date': 
+          try {
+            return Date.create(this.refs.input.value);          
+          }
+          catch (e) {
+            return null;
+          }
+        case 'datetime': 
+          try {
+            return Date.create(this.refs.input.value);
+          }
+          catch (e) {
+            return null;
+          }
+        case 'bool':
+          return this.refs.input.checked;
 
-      case 'duration':
-        return juration.parse(this.refs.input.value);
+        case 'duration':
+          return juration.parse(this.refs.input.value);
+      }
     }
   }
 
   input() {
-    switch (this.props.type || 'text') {
-      default:
-      case 'text':
-        return <input type="text" ref="input" onKeyPress={(e) => e.key === 'Enter' && this.action_save()} defaultValue={this.props.get()} />;
+    if (this.props.input) {
+      return withRef('input', this.props.input((value) => {
+        this.props.set(value);
+        this.setState({ editing: false });
+      }));
+    }
+    else {
+      switch (this.props.type || 'text') {
+        default:
+        case 'text':
+          return <input type="text" ref="input" onKeyPress={(e) => e.key === 'Enter' && this.action_save()} defaultValue={this.props.get()} />;
 
-      case 'duration':
-        return <input type="text" ref="input" onKeyPress={(e) => e.key === 'Enter' && this.action_save()} defaultValue={this.props.get() ? juration.stringify(this.props.get()) : ''} />;
+        case 'duration':
+          return <input type="text" ref="input" onKeyPress={(e) => e.key === 'Enter' && this.action_save()} defaultValue={this.props.get() ? juration.stringify(this.props.get()) : ''} />;
 
-      case 'date':
-        return <input type="date" ref="input" onKeyPress={(e) => e.key === 'Enter' && this.action_save()} defaultValue={this.props.get() && this.props.get().format('{yyyy}-{MM}-{dd}')} />;
-      case 'datetime':
-        return <input type="datetime" ref="input" onKeyPress={(e) => e.key === 'Enter' && this.action_save()} defaultValue={this.props.get() && this.props.get().format('{yyyy}-{MM}-{dd} {HH}:{mm}:{ss}')} />;
+        case 'date':
+          return <input type="date" ref="input" onKeyPress={(e) => e.key === 'Enter' && this.action_save()} defaultValue={this.props.get() && this.props.get().format('{yyyy}-{MM}-{dd}')} />;
+        case 'datetime':
+          return <input type="datetime" ref="input" onKeyPress={(e) => e.key === 'Enter' && this.action_save()} defaultValue={this.props.get() && this.props.get().format('{yyyy}-{MM}-{dd} {HH}:{mm}:{ss}')} />;
 
-      case 'bool':
-        return <input ref="input" defaultChecked={this.props.get()} type="checkbox" />
+        case 'bool':
+          return <input ref="input" defaultChecked={this.props.get()} type="checkbox" />
+      }
     }
   }
 
@@ -111,7 +131,20 @@ export class EditableValue extends XComponent {
 
 export class PropertyField extends XComponent {
 	xRender() {
-		return <EditableValue type={this.props.type} className={this.props.className} get={() => this.props.object[this.props.property]} set={(value) => this.props.object[this.props.property] = value} />;
+		return (
+      <EditableValue
+        className={this.props.className}
+
+        type={this.props.type}
+
+        set={(value) => this.props.object[this.props.property] = value}
+
+        input={this.props.input}
+
+        get={() => this.props.display ?
+                   this.props.display(this.props.object[this.props.property]) :
+                   this.props.object[this.props.property]} />
+    );
 	}
 }
 
@@ -257,6 +290,67 @@ export class EntitySelector extends XComponent {
 }
 
 
+
+export class Selector extends XComponent {
+  constructor() {
+    super({
+      actions: {
+        keyPress(event) {
+          if (event.key === 'ArrowDown') {
+            if (this.entries().length) {
+              this.setState({
+                selectedIndex: (this.state.selectedIndex + 1) % this.entries().length
+              });
+            }
+            return false;
+          }
+          else if (event.key === 'ArrowUp') {
+            if (this.entries().length) {
+              this.setState({
+                selectedIndex: (this.state.selectedIndex - 1 + this.entries().length) % this.entries().length
+              });
+            }
+            return false;
+          }
+          else if (event.key === 'Enter') {
+            this.props.onSelected(this.selectedValue())
+            return false;
+          }
+        },
+      }
+    });
+    this.state = {
+      selectedIndex: 0
+    };
+  }
+  selectedValue() {
+    return this.entries().length ? this.entries()[this.state.selectedIndex].key : null;
+  }
+  entries() {
+    const escape = (value) => {
+      return value.replace(/\(|\)|\[|\]|\$|\^|\\/g, '\\$1');
+    };
+
+    return this.state.filter ? this.props.entries.filter((entry) => {
+      return entry.display.match(new RegExp('(\\b|/|^)' + escape(this.state.filter), 'i'));
+    }) : [];
+  }
+  xRender() {
+    return (
+      <span className={classNames('entity-selector', this.props.className)}>
+        <input ref="filter" placeholder={this.props.placeholder} onKeyDown={this.actions.keyPress} onChange={(e) => this.setState({filter:e.target.value})} type="text" />
+        {this.entries().length > 0 && <ul>
+          {this.entries().map((entry, i) => (
+            <li className={classNames({selected: i === this.state.selectedIndex})} key={entry.key}>{entry.display}</li>
+          ))}
+        </ul>}
+      </span>
+    );  
+  }
+}
+
+
+
 export class Entity extends XComponent {
   constructor() {
     super({
@@ -337,6 +431,31 @@ export class Entity extends XComponent {
 
         deleteTimelineEvent(event) {
           this.props.entity.timeline.splice(this.props.entity.timeline.indexOf(event), 1);
+        },
+
+        createEvent() {
+          if (!this.props.entity.events) {
+            this.props.entity.events = XMap([]);
+          }
+
+          this.props.entity.events.push(XObject.obj());
+        },
+
+        deleteEvent(event) {
+          this.props.entity.events.splice(this.props.entity.events.indexOf(event), 1);
+        },
+
+
+        addToTargetTimeline() {
+          if (!this.props.entity.targetTimeline) {
+            this.props.entity.targetTimeline = XMap([]);
+          }
+
+          this.props.entity.targetTimeline.push(XObject.obj());
+        },
+
+        removeEntryFromTargetTimeline(entity) {
+          this.props.entity.targetTimeline.splice(this.props.entity.targetTimeline.indexOf(entity), 1);
         }
       }
     });
@@ -431,6 +550,7 @@ export class Entity extends XComponent {
     return notes;
   }
 
+
   xRender() {
     var workLogEntries = this.workLogEntries();
     var workPeriods = this.workPeriods();
@@ -451,8 +571,6 @@ export class Entity extends XComponent {
             <button onClick={this.actions.start}>Start</button>
           </span>
         </h1>
-          
-
         <div className="entity__properties">
           <h1>Entity</h1>
           {this.props.entity._created && <div className="creation-info">
@@ -489,23 +607,6 @@ export class Entity extends XComponent {
             })}
           </ul>
           <button onClick={this.actions.addState}>Add</button>
-
-          <h2>Timeline</h2>
-          <ul>
-            {this.props.entity.timeline && this.props.entity.timeline.map((event) => {
-              return (
-                <li key={event._id}>
-                  <div>
-                    <label>Time: </label>
-                    <PropertyField object={event} property="time" type="datetime" />
-                    <Property property={event.state ? event.state : event.state = XObject.obj()} />
-                  </div>
-                  <button onClick={this.actions.deleteTimelineEvent.bind(event)}>Delete</button>
-                </li>
-              );
-            })}
-          </ul>
-          <button onClick={this.actions.addToTimeline}>Add</button>
 
           <h2>Related Entities</h2>
           <ul>
@@ -563,6 +664,72 @@ export class Entity extends XComponent {
           <EditableValue get={() => this.props.entity.extends} set={(value) => this.props.entity.extends = value} />
           {this.props.entity.extends && <Entity entity={Collection.findById('entities', this.props.entity.extends)} />}
         </div>*/}
+
+        <h2>Target Timeline</h2>
+        <ul>
+          {this.props.entity.targetTimeline && this.props.entity.targetTimeline.map((entry) => {
+            return (
+              <li key={entry._id}>
+                <div>
+                  <label>Event: </label>
+                  <PropertyField
+                    object={entry}
+                    property="event"
+                    display={(value) => (this.props.entity.events.find((event) => event._id == value) || {descriptor:'(none)'}).descriptor }
+                    input={(update) => 
+                      <Selector
+                        entries={this.props.entity.events.map((event) => ({ display: event.descriptor || '(none)', key: event._id }))}
+                        onSelected={(key) => update(key)} />} />
+                </div>
+                <div>
+                  <label>Time: </label>
+                  <PropertyField object={entry} property="time" type="datetime" />
+                </div>
+                <div>
+                  <label>Source: </label>
+                  <PropertyField object={entry} property="source" type="text/line" />
+                </div>
+                <button onClick={this.actions.removeEntryFromTargetTimeline.bind(entry)}>Remove</button>
+              </li>
+            );
+          })}
+        </ul>
+
+        {/*<h2>Timeline</h2>
+        <ul>
+          {this.props.entity.timeline && this.props.entity.timeline.map((event) => {
+            return (
+              <li key={event._id}>
+                <div>
+                  <label>Time: </label>
+                  <PropertyField object={event} property="time" type="datetime" />
+                  <Property property={event.state ? event.state : event.state = XObject.obj()} />
+                </div>
+                <button onClick={this.actions.deleteTimelineEvent.bind(event)}>Delete</button>
+              </li>
+            );
+          })}
+        </ul>
+        <button onClick={this.actions.addToTimeline}>Add</button>*/}
+
+        <h2>Events</h2>
+        <ul>
+          {this.props.entity.events && this.props.entity.events.map((event) => {
+            return (
+              <li key={event._id}>
+                <div>
+                  <label>Descriptor:</label>
+                  <PropertyField object={event} property="descriptor" type="text/line" />
+                </div>
+                <button onClick={this.actions.deleteEvent.bind(event)}>Delete</button>
+              </li>
+            );
+          })}
+        </ul>
+        <button onClick={this.actions.createEvent}>Create</button>
+
+        <button onClick={this.actions.addToTargetTimeline}>Add</button>
+
 
         {notes.length > 0 && <div>
           <h2>Notes</h2>

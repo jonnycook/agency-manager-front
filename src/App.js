@@ -46,24 +46,64 @@ class Day extends XComponent {
   tasks() {
     return db.tasks.filter((task) => !task.completed && task.dueDate && task.dueDate.isBetween(this.props.date.clone().beginningOfDay(), this.props.date.clone().endOfDay()));
   }
+
+  get range() {
+    return [this.props.date.clone().beginningOfDay(), this.props.date.clone().endOfDay()];
+  }
+
   entities() {
-    return db.entities.filter((entity) => {
+    var entries = [];
+    for (var entity of db.entities) {
       var dateProp = entity.properties.find((property) => property.type == 'date');
       if (dateProp) {
         var date = Date.create(dateProp.value);
         if (date) {
-          return date.isBetween(this.props.date.clone().beginningOfDay(), this.props.date.clone().endOfDay());  
-        }        
+          if (date.isBetween(this.props.date.clone().beginningOfDay(), this.props.date.clone().endOfDay())) {
+            entries.push({
+              // name: Models.Entity.display(entity),
+              dateLabel: dateProp.name,
+              // date: dateProp.value,
+              entity: entity
+            });
+          }
+        }
       }
-    }).map((entity) => {
-      var date = entity.properties.find((property) => property.type == 'date');
-      return {
-        name: Models.Entity.display(entity),
-        dateLabel: date.name,
-        date: date.value,
-        entity: entity
-      };
-    });
+
+      if (entity.targetTimeline) {
+        var timelineEntries = entity.targetTimeline.filter((entry) => entry.time.isBetween(...this.range));
+        for (var timelineEntry of timelineEntries) {
+          entries.push({
+            // name: 
+            dateLabel: `${timelineEntry.time.format('{HH}:{mm}')}: ${entity.events.find((event) => event._id == timelineEntry.event).descriptor} (${timelineEntry.source})`,
+            entity: entity
+          });
+        }
+      }
+    }
+
+    return entries;
+
+    // return db.entities.filter((entity) => {
+    //   var dateProp = entity.properties.find((property) => property.type == 'date');
+    //   if (dateProp) {
+    //     var date = Date.create(dateProp.value);
+    //     if (date) {
+    //       return date.isBetween(this.props.date.clone().beginningOfDay(), this.props.date.clone().endOfDay());  
+    //     }
+    //   }
+
+    //   if (entity.targetTimeline) {
+
+    //   }
+    // }).map((entity) => {
+    //   var date = entity.properties.find((property) => property.type == 'date');
+    //   return {
+    //     name: Models.Entity.display(entity),
+    //     dateLabel: date.name,
+    //     date: date.value,
+    //     entity: entity
+    //   };
+    // });
   }
   xRender() {
     return (
@@ -73,7 +113,7 @@ class Day extends XComponent {
           {this.tasks().map(task => <li key={task._id}><span className="task__entity">{Models.Entity.display(Collection.findById('entities', task.entity), false)}</span> {task.title} ({task.deadline}) <input type="checkbox" onClick={() => task.completed = 'true'} /></li>)}
         </ul>
         <ul className="entities">
-          {this.entities().map(entry => <li key={entry.entity._id}><Link to={`/entities/${entry.entity._id}`}>{entry.name}</Link> &mdash; {entry.dateLabel}</li>)}
+          {this.entities().map(entry => <li key={entry.entity._id}><Link to={`/entities/${entry.entity._id}`}>{Models.Entity.display(entry.entity)}</Link> &mdash; {entry.dateLabel}</li>)}
         </ul>
       </div>
     );
