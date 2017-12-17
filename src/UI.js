@@ -644,7 +644,7 @@ export class Entity extends XComponent {
                     }).map((rel) => {
                       return (
                         <li key={`${rel._id}`}>
-                          <EntitySelector set={(value) => rel.entities[this.otherRelIndex(rel)] = value} entity={() => rel.entities[this.otherRelIndex(rel)]} />
+                          <EntitySelector type={true} set={(value) => rel.entities[this.otherRelIndex(rel)] = value} entity={() => rel.entities[this.otherRelIndex(rel)]} />
                           <div>
                             <label>Directed: </label>
                             <PropertyField type="bool" object={rel} property="directed" />
