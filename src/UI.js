@@ -617,17 +617,17 @@ export class Entity extends XComponent {
           <ul>
             {this.relationships().reduce((grouped, rel) => {
               var entity = Collection.findById('entities', rel.entities[this.otherRelIndex(rel)]);
-              if (!entity.timeframe) {
-                var index = grouped.findIndex((g) => g.type == (entity ? entity.type : '(none)'));
-                if (index != -1) {
-                  grouped[index].rels.push(rel);
-                }
-                else {
-                  grouped.push({
-                    type: entity ? entity.type : '(none)',
-                    rels: [rel]
-                  })
-                }
+              if (entity && entity.timeframe) return grouped;
+              
+              var index = grouped.findIndex((g) => g.type == (entity ? entity.type : '(none)'));
+              if (index != -1) {
+                grouped[index].rels.push(rel);
+              }
+              else {
+                grouped.push({
+                  type: entity ? entity.type : '(none)',
+                  rels: [rel]
+                })
               }
               return grouped;
             }, []).sort((a, b) => a.type < b.type ? -1 : 1).map(group => {
