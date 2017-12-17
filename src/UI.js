@@ -586,6 +586,11 @@ export class Entity extends XComponent {
             <PropertyField object={this.props.entity} property="descriptor" type="text/line" />
           </div>
 
+          <div>
+            <label>Timeframe: </label>
+            <PropertyField object={this.props.entity} property="timeframe" type="text/line" />
+          </div>
+
 	        <h2>Properties</h2>
 	        <ul>
 	          {this.props.entity.properties.map(prop => {
@@ -612,16 +617,17 @@ export class Entity extends XComponent {
           <ul>
             {this.relationships().reduce((grouped, rel) => {
               var entity = Collection.findById('entities', rel.entities[this.otherRelIndex(rel)]);
-
-              var index = grouped.findIndex((g) => g.type == (entity ? entity.type : '(none)'));
-              if (index != -1) {
-                grouped[index].rels.push(rel);
-              }
-              else {
-                grouped.push({
-                  type: entity ? entity.type : '(none)',
-                  rels: [rel]
-                })
+              if (!entity.timeframe) {
+                var index = grouped.findIndex((g) => g.type == (entity ? entity.type : '(none)'));
+                if (index != -1) {
+                  grouped[index].rels.push(rel);
+                }
+                else {
+                  grouped.push({
+                    type: entity ? entity.type : '(none)',
+                    rels: [rel]
+                  })
+                }
               }
               return grouped;
             }, []).sort((a, b) => a.type < b.type ? -1 : 1).map(group => {
