@@ -338,7 +338,7 @@ export var Models = {
         }
 
 
-        return showType && entity.type ? `${label} (${entity.type})` : label;
+        return showType && entity.type ? `${label} (${entity.type})` : label.toString();
       }
       else {
         return '(none)';
