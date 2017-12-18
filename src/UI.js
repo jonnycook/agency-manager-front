@@ -799,6 +799,10 @@ export class Entity extends XComponent {
                       <PropertyField type="datetime" object={entry} property="end" />
                     </div>
                     <div>
+                      <label>Duration: </label>
+                      <span>{juration.stringify(Math.floor((entry.end || new Date()).getTime() - entry.start.getTime())/1000)}</span>
+                    </div>
+                    <div>
                       <label>Activity: </label>
                       <PropertyField type="text" object={entry} property="activity.activity" />
                     </div>
