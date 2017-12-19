@@ -681,7 +681,7 @@ export class Entity extends XComponent {
                   <PropertyField
                     object={entry}
                     property="event"
-                    display={(value) => (this.props.entity.events.find((event) => event._id == value) || {descriptor:'(none)'}).descriptor }
+                    display={(value) => (this.props.entity.events && this.props.entity.events.find((event) => event._id == value) || {descriptor:'(none)'}).descriptor}
                     input={(update) => 
                       <Selector
                         entries={this.props.entity.events.map((event) => ({ display: event.descriptor || '(none)', key: event._id }))}
