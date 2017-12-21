@@ -294,12 +294,19 @@ export var Models = {
 
         var label;
 
+        // If the entity type has a naming function, use that
         if (func) {
           label = func();
         }
 
+        // Else, if the entity has a descriptor, use that
         if (!label && entity.descriptor) {
           label = entity.descriptor;
+        }
+
+        // Else, if the entity has text/line content, use that
+        if (!label && entity.content && entity.content.type == 'text/line') {
+          label = entity.content.content;
         }
 
         if (!label) {

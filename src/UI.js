@@ -69,7 +69,7 @@ export class EditableValue extends XComponent {
 
   input() {
     if (this.props.input) {
-      return withRef('input', this.props.input((value) => {
+      return withRef('input', this.props.input(this.props.get(), (value) => {
         this.props.set(value);
         this.setState({ editing: false });
       }));
@@ -95,19 +95,25 @@ export class EditableValue extends XComponent {
   }
 
   display() {
-    switch (this.props.type || 'text') {
-      default:
-      case 'text':
-        return this.props.get() && this.props.get().toString();
-      case 'date':
-        return this.props.get() && this.props.get().format('{yyyy}-{MM}-{dd}');
-      case 'datetime':
-        return this.props.get() && this.props.get().format('{yyyy}-{MM}-{dd} {HH}:{mm}:{ss}');
-      case 'bool':
-        return this.props.get() ? 'Yes' : 'No';
+    if (this.props.display) {
+      return this.props.display(this.props.get());
+    }
+    else {
+      switch (this.props.type || 'text') {
+        default:
+          return this.props.get()
+        case 'text':
+          return this.props.get() && this.props.get().toString();
+        case 'date':
+          return this.props.get() && this.props.get().format('{yyyy}-{MM}-{dd}');
+        case 'datetime':
+          return this.props.get() && this.props.get().format('{yyyy}-{MM}-{dd} {HH}:{mm}:{ss}');
+        case 'bool':
+          return this.props.get() ? 'Yes' : 'No';
 
-      case 'duration':
-        return this.props.get() && juration.stringify(this.props.get());
+        case 'duration':
+          return this.props.get() && juration.stringify(this.props.get());
+      }
     }
   }
   xRender() {
@@ -131,6 +137,7 @@ export class EditableValue extends XComponent {
 
 export class PropertyField extends XComponent {
 	xRender() {
+
 		return (
       <EditableValue
         className={this.props.className}
@@ -141,9 +148,9 @@ export class PropertyField extends XComponent {
 
         input={this.props.input}
 
-        get={() => this.props.display ?
-                   this.props.display(this.props.object[this.props.property]) :
-                   this.props.object[this.props.property]} />
+        display={this.props.display}
+
+        get={() => this.props.object[this.props.property]} />
     );
 	}
 }
@@ -587,6 +594,18 @@ export class Entity extends XComponent {
           </div>
 
           <div>
+            <label>Content: </label>
+            <PropertyField
+              object={this.props.entity}
+              property="content"
+              display={(value) => <ViewTypedValue value={value} />}
+              input={(value, update) => {
+                if (!value) value = XMap({});
+                return <EditTypedValue value={value} done={() => update(value)} />
+              }} />
+          </div>
+
+          <div>
             <label>Timeframe: </label>
             <PropertyField object={this.props.entity} property="timeframe" type="text/line" />
           </div>
@@ -644,7 +663,7 @@ export class Entity extends XComponent {
                     }).map((rel) => {
                       return (
                         <li key={`${rel._id}`}>
-                          <EntitySelector type={true} set={(value) => rel.entities[this.otherRelIndex(rel)] = value} entity={() => rel.entities[this.otherRelIndex(rel)]} />
+                          <EntitySelector type={false} set={(value) => rel.entities[this.otherRelIndex(rel)] = value} entity={() => rel.entities[this.otherRelIndex(rel)]} />
                           <div>
                             <label>Directed: </label>
                             <PropertyField type="bool" object={rel} property="directed" />
@@ -682,7 +701,7 @@ export class Entity extends XComponent {
                     object={entry}
                     property="event"
                     display={(value) => (this.props.entity.events && this.props.entity.events.find((event) => event._id == value) || {descriptor:'(none)'}).descriptor}
-                    input={(update) => 
+                    input={(event, update) => 
                       <Selector
                         entries={this.props.entity.events.map((event) => ({ display: event.descriptor || '(none)', key: event._id }))}
                         onSelected={(key) => update(key)} />} />
@@ -800,13 +819,21 @@ export class Entity extends XComponent {
                     </div>
                     <div>
                       <label>Duration: </label>
-                      <span>{juration.stringify(Math.floor((entry.end || new Date()).getTime() - entry.start.getTime())/1000)}</span>
+                      <PropertyField type="duration"
+                        object={{
+                          get duration() {
+                            return Math.floor((entry.end || new Date()).getTime() - entry.start.getTime())/1000;
+                          },
+                          set duration(v) {
+                            entry.end = new Date(entry.start.getTime() + v*1000);
+                          }
+                        }}
+                        property="duration" />
                     </div>
                     <div>
                       <label>Activity: </label>
                       <PropertyField type="text" object={entry} property="activity.activity" />
                     </div>
-
                     <button onClick={this.actions.deleteEntry.bind(entry)}>Delete</button>
                   </li>
                 );
@@ -976,6 +1003,57 @@ class ValueInput extends XComponent {
     </span>;
   }
 }
+
+
+class EditTypedValue extends XComponent {
+  save() {
+    this.props.value.type = this.refs.valueInput.type;
+    this.props.value.content = this.refs.valueInput.value;
+    this.props.done();
+  }
+
+  selectedValue() {
+    return this.valueInput.value;
+  }
+
+  xRender() {
+    return (
+      <span>
+        <ValueInput ref="valueInput" type={() => this.props.value.type} value={() => this.props.value.content} onEnter={this.save.bind(this)} />
+        <button onClick={this.save.bind(this)}>Save</button>
+      </span>
+    );
+  }
+}
+
+class ViewTypedValue extends XComponent {
+  xRender() {
+    return this.props.value ? <ValueDisplay type={this.props.value.type} value={this.props.value.content} /> : null;
+  }
+}
+
+class TypedValue extends XComponent {
+  constructor() {
+    super();
+    this.state = {
+      editing: false
+    };
+  }
+
+  action_toggleEdit() {
+    this.setState({ editing: !this.state.editing });
+  }
+
+  xRender() {
+    return <div className="content">
+      {this.state.editing ?
+        <EditTypedValue ref="edit" done={() => this.setState({editing: false})} value={this.props.value} /> :
+        <ViewTypedValue value={this.props.value} />}
+      <button onClick={this.action_toggleEdit.bind(this)}>{this.state.editing ? 'Cancel' : 'Edit'}</button>
+    </div>
+  }
+}
+
 
 class EditDataContent extends XComponent {
   save() {
