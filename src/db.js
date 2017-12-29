@@ -221,6 +221,28 @@ export var Models = {
 
   },
   Entity: {
+    relationships(entity, type=null, startPoint=null) {
+      if (startPoint === null) {
+        return db.relationships.filter((rel) => {
+          return rel.entities.includes(entity._id);
+        });
+      }
+      else if (startPoint === true) {
+        return db.relationships.filter((rel) => {
+          return rel.entities[0] == entity._id && rel.directed;
+        });
+      }
+      else if (startPoint === false) {
+        return db.relationships.filter((rel) => {
+          return rel.entities[1] == entity._id && rel.directed;
+        });
+      }
+    },
+
+    relatedEntity(entity, rel) {
+      return Collection.findById('entities', rel.entities[Models.Relationship.otherRelIndex(rel, entity)]);
+    },
+
     relatedEntities(entity, type=null, startPoint=null) {
 
       function relationships() {
@@ -313,16 +335,18 @@ export var Models = {
           var properties = {};
           var e = entity;
           while (true) {
-            for (var prop of e.properties) {
-              if (!(prop.name in properties)) {
-                if (prop.type == 'date') {
-                  properties[prop.name] = prop.value.format('{yyyy}-{MM}-{dd}');
+            if (e.properties) {
+              for (var prop of e.properties) {
+                if (!(prop.name in properties)) {
+                  if (prop.type == 'date') {
+                    properties[prop.name] = prop.value.format('{yyyy}-{MM}-{dd}');
+                  }
+                  else {
+                    properties[prop.name] = prop.value;                  
+                  }
                 }
-                else {
-                  properties[prop.name] = prop.value;                  
-                }
-              }
-            } 
+              } 
+            }
             if (e.extends) {
               e = Collection.findById('entities', e.extends);
             }

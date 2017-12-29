@@ -1,0 +1,90 @@
+.overview {
+	display: flex;
+	align-items: flex-start;
+	// flex-wrap: wrap;
+	> * {
+		margin-right: 10px;
+		margin-bottom: 10px;
+		flex: 0 0 auto;
+	}
+
+	.name {
+		display: inline-block;
+		position: relative;
+
+		a {
+			display: inline-block;
+			max-width: 320px;
+		}
+
+		form {
+			position: absolute;
+			left: 100%;
+			top: 22px;
+			z-index: 1;
+			background-color: white;
+			padding: 10px;
+			border: 1px solid #979797;
+			border-radius: 8px;
+		}
+
+		.add {
+			position: absolute;
+			left: 100%;
+			top: 0;
+			z-index: 1;
+		}
+
+		.add {
+			opacity: 0;
+			display: none;
+		}
+
+		&:hover {
+			.add {
+				display: block;
+				opacity: 1;
+			}
+		}
+	}
+
+
+	.entity-overview {
+		border: 1px solid #979797;
+		border-radius: 8px;
+		padding: 7px;
+		font-size: 14px;
+
+		&.object {
+			border-width: 0;
+			background: rgba(130, 130, 130, 0.37);
+		}
+
+		> .name {
+			a {
+				font-weight: bold;
+			}
+		}
+		> .containers {
+			margin-top: 5px;
+			display: flex;
+			align-items: flex-start;
+			flex-wrap: wrap;
+			> * {
+				margin-left: 5px;
+				flex: 0 0 auto;
+			}
+			margin-left: -5px;
+		}
+
+		> .related {
+			margin-top: 5px;
+			// display: flex;
+			// flex-direction: column;
+
+			> *:not(:first-child) {
+				margin-top: 5px;
+			}
+		}
+	}
+}

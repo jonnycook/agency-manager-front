@@ -18,6 +18,7 @@ export class XComponent extends Component {
 
         this.actions[action] = (...args) => {
           if ((args[0] instanceof Event) || (args[0] && (args[0].nativeEvent instanceof Event))) {
+            // args[0].preventDefault();
             return func.call(this, args[0]);
           }
           else {

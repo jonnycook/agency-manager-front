@@ -1,0 +1,56 @@
+.overview {
+  display: flex;
+  align-items: flex-start; }
+  .overview > * {
+    margin-right: 10px;
+    margin-bottom: 10px;
+    flex: 0 0 auto; }
+  .overview .name {
+    display: inline-block;
+    position: relative; }
+    .overview .name a {
+      display: inline-block;
+      max-width: 320px; }
+    .overview .name form {
+      position: absolute;
+      left: 100%;
+      top: 22px;
+      z-index: 1;
+      background-color: white;
+      padding: 10px;
+      border: 1px solid #979797;
+      border-radius: 8px; }
+    .overview .name .add {
+      position: absolute;
+      left: 100%;
+      top: 0;
+      z-index: 1; }
+    .overview .name .add {
+      opacity: 0;
+      display: none; }
+    .overview .name:hover .add {
+      display: block;
+      opacity: 1; }
+  .overview .entity-overview {
+    border: 1px solid #979797;
+    border-radius: 8px;
+    padding: 7px;
+    font-size: 14px; }
+    .overview .entity-overview.object {
+      border-width: 0;
+      background: rgba(130, 130, 130, 0.37); }
+    .overview .entity-overview > .name a {
+      font-weight: bold; }
+    .overview .entity-overview > .containers {
+      margin-top: 5px;
+      display: flex;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      margin-left: -5px; }
+      .overview .entity-overview > .containers > * {
+        margin-left: 5px;
+        flex: 0 0 auto; }
+    .overview .entity-overview > .related {
+      margin-top: 5px; }
+      .overview .entity-overview > .related > *:not(:first-child) {
+        margin-top: 5px; }

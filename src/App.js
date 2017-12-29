@@ -16,6 +16,7 @@ import { WorkPeriod } from './WorkPeriod';
 import { Work } from './Work';
 import { WorkDays } from './WorkDays';
 import { WorkDay } from './WorkDay';
+import { Overview } from './Overview';
 import { BatchEntityCreator } from './BatchEntityCreator';
 import classNames from 'classnames';
 import pluralize from 'pluralize';
@@ -252,50 +253,50 @@ class Entities extends XComponent {
   }
 }
 
-class Overview extends XComponent {
-  xRender() {
-    return (
-      <ul className="overview">
-        {db.entities.filter((entity) => entity.type === 'Client').map((client) => {
-          var projects = Models.Entity.relatedEntities(client, 'Project')
+// class Overview extends XComponent {
+//   xRender() {
+//     return (
+//       <ul className="overview">
+//         {db.entities.filter((entity) => entity.type === 'Client').map((client) => {
+//           var projects = Models.Entity.relatedEntities(client, 'Project')
 
-          return (
-            <li key={client._id} className={classNames((Models.Entity.state(client, 'Status').value || ''))}>
-              <h3 className="status-cont" data-status={Models.Entity.state(client, 'Status').value}><Link to={`/entities/${client._id}`}>{Models.Entity.property(client, 'Name')}</Link></h3>
-              {Models.Entity.state(client, 'Waiting Since').value &&
-              <div><h4>Waiting Since</h4>
-              <ValueDisplay {...Models.Entity.state(client, 'Waiting Since')} /></div>}
+//           return (
+//             <li key={client._id} className={classNames((Models.Entity.state(client, 'Status').value || ''))}>
+//               <h3 className="status-cont" data-status={Models.Entity.state(client, 'Status').value}><Link to={`/entities/${client._id}`}>{Models.Entity.property(client, 'Name')}</Link></h3>
+//               {Models.Entity.state(client, 'Waiting Since').value &&
+//               <div><h4>Waiting Since</h4>
+//               <ValueDisplay {...Models.Entity.state(client, 'Waiting Since')} /></div>}
 
-              {Models.Entity.state(client, 'Deadline').value &&
-              <div><h4>Deadline</h4>
-              <ValueDisplay {...Models.Entity.state(client, 'Deadline')} /></div>}
+//               {Models.Entity.state(client, 'Deadline').value &&
+//               <div><h4>Deadline</h4>
+//               <ValueDisplay {...Models.Entity.state(client, 'Deadline')} /></div>}
               
-              {Models.Entity.state(client, 'Overview').value &&
-              <div><h4>Overview</h4>
-              <ValueDisplay {...Models.Entity.state(client, 'Overview')} /></div>}
+//               {Models.Entity.state(client, 'Overview').value &&
+//               <div><h4>Overview</h4>
+//               <ValueDisplay {...Models.Entity.state(client, 'Overview')} /></div>}
 
-              {!!projects.length && <div>
-                <h4>Projects</h4>
-                <ul>
-                  {projects.map(project => {
-                    return (
-                      <li key={project._id} className={classNames((Models.Entity.state(project, 'Status').value || ''))}>
-                        <Link className="status-cont" data-status={Models.Entity.state(project, 'Status').value} to={`/entities/${project._id}`}>{Models.Entity.property(project, 'Name')}</Link>
-                        {Models.Entity.state(project, 'Overview').value &&
-                        <div><h4>Overview</h4>
-                        <ValueDisplay {...Models.Entity.state(project, 'Overview')} /></div>}
-                      </li>
-                    ); 
-                  })}
-                </ul>
-              </div>}
-            </li>
-          );
-        })}
-      </ul>
-    );
-  }
-}
+//               {!!projects.length && <div>
+//                 <h4>Projects</h4>
+//                 <ul>
+//                   {projects.map(project => {
+//                     return (
+//                       <li key={project._id} className={classNames((Models.Entity.state(project, 'Status').value || ''))}>
+//                         <Link className="status-cont" data-status={Models.Entity.state(project, 'Status').value} to={`/entities/${project._id}`}>{Models.Entity.property(project, 'Name')}</Link>
+//                         {Models.Entity.state(project, 'Overview').value &&
+//                         <div><h4>Overview</h4>
+//                         <ValueDisplay {...Models.Entity.state(project, 'Overview')} /></div>}
+//                       </li>
+//                     ); 
+//                   })}
+//                 </ul>
+//               </div>}
+//             </li>
+//           );
+//         })}
+//       </ul>
+//     );
+//   }
+// }
 
 
 var socket;
@@ -450,6 +451,7 @@ class App extends XComponent {
             {this.entityTypes().map((type) => <li key={type}><Link to={`/entities/type/${type}`}>{pluralize(type)}</Link></li>)}
           </ul>
         </li>*/}
+        <li><Link to="/overview">Overview</Link></li>
         <li><Link to="/tasks">Tasks</Link></li>
         <li><Link to="/calendar">Calendar</Link></li>
         <li><Link to="/issues">Issues</Link></li>
@@ -480,9 +482,9 @@ class App extends XComponent {
         </div>
         <main>
           {/*<Route exact path="/" component={Entities}/>*/}
-          <Route exact path="/overview" component={Overview}/>
-          <Route exact path="/calendar" component={Calendar}/>
-          <Route exact path="/entities" component={Entities}/>
+          <Route exact path="/overview" component={Overview} />
+          <Route exact path="/calendar" component={Calendar} />
+          <Route exact path="/entities" component={Entities} />
           <Route exact path="/entities/type/:type" component={({match}) => <Entities type={match.params.type} />} />
           <Route exact path="/entities/:id" component={({match}) => <Entity entity={Collection.findById('entities', match.params.id)} />}/>
           <Route exact path="/tasks" component={Tasks} />

@@ -589,6 +589,11 @@ export class Entity extends XComponent {
           </div>
 
           <div>
+            <label>Object: </label>
+            <PropertyField object={this.props.entity} property="object" type="bool" />
+          </div>
+
+          <div>
             <label>Descriptor: </label>
             <PropertyField object={this.props.entity} property="descriptor" type="text/line" />
           </div>
@@ -669,8 +674,14 @@ export class Entity extends XComponent {
                             <PropertyField type="bool" object={rel} property="directed" />
                           </div>
                           {rel.directed && <div>
-                            <label>Start Point: </label>
-                            <EditableValue type="bool" get={() => rel.entities[0] === this.props.entity._id} set={v => this.actions.toggleStartPoint.invoke(rel, v)} />
+                            <div>
+                              <label>Start Point: </label>
+                              <EditableValue type="bool" get={() => rel.entities[0] === this.props.entity._id} set={v => this.actions.toggleStartPoint.invoke(rel, v)} />
+                            </div>
+                            <div>
+                              <label>Internal: </label>
+                              <PropertyField type="bool" object={rel} property="internal" />
+                            </div>
                           </div>}
                           <button onClick={this.actions.deleteRelationship(rel)}>Delete</button>
                         </li>
