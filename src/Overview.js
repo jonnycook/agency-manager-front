@@ -142,8 +142,8 @@ class EntityActionMenu extends XComponent {
 	}
 	renderSubmenu() {
 		switch (this.state.submenu) {
-			case 'add': return <AddEntityForm entity={this.props.entity} onSubmit={this.props.onSubmit} />;
-			case 'start': return <StartEntity entity={this.props.entity} onSubmit={this.props.onSubmit} />;
+			case 'add': return <AddEntityForm entity={this.props.entity} onSubmit={this.props.onClose} />;
+			case 'start': return <StartEntity entity={this.props.entity} onSubmit={this.props.onClose} />;
 		}
 	}
 	renderTitle() {
