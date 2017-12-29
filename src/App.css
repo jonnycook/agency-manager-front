@@ -573,7 +573,7 @@ span.CodeMirror-selectedtext {
     font-size: 14px; }
     .overview .entity-overview.object {
       border-width: 0;
-      background: rgba(130, 130, 130, 0.37); }
+      background: rgba(130, 130, 130, 0.2); }
     .overview .entity-overview > .name a {
       font-weight: bold; }
     .overview .entity-overview > .containers {
