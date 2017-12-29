@@ -544,16 +544,17 @@ span.CodeMirror-selectedtext {
     position: relative; }
     .overview .name a {
       display: inline-block;
-      max-width: 320px; }
+      max-width: 320px;
+      color: #252525; }
     .overview .name form {
       position: absolute;
       left: 100%;
       top: 22px;
       z-index: 1;
-      background-color: white;
+      background-color: #F8F9FA;
       padding: 10px;
       border: 1px solid #979797;
-      border-radius: 8px; }
+      border-radius: 1px; }
     .overview .name .add {
       position: absolute;
       left: 100%;
@@ -567,7 +568,7 @@ span.CodeMirror-selectedtext {
       opacity: 1; }
   .overview .entity-overview {
     border: 1px solid #979797;
-    border-radius: 8px;
+    border-radius: 4px;
     padding: 7px;
     font-size: 14px; }
     .overview .entity-overview.object {
