@@ -1,6 +1,7 @@
 .overview {
 	display: flex;
 	align-items: flex-start;
+	overflow: auto;
 	// flex-wrap: wrap;
 	> * {
 		margin-right: 10px;

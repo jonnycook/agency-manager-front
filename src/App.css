@@ -533,7 +533,8 @@ span.CodeMirror-selectedtext {
 
 .overview {
   display: flex;
-  align-items: flex-start; }
+  align-items: flex-start;
+  overflow: auto; }
   .overview > * {
     margin-right: 10px;
     margin-bottom: 10px;
