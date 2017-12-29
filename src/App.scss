@@ -173,50 +173,50 @@ h4 {
 	}
 }
 
-.overview {
-	margin: 0;
-	padding: 0;
-	list-style-type: none;
+// .overview {
+// 	margin: 0;
+// 	padding: 0;
+// 	list-style-type: none;
 
-	h4 {
-		margin: 0;
-	}
+// 	h4 {
+// 		margin: 0;
+// 	}
 
-	.status-cont:after {
-		margin-left: 10px;
-		content: attr(data-status);
-		width: 10px;
-		height: 10px;
-		display: inline-block;
-		font-size: 11px;
-		text-indent: 13px;
-		line-height: 13px;
-		// margin-top: -10px;
-	}
+// 	.status-cont:after {
+// 		margin-left: 10px;
+// 		content: attr(data-status);
+// 		width: 10px;
+// 		height: 10px;
+// 		display: inline-block;
+// 		font-size: 11px;
+// 		text-indent: 13px;
+// 		line-height: 13px;
+// 		// margin-top: -10px;
+// 	}
 
-	.Working > .status-cont:after {
-		background-color: orange;
-	}
+// 	.Working > .status-cont:after {
+// 		background-color: orange;
+// 	}
 
-	.WaitingOnClient > .status-cont:after {
-		background-color: green;
-	}
+// 	.WaitingOnClient > .status-cont:after {
+// 		background-color: green;
+// 	}
 
-	.WaitingOnClient > .status-cont:after {
-		background-color: green;
-	}
+// 	.WaitingOnClient > .status-cont:after {
+// 		background-color: green;
+// 	}
 
-	.ClientWaiting > .status-cont:after {
-		background-color: red;
-	}
-	.NoWork > .status-cont:after {
-		background-color: gray;
-	}
+// 	.ClientWaiting > .status-cont:after {
+// 		background-color: red;
+// 	}
+// 	.NoWork > .status-cont:after {
+// 		background-color: gray;
+// 	}
 
-	> li {
-		margin-bottom: 20px;
-	}
-}
+// 	> li {
+// 		margin-bottom: 20px;
+// 	}
+// }
 
 
 .tasks {

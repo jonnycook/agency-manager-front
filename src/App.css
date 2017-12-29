@@ -534,7 +534,9 @@ span.CodeMirror-selectedtext {
 .overview {
   display: flex;
   align-items: flex-start;
-  overflow: auto; }
+  overflow: auto;
+  padding-left: 2px;
+  margin-left: -2px; }
   .overview > * {
     margin-right: 10px;
     margin-bottom: 10px;
@@ -567,13 +569,16 @@ span.CodeMirror-selectedtext {
       display: block;
       opacity: 1; }
   .overview .entity-overview {
-    border: 1px solid #979797;
     border-radius: 4px;
     padding: 7px;
     font-size: 14px; }
     .overview .entity-overview.object {
       border-width: 0;
-      background: rgba(130, 130, 130, 0.2); }
+      background: rgba(130, 130, 130, 0.2);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.23);
+      border-bottom: 1px solid #ccc; }
+    .overview .entity-overview:not(.object) {
+      border: 1px solid rgba(151, 151, 157, 0.48); }
     .overview .entity-overview > .name a {
       font-weight: bold; }
     .overview .entity-overview > .containers {
@@ -697,34 +702,6 @@ h4 {
       margin: 0;
       padding: 0;
       list-style-type: none; }
-
-.overview {
-  margin: 0;
-  padding: 0;
-  list-style-type: none; }
-  .overview h4 {
-    margin: 0; }
-  .overview .status-cont:after {
-    margin-left: 10px;
-    content: attr(data-status);
-    width: 10px;
-    height: 10px;
-    display: inline-block;
-    font-size: 11px;
-    text-indent: 13px;
-    line-height: 13px; }
-  .overview .Working > .status-cont:after {
-    background-color: orange; }
-  .overview .WaitingOnClient > .status-cont:after {
-    background-color: green; }
-  .overview .WaitingOnClient > .status-cont:after {
-    background-color: green; }
-  .overview .ClientWaiting > .status-cont:after {
-    background-color: red; }
-  .overview .NoWork > .status-cont:after {
-    background-color: gray; }
-  .overview > li {
-    margin-bottom: 20px; }
 
 .tasks .task__title {
   display: block;
