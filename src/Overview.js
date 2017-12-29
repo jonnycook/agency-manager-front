@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import React, { ReactDComponent } from 'react';
+import ReactDOM from 'react-dom';
 import { XComponent, XObject, XMap, XStrip } from './XObject';
 import { db, Models, Collection } from './db';
 import classNames from 'classnames';
@@ -15,6 +16,8 @@ import pluralize from 'pluralize';
 
 import { DragSource, DragDropContext, DropTarget } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
+
+import $ from 'jquery';
 
 
 
@@ -131,7 +134,7 @@ class EntityActionMenu extends XComponent {
 					});
 				},
 				close() {
-					this.props.onSubmit();
+					this.props.onClose();
 				}
 			}
 		});
@@ -154,7 +157,7 @@ class EntityActionMenu extends XComponent {
 	}
 	xRender() {
 		return (
-			<div className="menu">
+			<div className="entity-overview__menu">
 				<div className="menu__header">
 					{this.state.submenu && <button onClick={this.actions.back}>Back</button>}
 					{this.renderTitle()}
@@ -177,10 +180,37 @@ class _EntityName extends XComponent {
 	constructor() {
 		super({
 			actions: {
-				add() {
-					this.setState({
-						menu: !this.state.menu
-					})
+				menu() {
+					if (this.closeMenu) {
+						this.closeMenu();
+					}
+					else {
+						this.setState({
+							showingMenu: true
+						})
+						this.closeMenu = () => {
+							ReactDOM.unmountComponentAtNode(menuEl[0]);
+							menuEl.remove()
+							this.setState({
+								showingMenu: false
+							})
+							delete this.closeMenu;
+						}
+						var menuEl = $('<div></div>');
+						console.log(this.refs.el);
+						var el = $(this.refs.el);
+						ReactDOM.render(<EntityActionMenu onClose={this.closeMenu} entity={this.props.entity} />, menuEl[0]);
+						menuEl.appendTo('body');
+
+						menuEl.css({
+							position: 'absolute',
+						});
+						menuEl.css({
+							left: el.offset().left - menuEl.outerWidth() + el.outerWidth(),
+							top: el.offset().top + el.outerHeight()
+						})
+
+					}
 				},
 				done() {
 					this.setState({
@@ -193,9 +223,9 @@ class _EntityName extends XComponent {
 	}
 	xRender() {
 		return this.props.connectDropTarget(this.props.connectDragSource(
-			<div className="name">
-				<Link to={`/entities/${this.props.entity._id}`}>{Models.Entity.display(this.props.entity)}</Link>
-				<button className="add" onClick={this.actions.add}>...</button>
+			<div className={classNames('name', {'showing-menu':this.state.showingMenu})}>
+				<span><Link to={`/entities/${this.props.entity._id}`}>{Models.Entity.display(this.props.entity)}</Link></span>
+				<button ref="el" className="add" onClick={this.actions.menu}>...</button>
 				{this.state.menu && <EntityActionMenu entity={this.props.entity} onSubmit={() => this.setState({menu:false})} />}
 			</div>
 		));

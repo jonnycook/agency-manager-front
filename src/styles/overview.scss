@@ -1,3 +1,19 @@
+.entity-overview__menu {
+	background-color: #F8F9FA;
+	padding: 10px;
+	border: 1px solid #979797;
+	border-radius: 1px;
+	min-width: 120px;
+
+	.menu__header {
+		border-bottom: 1px solid #979797;
+		margin-bottom: 5px;
+		padding-bottom: 5px;
+		white-space: nowrap;
+	}
+}
+
+
 .overview {
 	display: flex;
 	align-items: flex-start;
@@ -21,24 +37,6 @@
 			color: #252525;
 		}
 
-		.menu {
-			position: absolute;
-			right: -30px;
-			top: 22px;
-			z-index: 1;
-			background-color: #F8F9FA;
-			padding: 10px;
-			border: 1px solid #979797;
-			border-radius: 1px;
-			min-width: 120px;
-
-			.menu__header {
-				border-bottom: 1px solid #979797;
-				margin-bottom: 5px;
-				padding-bottom: 5px;
-				white-space: nowrap;
-			}
-		}
 
 		.add {
 			position: absolute;
@@ -52,7 +50,7 @@
 			display: none;
 		}
 
-		&:hover {
+		&.showing-menu, &:hover {
 			.add {
 				display: block;
 				opacity: 1;

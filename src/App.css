@@ -531,6 +531,18 @@ div.CodeMirror-dragcursors {
 span.CodeMirror-selectedtext {
   background: none; }
 
+.entity-overview__menu {
+  background-color: #F8F9FA;
+  padding: 10px;
+  border: 1px solid #979797;
+  border-radius: 1px;
+  min-width: 120px; }
+  .entity-overview__menu .menu__header {
+    border-bottom: 1px solid #979797;
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+    white-space: nowrap; }
+
 .overview {
   display: flex;
   align-items: flex-start;
@@ -548,21 +560,6 @@ span.CodeMirror-selectedtext {
       display: inline-block;
       max-width: 320px;
       color: #252525; }
-    .overview .name .menu {
-      position: absolute;
-      right: -30px;
-      top: 22px;
-      z-index: 1;
-      background-color: #F8F9FA;
-      padding: 10px;
-      border: 1px solid #979797;
-      border-radius: 1px;
-      min-width: 120px; }
-      .overview .name .menu .menu__header {
-        border-bottom: 1px solid #979797;
-        margin-bottom: 5px;
-        padding-bottom: 5px;
-        white-space: nowrap; }
     .overview .name .add {
       position: absolute;
       left: 100%;
@@ -571,7 +568,7 @@ span.CodeMirror-selectedtext {
     .overview .name .add {
       opacity: 0;
       display: none; }
-    .overview .name:hover .add {
+    .overview .name.showing-menu .add, .overview .name:hover .add {
       display: block;
       opacity: 1; }
   .overview .entity-overview {
