@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { XComponent, XObject, XMap, XStrip } from './XObject';
 import { db, Models, Collection } from './db';
 import classNames from 'classnames';
-
+import { Overview } from './Overview';
 import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 
@@ -700,6 +700,9 @@ export class Entity extends XComponent {
           <EditableValue get={() => this.props.entity.extends} set={(value) => this.props.entity.extends = value} />
           {this.props.entity.extends && <Entity entity={Collection.findById('entities', this.props.entity.extends)} />}
         </div>*/}
+
+        <h2>Overview</h2>
+        <Overview entities={[this.props.entity]} />
 
         <h2>Target Timeline</h2>
         <ul>

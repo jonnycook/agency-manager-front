@@ -482,7 +482,7 @@ class App extends XComponent {
         </div>
         <main>
           {/*<Route exact path="/" component={Entities}/>*/}
-          <Route exact path="/overview" component={Overview} />
+          <Route exact path="/overview" component={() => <Overview entities={['59c3779c18ce9200007aa485', '59c30b66aceeab00008c9694', '59c2cc1be31edc00009abf68'].map((entity) => Collection.findById('entities', entity))} />} />
           <Route exact path="/calendar" component={Calendar} />
           <Route exact path="/entities" component={Entities} />
           <Route exact path="/entities/type/:type" component={({match}) => <Entities type={match.params.type} />} />

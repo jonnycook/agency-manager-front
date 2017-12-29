@@ -247,12 +247,12 @@ class Overview extends XComponent {
 		overview = this;
 	}
 	xRender() {
-		var rootEntities = ['59c3779c18ce9200007aa485', '59c30b66aceeab00008c9694', '59c2cc1be31edc00009abf68'];
+		// var rootEntities = ['59c3779c18ce9200007aa485', '59c30b66aceeab00008c9694', '59c2cc1be31edc00009abf68'];
 		return (
 			<div className="overview">
-				{rootEntities.map((entity) => {
+				{this.props.entities.map((entity) => {
 					return (
-						<EntityOverview key={entity} entity={Collection.findById('entities', entity)} />
+						<EntityOverview key={entity._id} entity={entity} />
 					);
 				})}
 			</div>
