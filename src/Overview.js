@@ -81,18 +81,110 @@ class AddEntityForm extends XComponent {
 	}
 }
 
+class StartEntity extends XComponent {
+	constructor() {
+		super({
+			actions: {
+				start(activity) {
+          db.work_log_entries.push(XObject.obj({
+            activity: {
+              activity: activity,
+              object: { entity: this.props.entity._id }
+            },
+            start: new Date(),
+            subject: db.agency_users.find((user) => user.authKey == localStorage.getItem('authKey')).entity
+          }));
+
+					this.props.onSubmit();
+				}
+			}
+		});
+	}
+	xRender() {
+		return (
+			<div>
+				<div><button onClick={this.actions.start.bind('Development')}>Development</button></div>
+			</div>
+		);
+	}
+}
+
+class EntityActionMenu extends XComponent {
+	constructor() {
+		super({
+			actions: {
+				add(e) {
+					e.preventDefault();
+					this.setState({
+						submenu: 'add'
+					});
+				},
+				start(e) {
+					e.preventDefault();
+					this.setState({
+						submenu: 'start'
+					});
+				},
+				back() {
+					this.setState({
+						submenu: null
+					});
+				},
+				close() {
+					this.props.onSubmit();
+				}
+			}
+		});
+		this.state = {};
+	}
+	renderSubmenu() {
+		switch (this.state.submenu) {
+			case 'add': return <AddEntityForm entity={this.props.entity} onSubmit={this.props.onSubmit} />;
+			case 'start': return <StartEntity entity={this.props.entity} onSubmit={this.props.onSubmit} />;
+		}
+	}
+	renderTitle() {
+		if (!this.state.submenu) return 'Entity Actions';
+		switch (this.state.submenu) {
+			case 'add':
+				return 'Add';
+			case 'start':
+				return 'Start';
+		}
+	}
+	xRender() {
+		return (
+			<div className="menu">
+				<div className="menu__header">
+					{this.state.submenu && <button onClick={this.actions.back}>Back</button>}
+					{this.renderTitle()}
+					<button className="close" onClick={this.actions.close}>X</button>
+				</div>
+				{!this.state.submenu && <div>
+					<div><a onClick={this.actions.add} href="#">Add</a></div>
+					<div><a onClick={this.actions.start} href="#">Start</a></div>
+				</div>}
+
+				{this.state.submenu && <div>
+					{this.renderSubmenu()}
+				</div>}
+			</div>
+		);
+	}
+}
+
 class _EntityName extends XComponent {
 	constructor() {
 		super({
 			actions: {
 				add() {
 					this.setState({
-						adding: !this.state.adding
+						menu: !this.state.menu
 					})
 				},
 				done() {
 					this.setState({
-						adding: false
+						menu: false
 					})
 				}
 			}
@@ -103,8 +195,8 @@ class _EntityName extends XComponent {
 		return this.props.connectDropTarget(this.props.connectDragSource(
 			<div className="name">
 				<Link to={`/entities/${this.props.entity._id}`}>{Models.Entity.display(this.props.entity)}</Link>
-				<button className="add" onClick={this.actions.add}>Add</button>
-				{this.state.adding && <AddEntityForm entity={this.props.entity} onSubmit={() => this.setState({adding:false})} />}
+				<button className="add" onClick={this.actions.add}>...</button>
+				{this.state.menu && <EntityActionMenu entity={this.props.entity} onSubmit={() => this.setState({menu:false})} />}
 			</div>
 		));
 	}
