@@ -180,10 +180,10 @@ export class Time extends XComponent {
 								<div onClick={this.actions.selectWorkTime.bind(date.date)} className={classNames('work-time', {selected:this.state.selectedWorkTime && date.date.getTime() == this.state.selectedWorkTime.getTime()})} style={{height:Math.round((totalWorkTime/maxTime)*100) + '%'}} />
 								{times.map((time) => {
 									return (
-										<div className="time" style={{height:Math.round((time.time/maxTime)*100) + '%'}} key={time.name}>
+										time.time > 0 ? <div className="time" style={{height:Math.round((time.time/maxTime)*100) + '%'}} key={time.name}>
 											{time.name}
-											{/*<div>{juration.stringify(time.time)}</div>*/}
-										</div>
+											<div>{juration.stringify(time.time)}</div>
+										</div> : null
 									);
 								})}
 							</div>
