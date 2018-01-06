@@ -137,7 +137,7 @@ export class Time extends XComponent {
 				return 8;
 			},
 			sixHoursPerDay(date) {
-				return 8;
+				return 6;
 			},
 		};
 
