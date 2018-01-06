@@ -3,6 +3,7 @@ import { XMap, XObject,/* XStrip,*/ XComponent } from './XObject';
 import { db, Models, Collection } from './db';
 import { PropertyField, EntitySelector } from './UI';
 import juration from './juration';
+import { Link } from 'react-router-dom';
 import _ from 'lodash';
 
 export class Schedule extends XComponent {
@@ -46,6 +47,35 @@ export class Schedule extends XComponent {
 	}
 }
 
+export class Schedules extends XComponent {
+	constructor() {
+		super({
+			actions: {
+				addSchedule() {
+					db.schedules.push(XObject.obj());
+				}
+			}
+		});
+	}
+
+	xRender() {
+		return (
+			<div>
+				<ul>
+					{db.schedules.map((schedule) => {
+						return (
+							<li key={schedule._id}>
+								<Link to={`/schedules/${schedule._id}`}>{schedule.start ? schedule.start.toString() : '(none)'}</Link>
+							</li>
+						);
+					})}
+				</ul>
+				<button onClick={this.actions.addSchedule}>Add</button>
+			</div>
+		);
+	}
+}
+
 export class Schedule2 extends XComponent {
 	constructor() {
 		super({
@@ -60,11 +90,15 @@ export class Schedule2 extends XComponent {
 			}
 		});
 
-		this.schedule = db.schedules[0];
-		if (!this.schedule) {
-			this.schedule = XObject.obj();
-			db.schedules.push(this.schedule);
-		}
+		// this.schedule = db.schedules[0];
+		// if (!this.schedule) {
+		// 	this.schedule = XObject.obj();
+		// 	db.schedules.push(this.schedule);
+		// }
+	}
+
+	componentWillMount() {
+		this.schedule = this.props.schedule;
 	}
 
 	dateFramework(date) {
@@ -160,17 +194,19 @@ export class Schedule2 extends XComponent {
 
 		var scheduledBlocks = [];
 
-		for (var block of this.schedule.blocks) {
-			var workTimeBlocks = Blocks.take(block.time);
-			for (var workTimeBlock of workTimeBlocks) {
-				scheduledBlocks.push({
-					start: workTimeBlock[0],
-					end: workTimeBlock[1],
-					entity: block.entity
-				});
-			}
-			if (!Blocks.startOfBlock()) {
-				Blocks.take(60*10);
+		if (this.schedule.blocks) {
+			for (var block of this.schedule.blocks) {
+				var workTimeBlocks = Blocks.take(block.time);
+				for (var workTimeBlock of workTimeBlocks) {
+					scheduledBlocks.push({
+						start: workTimeBlock[0],
+						end: workTimeBlock[1],
+						entity: block.entity
+					});
+				}
+				if (!Blocks.startOfBlock()) {
+					Blocks.take(60*10);
+				}
 			}
 		}
 
@@ -192,12 +228,14 @@ export class Schedule2 extends XComponent {
 
 	totalTime() {
 		var totalTime = {};
-		for (var block of this.schedule.blocks) {
-			if (block.entity) {
-				if (!totalTime[block.entity]) {
-					totalTime[block.entity] = 0;
+		if (this.schedule.blocks) {
+			for (var block of this.schedule.blocks) {
+				if (block.entity) {
+					if (!totalTime[block.entity]) {
+						totalTime[block.entity] = 0;
+					}
+					totalTime[block.entity] += block.time;
 				}
-				totalTime[block.entity] += block.time;
 			}
 		}
 		return _.map(totalTime, (time, entity) => {
@@ -231,6 +269,7 @@ export class Schedule2 extends XComponent {
 						</li>
 					})}
 				</ul>
+				{this.schedule.start && 
 				<ul>
 					{this.scheduledBlocksByDate().map((date) => {
 						return (
@@ -250,6 +289,7 @@ export class Schedule2 extends XComponent {
 						);
 					})}
 				</ul>
+				}
 			</div>
 		);
 	}

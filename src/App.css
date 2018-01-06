@@ -597,6 +597,46 @@ span.CodeMirror-selectedtext {
       .overview .entity-overview > .related > *:not(:first-child) {
         margin-top: 5px; }
 
+.time-view {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column; }
+  .time-view .dates {
+    display: flex;
+    height: 100%; }
+  .time-view .date {
+    height: 100%;
+    width: 200px;
+    margin-right: 20px;
+    position: relative; }
+    .time-view .date .date__times {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      top: 20px; }
+      .time-view .date .date__times .work-time {
+        position: absolute;
+        height: 40%;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 20px;
+        background: rgba(130, 130, 130, 0.2);
+        cursor: pointer; }
+        .time-view .date .date__times .work-time.selected {
+          background: #828282; }
+      .time-view .date .date__times .time {
+        position: absolute;
+        left: 20px;
+        right: 0;
+        bottom: 0;
+        background: rgba(130, 130, 130, 0.2); }
+
 .disconnected {
   background-color: red;
   color: white;
@@ -800,4 +840,5 @@ main {
   margin-right: -20px;
   border-right: 0;
   border-top-right-radius: 0;
-  padding-right: 30px; }
+  padding-right: 30px;
+  position: relative; }

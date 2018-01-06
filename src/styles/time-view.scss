@@ -1,0 +1,67 @@
+.time-view {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+
+	display: flex;
+
+	flex-direction: column;
+
+	.entities {
+
+	}
+
+	.dates {
+		display: flex;
+		height: 100%;		
+	}
+
+	.date {
+		height: 100%;
+		width: 200px;
+		margin-right: 20px;
+		position: relative;
+
+
+		.date__date {
+
+
+		}
+
+		.date__times {
+			position: absolute;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			top: 20px;
+
+			.work-time {
+				position: absolute;
+				height: 40%;
+
+				left: 0;
+				right: 0;
+				bottom: 0;
+				width: 20px;
+				background: rgba(130, 130, 130, 0.2);
+				cursor: pointer;
+
+				&.selected {
+					background: rgb(130, 130, 130);
+				}
+			}
+
+			.time {
+				position: absolute;
+
+				left: 20px;
+				right: 0;
+				bottom: 0;
+
+				background: rgba(130, 130, 130, 0.2);
+			}
+		}
+	}
+}

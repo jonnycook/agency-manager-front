@@ -2,6 +2,7 @@
 @import 'styles/calendar.scss';
 @import 'styles/code-mirror.scss';
 @import 'styles/overview.scss';
+@import 'styles/time-view.scss';
 
 .disconnected {
 	background-color: red;
@@ -352,6 +353,8 @@ main {
 	border-right: 0;
 	border-top-right-radius: 0;
 
-	padding-right: 30px
+	padding-right: 30px;
+
+	position: relative;
 }
 

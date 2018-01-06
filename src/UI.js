@@ -463,6 +463,18 @@ export class Entity extends XComponent {
 
         removeEntryFromTargetTimeline(entity) {
           this.props.entity.targetTimeline.splice(this.props.entity.targetTimeline.indexOf(entity), 1);
+        },
+
+        createMilestone() {
+          if (!this.props.entity.milestones) {
+            this.props.entity.milestones = XMap([]);
+          }
+
+          this.props.entity.milestones.push(XObject.obj());
+        },
+
+        deleteMilestone(milestone) {
+          this.props.entity.milestones.splice(this.props.entity.milestones.indexOf(milestone), 1);
         }
       }
     });
@@ -809,6 +821,34 @@ export class Entity extends XComponent {
 
         <div>
           <h2>Work</h2>
+          <h3>Milestones</h3>
+          <ul>
+            {(this.props.entity.milestones || []).map((milestone) => {
+              return (
+                <li key={milestone._id}>
+                  <div>
+                    <label>Name:</label>
+                    <PropertyField object={milestone} property="name" type="text/line" />
+                  </div>
+                  <div>
+                    <label>Deadline:</label>
+                    <PropertyField object={milestone} property="deadline" type="datetime" />
+                  </div>
+                  <div>
+                    <label>Time:</label>
+                    <PropertyField object={milestone} property="time" type="duration" />
+                  </div>
+                  <div>
+                    <label>Completed:</label>
+                    <PropertyField object={milestone} property="completed" type="bool" />
+                  </div>
+
+                  <button onClick={this.actions.deleteMilestone.bind(milestone)}>Delete</button>
+                </li>
+              );
+            })}
+          </ul>
+          <button onClick={this.actions.createMilestone}>Add</button>
           {workLogEntries.length > 0 && <div className="work-log-entries">
             <h3>Log ({juration.stringify(this.workTime()/1000)})</h3>
             <ul>

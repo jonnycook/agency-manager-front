@@ -10,13 +10,14 @@ import { Income } from './Income';
 import { WorkLog } from './WorkLog';
 import { EntityWorkLog } from './EntityWorkLog';
 import { YourIncome } from './YourIncome';
-import { Schedule } from './Schedule';
+import { Schedule, Schedule2, Schedules } from './Schedule';
 import { WorkPeriods } from './WorkPeriods';
 import { WorkPeriod } from './WorkPeriod';
 import { Work } from './Work';
 import { WorkDays } from './WorkDays';
 import { WorkDay } from './WorkDay';
 import { Overview } from './Overview';
+import { Time } from './Time';
 import { BatchEntityCreator } from './BatchEntityCreator';
 import classNames from 'classnames';
 import pluralize from 'pluralize';
@@ -459,6 +460,7 @@ class App extends XComponent {
         <li>
           <Link to="/work">Work</Link>
           <ul>
+            <li><Link to="/work/time">Time</Link></li>
             <li><Link to="/work-periods">Periods</Link></li>
             <li><Link to="/work-log">Log</Link></li>
             <li><Link to="/work-days">Days</Link></li>
@@ -495,10 +497,12 @@ class App extends XComponent {
           <Route exact path="/work-log" component={WorkLog} />
           <Route exact path="/work-log/entities/:id" component={({match}) => <EntityWorkLog entity={Collection.findById('entities', match.params.id)} />} />
           <Route exact path="/invoices/:id" component={({match}) => <Invoice invoice={Collection.findById('invoices', match.params.id)} />} />
-          <Route exact path="/schedule" component={Schedule} />
+          <Route exact path="/schedules" component={Schedules} />
+          <Route exact path="/schedules/:id" component={({match}) => <Schedule2 schedule={Collection.findById('schedules', match.params.id)} />} />
           <Route exact path="/batch-entity-creator" component={BatchEntityCreator} />
           <Route exact path="/work-periods" component={WorkPeriods} />
           <Route exact path="/work" component={Work} />
+          <Route exact path="/work/time" component={Time} />
           <Route exact path="/work-days" component={WorkDays} />
           <Route exact path="/work-days/:id" component={({match}) => <WorkDay workDay={Collection.findById('work_days', match.params.id)} />} />
           <Route exact path="/work-periods/:id" component={({match}) => <WorkPeriod workPeriod={Collection.findById('work_periods', match.params.id)} />} />

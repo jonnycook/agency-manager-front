@@ -100,15 +100,15 @@ export class WorkPeriodHelper {
 
 		var entries = allEntries.filter((entry) => entry.activity.object.entity === entity._id);
 		
-		var tasks = db.tasks.filter((task) => task.entity === entity._id);
-		for (var task of tasks) {
-			entries = entries.concat(allEntries.filter((entry) => entry.activity.object.task === task._id));
-		}
+		// var tasks = db.tasks.filter((task) => task.entity === entity._id);
+		// for (var task of tasks) {
+		// 	entries = entries.concat(allEntries.filter((entry) => entry.activity.object.task === task._id));
+		// }
 
-		var issues = db.issues.filter((issue) => issue.entity === entity._id);
-		for (var issue of issues) {
-			entries = entries.concat(allEntries.filter((entry) => entry.activity.object.issue === issue._id));
-		}
+		// var issues = db.issues.filter((issue) => issue.entity === entity._id);
+		// for (var issue of issues) {
+		// 	entries = entries.concat(allEntries.filter((entry) => entry.activity.object.issue === issue._id));
+		// }
 
 		return entries;
 	}
@@ -207,7 +207,7 @@ export class WorkPeriod extends XComponent {
 
 	xRender() {
 		var helper = new WorkPeriodHelper(this.props.workPeriod);
-		var workLogEntries = helper.workLogEntries(Collection.findById('entities', this.props.workPeriod.baseEntity));
+		var workLogEntries = this.props.workPeriod.baseEntity ? helper.workLogEntries(Collection.findById('entities', this.props.workPeriod.baseEntity)) : [];
 		workLogEntries.sort((a, b) => {
 			return a.start.getTime() - b.start.getTime();
 		})
