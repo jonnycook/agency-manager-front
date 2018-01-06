@@ -136,6 +136,9 @@ export class Time extends XComponent {
 			eightHoursPerDay(date) {
 				return 8;
 			},
+			sixHoursPerDay(date) {
+				return 8;
+			},
 		};
 
 		let currentTime = new Date();
