@@ -268,7 +268,7 @@ export class Time extends XComponent {
 									return (
 										time.time > 0 ? <div className="time" style={{height:Math.round((time.time/maxTime)*100) + '%'}} key={time.time}>
 											{time.names.join(', ')}
-											<div>{juration.stringify(time.time)}</div>
+											{/*<div>{juration.stringify(time.time)}</div>*/}
 										</div> : null
 									);
 								})}
