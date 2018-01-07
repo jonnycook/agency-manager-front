@@ -196,8 +196,14 @@ export class Time extends XComponent {
 							<div key={entry.entity._id}>
 								<Link to={`/entities/${entry.entity._id}`}>
 								{Models.Entity.display(entry.entity)}
-								{/*juration.stringify(entry.milestone.time)}
-								{entry.milestone.deadline.format('{Mon} {d}')*/}
+								{entry.milestone && <span>
+									{juration.stringify(entry.milestone.time)}
+									{entry.milestone.deadline.format('{Mon} {d}')}
+								</span>}
+								{entry.workBlock && <span>
+									{juration.stringify(entry.workBlock.time)}
+									{entry.workBlock.end.format('{Mon} {d}')}
+								</span>}
 								</Link>
 							</div>
 						);
