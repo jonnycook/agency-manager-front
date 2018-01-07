@@ -860,6 +860,7 @@ export class Entity extends XComponent {
               );
             })}
           </ul>
+          <button onClick={this.actions.createMilestone}>Add</button>
           <h3>Blocks</h3>
           <ul>
             {(this.props.entity.workBlocks || []).map((workBlock) => {
