@@ -158,6 +158,18 @@ export class Time extends XComponent {
 			return entry.end.isBetween(minDate, maxDate);
 		});
 
+		for (let date of dates) {
+			for (let entry of date.entries) {
+				if (entry.workBlock) {
+					entry.workedTime = allWorkLogEntries.filter((workLogEntry) => {
+						return workLogEntry.activity.object.entity == entry.entity._id && workLogEntry.end.isBetween(entry.workBlock.start, entry.workBlock.end);
+					}).reduce((total, workLogEntry) => {
+						return total + (workLogEntry.end.getTime() - workLogEntry.start.getTime())
+					}, 0)/1000;
+				}
+			}
+		}
+
 
 		let schedules = {
 			allTime(date) {
@@ -201,7 +213,7 @@ export class Time extends XComponent {
 									{entry.milestone.deadline.format('{Mon} {d}')}
 								</span>}
 								{entry.workBlock && <span>
-									{juration.stringify(entry.workBlock.time)}
+									{juration.stringify(entry.workBlock.time - entry.workedTime)}
 									{entry.workBlock.end.format('{Mon} {d}')}
 								</span>}
 								</Link>
@@ -237,14 +249,13 @@ export class Time extends XComponent {
 							totalWorkTime += entry.milestone.time;							
 						}
 						else if (entry.workBlock) {
-							let workedTime = allWorkLogEntries.filter((workLogEntry) => {
-								return workLogEntry.activity.object.entity == entry.entity._id && workLogEntry.end.isBetween(entry.workBlock.start, entry.workBlock.end);
-							}).reduce((total, workLogEntry) => {
-								return total + (workLogEntry.end.getTime() - workLogEntry.start.getTime())
-							}, 0)/1000;
+							// let workedTime = allWorkLogEntries.filter((workLogEntry) => {
+							// 	return workLogEntry.activity.object.entity == entry.entity._id && workLogEntry.end.isBetween(entry.workBlock.start, entry.workBlock.end);
+							// }).reduce((total, workLogEntry) => {
+							// 	return total + (workLogEntry.end.getTime() - workLogEntry.start.getTime())
+							// }, 0)/1000;
 
-
-							totalWorkTime += Math.max(0, entry.workBlock.time - workedTime);
+							totalWorkTime += Math.max(0, entry.workBlock.time - entry.workedTime);
 						}
 					}
 
