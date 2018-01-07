@@ -62,17 +62,30 @@ export class Time extends XComponent {
 				let milestone = entity.milestones.find((milestone) => !milestone.completed);
 				if (milestone) {
 					entries.push({
+						date: milestone.deadline,
 						milestone: milestone,
 						entity: entity
 					});					
 				}
+			}
+
+			if (entity.workBlocks) {
+				let workBlock = entity.workBlocks.find((workBlock) => !workBlock.completed);
+				if (workBlock) {
+					entries.push({
+						date: workBlock.end,
+						workBlock: workBlock,
+						entity: entity
+					});					
+				}
+
 			}
 		}
 
 		let entriesByDate = {};
 
 		for (let entry of entries) {
-			let date = entry.milestone.deadline.beginningOfDay();
+			let date = entry.date.beginningOfDay();
 			if (!entriesByDate[date.getTime()]) {
 				entriesByDate[date.getTime()] = [];
 			}
@@ -113,6 +126,38 @@ export class Time extends XComponent {
 
 	xRender() {
 		let dates = this.dates();
+		let minDate, maxDate;
+		for (let date of dates) {
+			for (let entry of date.entries) {
+				if (entry.milestone) {
+					if (!minDate || entry.milestone.deadline.isBefore(minDate)) {
+						minDate = entry.milestone.deadline;
+					}
+					if (!maxDate || entry.milestone.deadline.isAfter(maxDate)) {
+						maxDate = entry.milestone.deadline;
+					}
+				}
+				else if (entry.workBlock) {
+					if (!minDate || entry.workBlock.start.isBefore(minDate)) {
+						minDate = entry.workBlock.start;
+					}
+					if (entry.workBlock.end.isBefore(minDate)) {
+						minDate = entry.workBlock.end;
+					}
+					if (!maxDate || entry.workBlock.start.isAfter(maxDate)) {
+						maxDate = entry.workBlock.start;
+					}
+					if (entry.workBlock.end.isAfter(maxDate)) {
+						maxDate = entry.workBlock.end;
+					}
+				}
+			}
+		}
+
+		let allWorkLogEntries = db.work_log_entries.filter((entry) => {
+			return entry.end.isBetween(minDate, maxDate);
+		});
+
 
 		let schedules = {
 			allTime(date) {
@@ -151,8 +196,8 @@ export class Time extends XComponent {
 							<div key={entry.entity._id}>
 								<Link to={`/entities/${entry.entity._id}`}>
 								{Models.Entity.display(entry.entity)}
-								{juration.stringify(entry.milestone.time)}
-								{entry.milestone.deadline.format('{Mon} {d}')}
+								{/*juration.stringify(entry.milestone.time)}
+								{entry.milestone.deadline.format('{Mon} {d}')*/}
 								</Link>
 							</div>
 						);
@@ -173,7 +218,19 @@ export class Time extends XComponent {
 
 					let totalWorkTime = 0;
 					for (let entry of date.entries) {
-						totalWorkTime += entry.milestone.time;
+						if (entry.milestone) {
+							totalWorkTime += entry.milestone.time;							
+						}
+						else if (entry.workBlock) {
+							let workedTime = allWorkLogEntries.filter((workLogEntry) => {
+								return workLogEntry.activity.object.entity == entry.entity._id && workLogEntry.end.isBetween(entry.workBlock.start, entry.workBlock.end);
+							}).reduce((total, workLogEntry) => {
+								return total + (workLogEntry.end.getTime() - workLogEntry.start.getTime())
+							}, 0)/1000;
+
+
+							totalWorkTime += Math.max(0, entry.workBlock.time - workedTime);
+						}
 					}
 
 					return (

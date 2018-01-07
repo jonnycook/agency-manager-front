@@ -475,6 +475,18 @@ export class Entity extends XComponent {
 
         deleteMilestone(milestone) {
           this.props.entity.milestones.splice(this.props.entity.milestones.indexOf(milestone), 1);
+        },
+
+        createWorkBlock() {
+          if (!this.props.entity.workBlocks) {
+            this.props.entity.workBlocks = XMap([]);
+          }
+
+          this.props.entity.workBlocks.push(XObject.obj());
+        },
+
+        deleteWorkBlock(workBlock) {
+          this.props.entity.workBlocks.splice(this.props.entity.workBlocks.indexOf(workBlock), 1);
         }
       }
     });
@@ -848,7 +860,33 @@ export class Entity extends XComponent {
               );
             })}
           </ul>
-          <button onClick={this.actions.createMilestone}>Add</button>
+          <h3>Blocks</h3>
+          <ul>
+            {(this.props.entity.workBlocks || []).map((workBlock) => {
+              return (
+                <li key={workBlock._id}>
+                  <div>
+                    <label>Start:</label>
+                    <PropertyField object={workBlock} property="start" type="datetime" />
+                  </div>
+                  <div>
+                    <label>End:</label>
+                    <PropertyField object={workBlock} property="end" type="datetime" />
+                  </div>
+                  <div>
+                    <label>Time:</label>
+                    <PropertyField object={workBlock} property="time" type="duration" />
+                  </div>
+                  <div>
+                    <label>Completed:</label>
+                    <PropertyField object={workBlock} property="completed" type="bool" />
+                  </div>
+                  <button onClick={this.actions.deleteWorkBlock.bind(workBlock)}>Delete</button>
+                </li>
+              );
+            })}
+          </ul>
+          <button onClick={this.actions.createWorkBlock}>Add</button>
           {workLogEntries.length > 0 && <div className="work-log-entries">
             <h3>Log ({juration.stringify(this.workTime()/1000)})</h3>
             <ul>
