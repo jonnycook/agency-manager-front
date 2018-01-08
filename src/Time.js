@@ -183,13 +183,13 @@ export class Time extends XComponent {
 
 		let dayTotals = [
 			{
-				name: 'Every Day',
+				name: 'Day',
 				test(date) {
 					return true;
 				}
 			},
 			{
-				name: 'Work Days',
+				name: 'Work Day',
 				test(date) {
 					return !(date.getDay() == 0 || date.getDay() == 6);
 				}
