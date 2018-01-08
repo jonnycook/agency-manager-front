@@ -28,7 +28,7 @@ export class Time extends XComponent {
 		this.state = {};
 	}
 	time(start, end, schedule) {
-		let current = start.clone().addDays(1).beginningOfDay();
+		let current = start.clone()./*addDays(1).*/beginningOfDay();
 		let time = 0;
 		while (true) {
 			time += schedule(current)*60*60;
@@ -39,7 +39,7 @@ export class Time extends XComponent {
 	}
 
 	countDays(start, end, test) {
-		let current = start.clone().addDays(1).beginningOfDay();
+		let current = start.clone()./*addDays(1).*/beginningOfDay();
 		let total = 0;
 		while (true) {
 			if (test(current)) total ++;
