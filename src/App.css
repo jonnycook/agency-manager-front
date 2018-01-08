@@ -613,12 +613,18 @@ span.CodeMirror-selectedtext {
     width: 200px;
     margin-right: 20px;
     position: relative; }
+    .time-view .date .date__date {
+      position: absolute;
+      bottom: 2px;
+      right: 3px;
+      z-index: 1;
+      font-size: 13px; }
     .time-view .date .date__times {
       position: absolute;
       left: 0;
       right: 0;
       bottom: 0;
-      top: 20px; }
+      top: 0; }
       .time-view .date .date__times .work-time {
         position: absolute;
         height: 40%;
@@ -635,7 +641,12 @@ span.CodeMirror-selectedtext {
         left: 20px;
         right: 0;
         bottom: 0;
-        background: rgba(130, 130, 130, 0.2); }
+        background: rgba(130, 130, 130, 0.2);
+        font-size: 10px;
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
+        padding: 3px;
+        box-sizing: border-box; }
 
 .disconnected {
   background-color: red;

@@ -4,6 +4,7 @@ import { db, Models, Collection } from './db';
 import juration from './juration';
 import jQuery from 'jquery';
 import classNames from 'classnames';
+import _ from 'lodash';
 import { Link } from 'react-router-dom';
 
 export class Time extends XComponent {
@@ -27,6 +28,7 @@ export class Time extends XComponent {
 
 		this.state = {};
 	}
+
 	time(start, end, schedule) {
 		let current = start.clone()./*addDays(1).*/beginningOfDay();
 		let time = 0;
@@ -80,15 +82,14 @@ export class Time extends XComponent {
 			}
 
 			if (entity.workBlocks) {
-				let workBlock = entity.workBlocks.find((workBlock) => !workBlock.completed);
-				if (workBlock) {
+				let workBlocks = entity.workBlocks.filter((workBlock) => !workBlock.completed);
+				for (let workBlock of workBlocks) {
 					entries.push({
 						date: workBlock.end,
 						workBlock: workBlock,
 						entity: entity
-					});					
+					});
 				}
-
 			}
 		}
 
@@ -188,7 +189,7 @@ export class Time extends XComponent {
 				}
 			},
 			{
-				name: 'Week Days',
+				name: 'Work Days',
 				test(date) {
 					return !(date.getDay() == 0 || date.getDay() == 6);
 				}
@@ -247,22 +248,7 @@ export class Time extends XComponent {
 				</div>}
 				<div className="dates">
 				{dates.map((date) => {
-					let tmp = {};
-					for (let schedule in schedules) {
-						let time = this.time(currentTime, date.date, schedules[schedule]);
-						if (!tmp[time]) {
-							tmp[time] = [];
-						}
-						tmp[time].push(schedule);
-					}
 
-					let times = [];
-					for (let time in tmp) {
-						times.push({
-							time: parseInt(time),
-							names: tmp[time]
-						});
-					}
 
 					let totalWorkTime = 0;
 					for (let entry of date.entries) {
@@ -270,47 +256,56 @@ export class Time extends XComponent {
 							totalWorkTime += entry.milestone.time;							
 						}
 						else if (entry.workBlock) {
-							// let workedTime = allWorkLogEntries.filter((workLogEntry) => {
-							// 	return workLogEntry.activity.object.entity == entry.entity._id && workLogEntry.end.isBetween(entry.workBlock.start, entry.workBlock.end);
-							// }).reduce((total, workLogEntry) => {
-							// 	return total + (workLogEntry.end.getTime() - workLogEntry.start.getTime())
-							// }, 0)/1000;
-
 							totalWorkTime += Math.max(0, entry.workBlock.time - entry.workedTime);
 						}
 					}
 
-					let a = [];
-					for (let daysCounter of dayTotals) {
-						let totalDays = this.countDays(currentTime, date.date, daysCounter.test);
-						console.log(totalDays, daysCounter.name, );
-						a.push(`${juration.stringify(totalWorkTime/totalDays)}/${daysCounter.name}`);
+					let times = [];
+					for (let schedule in schedules) {
+						let time = this.time(currentTime, date.date, schedules[schedule]);
+						times.push({
+							name: schedule,
+							time: time,
+						});
 					}
 
 
-					times.push({
-						time: totalWorkTime,
-						names: a
-					});
-
+					let a = [];
+					for (let daysCounter of dayTotals) {
+						let totalDays = this.countDays(currentTime, date.date, daysCounter.test);
+						times.push({
+							name: `${juration.stringify(totalWorkTime/totalDays)}/${daysCounter.name}`,
+							time: totalWorkTime
+						})
+					}
 					times.sort((a, b) => b.time - a.time);
 
 					let maxTime = times[0].time;
 
+
+
+					let clusteredTimes = {};
+					for (let time of times) {
+						let key = Math.round(time.time/maxTime*100);
+						if (!clusteredTimes[key]) {
+							clusteredTimes[key] = [];
+						}
+						clusteredTimes[key].push(time);
+					}
 
 					return (
 						<div className="date" key={date.date.getTime()}>
 							<div className="date__date">{date.date.format('{Mon} {d}')}</div>
 							<div className="date__times">
 								<div onClick={this.actions.selectWorkTime.bind(date.date)} className={classNames('work-time', {selected:this.state.selectedWorkTime && date.date.getTime() == this.state.selectedWorkTime.getTime()})} style={{height:Math.round((totalWorkTime/maxTime)*100) + '%'}} />
-								{times.map((time) => {
+								{_.map(clusteredTimes, (times, key) => {
 									return (
-										time.time > 0 ? <div className="time" style={{height:Math.round((time.time/maxTime)*100) + '%'}} key={time.time}>
-											{time.names.join(', ')}
+										key > 0 ? <div className="time" style={{height:key + '%'}} key={key}>
+											{times.map((time) => time.name).join(', ')}
 											{/*<div>{juration.stringify(time.time)}</div>*/}
 										</div> : null
 									);
-								})}
+								}).reverse()}
 							</div>
 						</div>
 					);
