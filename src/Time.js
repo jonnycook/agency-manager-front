@@ -38,6 +38,16 @@ export class Time extends XComponent {
 		}
 	}
 
+	countDays(start, end, test) {
+		let current = start.clone().beginningOfDay();
+		let total = 0;
+		while (true) {
+			if (test(current)) total ++;
+			current.addDays(1);
+			if (current.getTime() > end.getTime()) return total;
+		}
+	}
+
 	updateCont() {
 		let mainEl = jQuery('main');
 		mainEl.outerHeight(jQuery(window).height() - mainEl.offset().top - 20);
@@ -170,30 +180,44 @@ export class Time extends XComponent {
 			}
 		}
 
+		let dayTotals = [
+			{
+				name: 'Every Day',
+				test(date) {
+					return true;
+				}
+			},
+			{
+				name: 'Week Days',
+				test(date) {
+					return !(date.getDay() == 0 || date.getDay() == 6);
+				}
+			},
+		];
 
 		let schedules = {
-			allTime(date) {
+			'Every day': (date) => {
 				return 24;
 			},
-			timeDuringDays(date) {
+			'Time during days': (date) => {
 				return 14;
 			},
-			timeDuringWorkDays(date) {
+			'Time during work days': (date) => {
 				if (date.getDay() == 0 || date.getDay() == 6) return 0;
 				return 14;
 			},
-			sixHourWorkDays(date) {
+			'6 hrs/Workdays': (date) => {
 				if (date.getDay() == 0 || date.getDay() == 6) return 0;
 				return 6;
 			},
-			eightHourWorkDays(date) {
+			'8 hrs/Workdays': (date) => {
 				if (date.getDay() == 0 || date.getDay() == 6) return 0;
 				return 8;
 			},
-			eightHoursPerDay(date) {
+			'8 hrs/Day': (date) => {
 				return 8;
 			},
-			sixHoursPerDay(date) {
+			'6 hrs/Day': (date) => {
 				return 6;
 			},
 		};
@@ -239,9 +263,6 @@ export class Time extends XComponent {
 							names: tmp[time]
 						});
 					}
-					times.sort((a, b) => b.time - a.time);
-
-					let maxTime = times[0].time;
 
 					let totalWorkTime = 0;
 					for (let entry of date.entries) {
@@ -258,6 +279,24 @@ export class Time extends XComponent {
 							totalWorkTime += Math.max(0, entry.workBlock.time - entry.workedTime);
 						}
 					}
+
+					let a = [];
+					for (let daysCounter of dayTotals) {
+						let totalDays = this.countDays(currentTime, date.date, daysCounter.test);
+						console.log(totalDays, daysCounter.name, );
+						a.push(`${juration.stringify(totalWorkTime/totalDays)}/${daysCounter.name}`);
+					}
+
+
+					times.push({
+						time: totalWorkTime,
+						names: a
+					});
+
+					times.sort((a, b) => b.time - a.time);
+
+					let maxTime = times[0].time;
+
 
 					return (
 						<div className="date" key={date.date.getTime()}>
