@@ -39,7 +39,7 @@ export class Time extends XComponent {
 	}
 
 	countDays(start, end, test) {
-		let current = start.clone().beginningOfDay();
+		let current = start.clone().addDays(1).beginningOfDay();
 		let total = 0;
 		while (true) {
 			if (test(current)) total ++;
