@@ -189,7 +189,7 @@ export class Time extends XComponent {
 				}
 			},
 			{
-				name: 'Work Day',
+				name: 'Workday',
 				test(date) {
 					return !(date.getDay() == 0 || date.getDay() == 6);
 				}
@@ -207,18 +207,18 @@ export class Time extends XComponent {
 				if (date.getDay() == 0 || date.getDay() == 6) return 0;
 				return 14;
 			},
-			'6 hrs/Workdays': (date) => {
+			'6hrs/Workday': (date) => {
 				if (date.getDay() == 0 || date.getDay() == 6) return 0;
 				return 6;
 			},
-			'8 hrs/Workdays': (date) => {
+			'8hrs/Workday': (date) => {
 				if (date.getDay() == 0 || date.getDay() == 6) return 0;
 				return 8;
 			},
-			'8 hrs/Day': (date) => {
+			'8hrs/Day': (date) => {
 				return 8;
 			},
-			'6 hrs/Day': (date) => {
+			'6hrs/Day': (date) => {
 				return 6;
 			},
 		};
