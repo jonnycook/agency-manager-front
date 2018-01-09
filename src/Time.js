@@ -257,7 +257,7 @@ export class Time extends XComponent {
 				{this.state.selectedWorkTime && <div className="entities">
 					{dates.find((date) => date.date.getTime() == this.state.selectedWorkTime.getTime()).entries.map((entry) => {
 						return (
-							<div key={entry.entity._id}>
+							<div key={entry.milestone ? entry.milestone._id : entry.workBlock._id}>
 								<Link to={`/entities/${entry.entity._id}`}>
 								{Models.Entity.display(entry.entity)}
 								{entry.milestone && <span>
