@@ -487,6 +487,17 @@ export class Entity extends XComponent {
 
         deleteWorkBlock(workBlock) {
           this.props.entity.workBlocks.splice(this.props.entity.workBlocks.indexOf(workBlock), 1);
+        },
+
+        addToWorkLog() {
+          if (!this.props.entity.workLog) {
+            this.props.entity.workLog = XMap([]);
+          }
+          this.props.entity.workLog.push(XObject.obj({timestamp:new Date()}));
+        },
+
+        removeFromWorkLog(entry) {
+          this.props.entity.workLog.splice(this.props.entity.workLog.indexOf(entry), 1);
         }
       }
     });
@@ -888,8 +899,20 @@ export class Entity extends XComponent {
             })}
           </ul>
           <button onClick={this.actions.createWorkBlock}>Add</button>
+          <h3>Log</h3>
+          <ul>
+            {(this.props.entity.workLog || []).map((entry) => {
+              return (
+                <li key={entry._id}>
+                  <PropertyField object={entry} property="text" type="text/block" />
+                  <button onClick={this.actions.removeFromWorkLog.bind(entry)}>Remove</button>
+                </li>
+              );
+            })}
+          </ul>
+          <button onClick={this.actions.addToWorkLog}>Add</button>
           {workLogEntries.length > 0 && <div className="work-log-entries">
-            <h3>Log ({juration.stringify(this.workTime()/1000)})</h3>
+            <h3>Time ({juration.stringify(this.workTime()/1000)})</h3>
             <ul>
               {workLogEntries.map((entry) => {
                 return (
