@@ -382,6 +382,20 @@ class CurrentWorkLogEntry extends XComponent {
           <span className="item">{hours}:{minutes.toString().padLeft(2, '0')}:{seconds.toString().padLeft(2, '0')}</span>
 
           <PropertyField object={entry.activity.object} property="entity" type="entity" />
+
+          <input placeholder="Log" type="text" onKeyPress={(e) => {
+            if (e.key == 'Enter') {
+              let entity = Collection.findById('entities', entry.activity.object.entity);
+              if (!entity.workLog) {
+                entity.workLog = XMap([]);
+              }
+              entity.workLog.push(XObject.obj({
+                timestamp: new Date(),
+                text: e.target.value
+              }));
+              e.target.value = '';              
+            }
+          }} />
         </div>
       );
     }
