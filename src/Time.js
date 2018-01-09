@@ -165,9 +165,32 @@ export class Time extends XComponent {
 			}
 		}
 
+		let trailingDays = new Date().beginningOfDay().addDays(-20);
+
+		if (trailingDays.isBefore(minDate)) {
+			minDate = trailingDays;
+		}
+
 		let allWorkLogEntries = db.work_log_entries.filter((entry) => {
 			return entry.end.isBetween(minDate, maxDate);
 		});
+
+		let timeByDay = {};
+		let currentDay = trailingDays.clone();
+		while (true) {
+			let dayBegin = currentDay;
+			let dayEnd = currentDay.clone().endOfDay();
+			let totalTime = Math.round(db.work_log_entries.filter((entry) => {
+				return entry.end.isBetween(dayBegin, dayEnd);
+			}).reduce((total, entry) => {
+				return total + (entry.end || new Date()).getTime() - entry.start.getTime();
+			}, 0)/1000);
+
+			timeByDay[dayBegin.getTime()] = totalTime
+
+			currentDay.addDays(1);
+			if (currentDay.isAfter(new Date())) break;
+		}
 
 		for (let date of dates) {
 			for (let entry of date.entries) {
@@ -197,13 +220,17 @@ export class Time extends XComponent {
 		];
 
 		let schedules = {
-			'Every day': (date) => {
+			'24hrs/Day': (date) => {
 				return 24;
 			},
-			'Time during days': (date) => {
+			'24 hrs/Workday': (date) => {
+				if (date.getDay() == 0 || date.getDay() == 6) return 0;
+				return 24;
+			},
+			'14 hrs/Day': (date) => {
 				return 14;
 			},
-			'Time during work days': (date) => {
+			'14 hrs/Workday': (date) => {
 				if (date.getDay() == 0 || date.getDay() == 6) return 0;
 				return 14;
 			},
@@ -211,12 +238,12 @@ export class Time extends XComponent {
 				if (date.getDay() == 0 || date.getDay() == 6) return 0;
 				return 6;
 			},
-			'8 hrs/Workday': (date) => {
+			'7 hrs/Workday': (date) => {
 				if (date.getDay() == 0 || date.getDay() == 6) return 0;
-				return 8;
+				return 7;
 			},
-			'8 hrs/Day': (date) => {
-				return 8;
+			'7 hrs/Day': (date) => {
+				return 7;
 			},
 			'6 hrs/Day': (date) => {
 				return 6;
@@ -247,69 +274,77 @@ export class Time extends XComponent {
 					})}
 				</div>}
 				<div className="dates">
-				{dates.map((date) => {
-
-
-					let totalWorkTime = 0;
-					for (let entry of date.entries) {
-						if (entry.milestone) {
-							totalWorkTime += entry.milestone.time;							
+					{dates.map((date) => {
+						let totalWorkTime = 0;
+						for (let entry of date.entries) {
+							if (entry.milestone) {
+								totalWorkTime += entry.milestone.time;							
+							}
+							else if (entry.workBlock) {
+								totalWorkTime += Math.max(0, entry.workBlock.time - entry.workedTime);
+							}
 						}
-						else if (entry.workBlock) {
-							totalWorkTime += Math.max(0, entry.workBlock.time - entry.workedTime);
+
+						let times = [];
+						for (let schedule in schedules) {
+							let time = this.time(currentTime, date.date, schedules[schedule]);
+							times.push({
+								name: schedule,
+								time: time,
+							});
 						}
-					}
-
-					let times = [];
-					for (let schedule in schedules) {
-						let time = this.time(currentTime, date.date, schedules[schedule]);
-						times.push({
-							name: schedule,
-							time: time,
-						});
-					}
 
 
-					let a = [];
-					for (let daysCounter of dayTotals) {
-						let totalDays = this.countDays(currentTime, date.date, daysCounter.test);
-						times.push({
-							name: `${juration.stringify(totalWorkTime/totalDays)}/${daysCounter.name}`,
-							time: totalWorkTime
-						})
-					}
-					times.sort((a, b) => b.time - a.time);
-
-					let maxTime = times[0].time;
-
-
-
-					let clusteredTimes = {};
-					for (let time of times) {
-						let key = Math.round(time.time/maxTime*100);
-						if (!clusteredTimes[key]) {
-							clusteredTimes[key] = [];
+						let a = [];
+						for (let daysCounter of dayTotals) {
+							let totalDays = this.countDays(currentTime, date.date, daysCounter.test);
+							times.push({
+								name: `${juration.stringify(Math.ceil(totalWorkTime/totalDays / 60)*60)}/${daysCounter.name}`,
+								time: totalWorkTime
+							})
 						}
-						clusteredTimes[key].push(time);
-					}
+						times.sort((a, b) => b.time - a.time);
 
-					return (
-						<div className="date" key={date.date.getTime()}>
-							<div className="date__date">{date.date.format('{Mon} {d}')}</div>
-							<div className="date__times">
-								<div onClick={this.actions.selectWorkTime.bind(date.date)} className={classNames('work-time', {selected:this.state.selectedWorkTime && date.date.getTime() == this.state.selectedWorkTime.getTime()})} style={{height:Math.round((totalWorkTime/maxTime)*100) + '%'}} />
-								{_.map(clusteredTimes, (times, key) => {
-									return (
-										key > 0 ? <div className="time" style={{height:key + '%'}} key={key}>
-											{times.map((time) => time.name).join(', ')}
-											{/*<div>{juration.stringify(time.time)}</div>*/}
-										</div> : null
-									);
-								}).reverse()}
+						let maxTime = times[0].time;
+
+
+
+						let clusteredTimes = {};
+						for (let time of times) {
+							let key = Math.floor(Math.round(time.time/maxTime*100)/2);
+							if (!clusteredTimes[key]) {
+								clusteredTimes[key] = {times:[], value:Math.round(time.time/maxTime*100)};
+							}
+							clusteredTimes[key].times.push(time);
+						}
+
+						return (
+							<div className="date" key={date.date.getTime()}>
+								<div className="date__date">{date.date.format('{Mon} {d}')}</div>
+								<div className="date__times">
+									<div onClick={this.actions.selectWorkTime.bind(date.date)} className={classNames('work-time', {selected:this.state.selectedWorkTime && date.date.getTime() == this.state.selectedWorkTime.getTime()})} style={{height:Math.round((totalWorkTime/maxTime)*100) + '%'}} />
+									{_.map(clusteredTimes, (entry, key) => {
+										return (
+											key > 0 ? <div className="time" style={{height:entry.value + '%'}} key={key}>
+												<span className="labels">{entry.times.map((time) => time.name).join('; ')}</span>
+												{/*<div>{juration.stringify(time.time)}</div>*/}
+											</div> : null
+										);
+									}).reverse()}
+								</div>
 							</div>
-						</div>
-					);
-				})}
+						);
+					})}
+				</div>
+				<div className="days">
+					{_.map(timeByDay, (time, date) => {
+						return (
+							<div className="day" key={date}>
+								<span className="date">{new Date(parseInt(date)).format('{Dow}, {Mon} {d}')}</span>
+								<span className="time">{juration.stringify(Math.round(time/60)*60)}</span>
+							</div>
+						);
+					})}
 				</div>
 			</div>
 		);
