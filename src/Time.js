@@ -172,7 +172,7 @@ export class Time extends XComponent {
 		}
 
 		let allWorkLogEntries = db.work_log_entries.filter((entry) => {
-			return entry.end.isBetween(minDate, maxDate);
+			return (entry.end || new Date()).isBetween(minDate, maxDate);
 		});
 
 		let timeByDay = {};
@@ -181,7 +181,7 @@ export class Time extends XComponent {
 			let dayBegin = currentDay;
 			let dayEnd = currentDay.clone().endOfDay();
 			let totalTime = Math.round(db.work_log_entries.filter((entry) => {
-				return entry.end.isBetween(dayBegin, dayEnd);
+				return (entry.end || new Date()).isBetween(dayBegin, dayEnd);
 			}).reduce((total, entry) => {
 				return total + (entry.end || new Date()).getTime() - entry.start.getTime();
 			}, 0)/1000);
