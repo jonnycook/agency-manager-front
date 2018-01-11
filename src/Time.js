@@ -196,9 +196,9 @@ export class Time extends XComponent {
 			for (let entry of date.entries) {
 				if (entry.workBlock) {
 					entry.workedTime = allWorkLogEntries.filter((workLogEntry) => {
-						return workLogEntry.activity.object.entity == entry.entity._id && workLogEntry.end.isBetween(entry.workBlock.start, entry.workBlock.end);
+						return workLogEntry.activity.object.entity == entry.entity._id && (workLogEntry.end || new Date()).isBetween(entry.workBlock.start, entry.workBlock.end);
 					}).reduce((total, workLogEntry) => {
-						return total + (workLogEntry.end.getTime() - workLogEntry.start.getTime())
+						return total + ((workLogEntry.end || new Date()).getTime() - workLogEntry.start.getTime())
 					}, 0)/1000;
 				}
 			}
