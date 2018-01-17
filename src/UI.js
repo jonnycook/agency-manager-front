@@ -938,7 +938,7 @@ export class Entity extends XComponent {
             })}
           </ul>
           <button onClick={this.actions.createWorkBlock}>Add</button>
-          <h3>Log</h3>
+          {/*<h3>Log</h3>
           <ul>
             {(this.props.entity.workLog || []).map((entry) => {
               return (
@@ -949,7 +949,7 @@ export class Entity extends XComponent {
               );
             })}
           </ul>
-          <button onClick={this.actions.addToWorkLog}>Add</button>
+          <button onClick={this.actions.addToWorkLog}>Add</button>*/}
           {workLogEntries.length > 0 && <div className="work-log-entries">
             <h3>Time ({juration.stringify(this.workTime()/1000)})</h3>
             <ul>
