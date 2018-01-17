@@ -12,7 +12,7 @@ export class WorkProcess extends XComponent {
 					if (!this.props.workProcess.log) {
 						this.props.workProcess.log = XMap([]);
 					}
-					this.props.workProcess.log.push(XObject.obj());
+					this.props.workProcess.log.push(XObject.obj({timestamp:new Date()}));
 				},
 				deleteLog(log) {
 					this.props.workProcess.log.splice(this.props.workProcess.log.indexOf(log), 1);
