@@ -196,6 +196,16 @@ export async function initDb() {
   }
 }
 
+export var collections = new Proxy({}, {
+  get(_, collection) {
+    return {
+      findById(id) {
+        return Collection.findById(collection, id);
+      }
+    }
+  }
+});
+
 export var Collection = {
   _collections: {},
   removeDocument(name, doc) {
@@ -217,62 +227,76 @@ export var Models = {
       else {
         return 0;
       }
+    },
+    otherEntity(rel, entity) {
+      return rel.entities[this.otherRelIndex(rel, entity)];
     }
-
   },
   Entity: {
-    relationships(entity, type=null, startPoint=null) {
+    queryRelatedEntities(entity, query) {
+      let entities = this.relationships(entity, query.startPoint, query).map((rel) => this.relatedEntity(entity, rel));
+
+      if (query.type) {
+        entities = entities.filter((e) => e.type === query.type);
+      }
+
+
+
+      return entities;
+    },
+    queryRelatedEntity(entity, query) {
+      let result = this.queryRelatedEntities(entity, query);
+      if (result) {
+        return result[0];
+      }
+    },
+
+    relationships(entity, startPoint=null, query=null) {
+      let rels;
       if (startPoint === null) {
-        return db.relationships.filter((rel) => {
+        rels = db.relationships.filter((rel) => {
           return rel.entities.includes(entity._id);
         });
       }
-      else if (startPoint === true) {
-        return db.relationships.filter((rel) => {
+      else if (startPoint === false) {
+        rels = db.relationships.filter((rel) => {
           return rel.entities[0] == entity._id && rel.directed;
         });
       }
-      else if (startPoint === false) {
-        return db.relationships.filter((rel) => {
+      else if (startPoint === true) {
+        rels = db.relationships.filter((rel) => {
           return rel.entities[1] == entity._id && rel.directed;
         });
       }
+
+      if (query) {
+        rels = rels.filter((rel) => {
+          if ('primary' in query) {
+            if (rel.primary !== query.primary) return false;
+          }
+          return true;
+        })
+      }
+
+      return rels;
     },
 
     relatedEntity(entity, rel) {
       return Collection.findById('entities', rel.entities[Models.Relationship.otherRelIndex(rel, entity)]);
     },
 
+
+
     relatedEntities(entity, type=null, startPoint=null) {
+      // function relatedEntity(rel) {
+      //   var id = rel.entities[Models.Relationship.otherRelIndex(rel, entity)];
+      //   // return id;
+      //   if (id) {
+      //     return Collection.findById('entities', id);
+      //   }
+      // }
 
-      function relationships() {
-        if (startPoint === null) {
-          return db.relationships.filter((rel) => {
-            return rel.entities.includes(entity._id);
-          });
-        }
-        else if (startPoint === true) {
-          return db.relationships.filter((rel) => {
-            return rel.entities[0] == entity._id && rel.directed;
-          });
-        }
-        else if (startPoint === false) {
-          return db.relationships.filter((rel) => {
-            return rel.entities[1] == entity._id && rel.directed;
-          });
-        }
-      }
-
-
-      function relatedEntity(rel) {
-        var id = rel.entities[Models.Relationship.otherRelIndex(rel, entity)];
-        // return id;
-        if (id) {
-          return Collection.findById('entities', id);
-        }
-      }
-
-      var entities = relationships(startPoint).map(relatedEntity);
+      let entities = this.relationships(entity, startPoint === null ? null : !startPoint).map((rel) => this.relatedEntity(entity, rel));
       if (type) {
         return entities.filter((e) => e.type === type);
       }

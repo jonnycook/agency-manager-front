@@ -5,13 +5,17 @@ import { PropertyField, EntitySelector } from './UI';
 import juration from './juration';
 import _ from 'lodash';
 
-export class WorkPeriodHelper {
-	constructor(workPeriod) {
-		this.workPeriod = workPeriod;
+export class WorkTimeCalculator {
+	constructor(startDate, endDate, entityExclusions) {
+		this.startDate = startDate;
+		this.endDate = endDate;
+		this.entityExclusions = entityExclusions;
+		this.allEntries = db.work_log_entries.filter((entry) => this.startDate && (entry.start.getTime() >= this.startDate.getTime() && (!this.endDate || entry.start.getTime() <= this.endDate.getTime())));
+
 	}
 
 	_totalTime(entity) {
-		if ((this.workPeriod.entityExclusions || []).find((entityExclusion) => entityExclusion._value == entity._id)) {
+		if ((this.entityExclusions || []).find((entityExclusion) => entityExclusion._value == entity._id)) {
 			return {
 				totalTime: 0,
 				timeByActivity: {}
@@ -87,7 +91,7 @@ export class WorkPeriodHelper {
 
 	workLogEntries(entity) {
 		var workLogEntries = this._workLogEntries(entity);
-		var entities = Models.Entity.relatedEntities(entity, null, true);
+		var entities = Models.Entity.queryRelatedEntities(entity, { startPoint: false, primary: true });
 		for (var e of entities) {
 			workLogEntries = workLogEntries.concat(this.workLogEntries(e));
 		}
@@ -95,10 +99,9 @@ export class WorkPeriodHelper {
 	}
 
 	_workLogEntries(entity) {
-		var allEntries =  db.work_log_entries.filter((entry) => this.workPeriod.startDate && (entry.start.getTime() >= this.workPeriod.startDate.getTime() && (!this.workPeriod.endDate || entry.start.getTime() <= this.workPeriod.endDate.getTime())));
 
 
-		var entries = allEntries.filter((entry) => entry.activity.object.entity === entity._id);
+		var entries = this.allEntries.filter((entry) => entry.activity.object.entity === entity._id);
 		
 		// var tasks = db.tasks.filter((task) => task.entity === entity._id);
 		// for (var task of tasks) {
@@ -117,7 +120,7 @@ export class WorkPeriodHelper {
 
 	totalTime(entity) {
 		var totalTime = this._totalTime(entity);
-		var entities = Models.Entity.relatedEntities(entity, null, true);
+		var entities = Models.Entity.queryRelatedEntities(entity, { startPoint: false, primary: true });
 
 		// if (this._touched[entity._id]) {
 		// 	throw new Error('touched ' + entity._id);
@@ -183,6 +186,35 @@ export class WorkPeriodHelper {
 				</ul>
 			</div> 
 		) : null;
+	}
+
+}
+
+export class WorkPeriodHelper {
+	constructor(workPeriod) {
+		this.calc = new WorkTimeCalculator(workPeriod.startDate, workPeriod.endDate, workPeriod.entityExclusions);
+	}
+
+
+	workLogEntries(entity) {
+		return this.calc.workLogEntries(entity);
+	}
+
+
+	totalTime(entity) {
+		return this.calc.totalTime(entity);
+	}
+
+	formattedTotalTime(entity) {
+		return this.calc.formattedTotalTime(entity);
+	}
+
+	formatTotalTime(totalTime) {
+		return this.calc.formatTotalTime(totalTime);
+	}
+
+	renderTotalTime(entity) {
+		return this.calc.renderTotalTime(entity);
 	}
 }
 

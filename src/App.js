@@ -1,7 +1,7 @@
 import React from 'react';
 import { XMap, XObject, XComponent, XStrip } from './XObject';
 import { EntitySelector, Entity, ValueDisplay, PropertyField } from './UI';
-import { initDb, db, Models, Collection, applyChanges } from './db';
+import { initDb, db, Models, Collection, applyChanges, collections } from './db';
 import { Tasks } from './Tasks';
 import { Invoice } from './Invoice';
 import { Issues } from './Issues';
@@ -13,10 +13,13 @@ import { YourIncome } from './YourIncome';
 import { Schedule, Schedule2, Schedules } from './Schedule';
 import { WorkPeriods } from './WorkPeriods';
 import { WorkPeriod } from './WorkPeriod';
+import { WorkProcesses } from './Work/Processes';
+import { WorkProcess } from './Work/Process';
 import { Work } from './Work';
 import { WorkDays } from './WorkDays';
 import { WorkDay } from './WorkDay';
 import { Overview } from './Overview';
+import { EntityContents } from './Entity/Contents';
 import { Time } from './Time';
 import { BatchEntityCreator } from './BatchEntityCreator';
 import classNames from 'classnames';
@@ -475,6 +478,7 @@ class App extends XComponent {
           <Link to="/work">Work</Link>
           <ul>
             <li><Link to="/work/time">Time</Link></li>
+            <li><Link to="/work/processes">Processes</Link></li>
             <li><Link to="/work-periods">Periods</Link></li>
             <li><Link to="/work-log">Log</Link></li>
             <li><Link to="/work-days">Days</Link></li>
@@ -503,6 +507,7 @@ class App extends XComponent {
           <Route exact path="/entities" component={Entities} />
           <Route exact path="/entities/type/:type" component={({match}) => <Entities type={match.params.type} />} />
           <Route exact path="/entities/:id" component={({match}) => <Entity entity={Collection.findById('entities', match.params.id)} />}/>
+          <Route exact path="/entities/:id/contents" component={({match}) => <EntityContents entity={Collection.findById('entities', match.params.id)} />}/>
           <Route exact path="/tasks" component={Tasks} />
           <Route exact path="/issues" component={Issues} />
           <Route exact path="/tickets" component={Tickets} />
@@ -517,6 +522,8 @@ class App extends XComponent {
           <Route exact path="/work-periods" component={WorkPeriods} />
           <Route exact path="/work" component={Work} />
           <Route exact path="/work/time" component={Time} />
+          <Route exact path="/work/processes" component={WorkProcesses} />
+          <Route exact path="/work/processes/:id" component={({match}) => <WorkProcess workProcess={collections.work_processes.findById(match.params.id)} />} />
           <Route exact path="/work-days" component={WorkDays} />
           <Route exact path="/work-days/:id" component={({match}) => <WorkDay workDay={Collection.findById('work_days', match.params.id)} />} />
           <Route exact path="/work-periods/:id" component={({match}) => <WorkPeriod workPeriod={Collection.findById('work_periods', match.params.id)} />} />

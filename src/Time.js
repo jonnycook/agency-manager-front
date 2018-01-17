@@ -7,6 +7,8 @@ import classNames from 'classnames';
 import _ from 'lodash';
 import { Link } from 'react-router-dom';
 
+import { WorkTimeCalculator } from './WorkPeriod';
+
 export class Time extends XComponent {
 	constructor() {
 		super({
@@ -195,11 +197,14 @@ export class Time extends XComponent {
 		for (let date of dates) {
 			for (let entry of date.entries) {
 				if (entry.workBlock) {
-					entry.workedTime = allWorkLogEntries.filter((workLogEntry) => {
-						return workLogEntry.activity.object.entity == entry.entity._id && (workLogEntry.end || new Date()).isBetween(entry.workBlock.start, entry.workBlock.end);
-					}).reduce((total, workLogEntry) => {
-						return total + ((workLogEntry.end || new Date()).getTime() - workLogEntry.start.getTime())
-					}, 0)/1000;
+					let calc = new WorkTimeCalculator(entry.workBlock.start, entry.workBlock.end, []);
+					entry.workedTime = calc.totalTime(entry.entity).totalTime;
+
+					// entry.workedTime = allWorkLogEntries.filter((workLogEntry) => {
+					// 	return workLogEntry.activity.object.entity == entry.entity._id && (workLogEntry.end || new Date()).isBetween(entry.workBlock.start, entry.workBlock.end);
+					// }).reduce((total, workLogEntry) => {
+					// 	return total + ((workLogEntry.end || new Date()).getTime() - workLogEntry.start.getTime())
+					// }, 0)/1000;
 				}
 			}
 		}
@@ -313,7 +318,7 @@ export class Time extends XComponent {
 						for (let time of times) {
 							let key = Math.floor(Math.round(time.time/maxTime*100)/2);
 							if (!clusteredTimes[key]) {
-								clusteredTimes[key] = {times:[], value:Math.round(time.time/maxTime*100)};
+								clusteredTimes[key] = {times:[], value:Math.round(time.time/maxTime*100), time: time.time};
 							}
 							clusteredTimes[key].times.push(time);
 						}
@@ -327,7 +332,7 @@ export class Time extends XComponent {
 										return (
 											key > 0 ? <div className="time" style={{height:entry.value + '%'}} key={key}>
 												<span className="labels">{entry.times.map((time) => time.name).join('; ')}</span>
-												{/*<div>{juration.stringify(time.time)}</div>*/}
+												{/*<span>{juration.stringify(entry.time)}</span>*/}
 											</div> : null
 										);
 									}).reverse()}

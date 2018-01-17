@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { XComponent, XObject, XMap, XStrip } from './XObject';
-import { db, Models, Collection } from './db';
+import { db, Models, Collection, collections } from './db';
 import classNames from 'classnames';
 import { Overview } from './Overview';
 import { Link } from 'react-router-dom';
@@ -63,6 +63,9 @@ export class EditableValue extends XComponent {
 
         case 'duration':
           return juration.parse(this.refs.input.value);
+
+        case 'dropdown':
+          return this.refs.input.value;
       }
     }
   }
@@ -90,6 +93,19 @@ export class EditableValue extends XComponent {
 
         case 'bool':
           return <input ref="input" defaultChecked={this.props.get()} type="checkbox" />
+
+        case 'dropdown':
+          return (
+            <select ref="input" defaultValue={this.props.get()}>
+              <option></option>
+              {this.props.options.map((option) => {
+                return (
+                  <option key={option}>{option}</option>
+                );
+              })}
+            </select>
+          );
+
       }
     }
   }
@@ -110,9 +126,9 @@ export class EditableValue extends XComponent {
           return this.props.get() && this.props.get().format('{yyyy}-{MM}-{dd} {HH}:{mm}:{ss}');
         case 'bool':
           return this.props.get() ? 'Yes' : 'No';
-
         case 'duration':
           return this.props.get() && juration.stringify(this.props.get());
+        case 'dropdown': return this.props.get();
       }
     }
   }
@@ -137,20 +153,16 @@ export class EditableValue extends XComponent {
 
 export class PropertyField extends XComponent {
 	xRender() {
-
+    const { className, type, input, display, object, property, ...other } = this.props;
 		return (
       <EditableValue
-        className={this.props.className}
-
-        type={this.props.type}
-
-        set={(value) => this.props.object[this.props.property] = value}
-
-        input={this.props.input}
-
-        display={this.props.display}
-
-        get={() => this.props.object[this.props.property]} />
+        className={className}
+        type={type}
+        set={(value) => object[property] = value}
+        input={input}
+        display={display}
+        get={() => object[property]}
+        {...other} />
     );
 	}
 }
@@ -366,6 +378,7 @@ export class Entity extends XComponent {
           db.relationships.push({
             _id: XObject.id(),
             entities: [this.props.entity._id],
+            primary: true
           });
         },
         deleteRelationship(rel) {
@@ -717,6 +730,13 @@ export class Entity extends XComponent {
                               <label>Internal: </label>
                               <PropertyField type="bool" object={rel} property="internal" />
                             </div>
+
+                            {rel.entities[1] == this.props.entity._id &&
+                              <div>
+                                <label>Primary: </label>
+                                <PropertyField type="bool" object={rel} property="primary" />
+                              </div>
+                            }
                           </div>}
                           <button onClick={this.actions.deleteRelationship(rel)}>Delete</button>
                         </li>
@@ -844,6 +864,17 @@ export class Entity extends XComponent {
 
         <div>
           <h2>Work</h2>
+          <h3>Processess</h3>
+          <ul>
+            {db.work_processes.filter((workProcess) => workProcess.focusEntity == this.props.entity._id).map((workProcess) => {
+              return (
+                <li key={workProcess._id}>
+                  {workProcess.state}
+                  <Link to={`/work/processes/${workProcess._id}`}>{Models.Entity.display(collections.entities.findById(workProcess.focusEntity))}</Link>
+                </li>
+              );
+            })}   
+          </ul>
           <h3>Milestones</h3>
           <ul>
             {(this.props.entity.milestones || []).map((milestone) => {
@@ -1295,7 +1326,6 @@ class Datum extends XComponent {
     this.setState({
       editingDescription: false
     });
-
   }
   action_cancelDescription() {
     this.setState({

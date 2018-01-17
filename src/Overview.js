@@ -36,7 +36,6 @@ class AddEntityForm extends XComponent {
 					});
 				},
 				submit() {
-					console.log('asdf');
 					var entity = XMap({
             _id: XObject.id(),
             type: this.refs.type.value,
@@ -54,9 +53,10 @@ class AddEntityForm extends XComponent {
           db.relationships.push(XObject.obj({
           	entities: [this.props.entity._id, entity._id],
           	directed: true,
-          	internal: true
+          	internal: true,
+          	primary: true,
           }))
-					this.props.onSubmit();
+					this.props.onSubmit(entity);
 					return false;
 				}
 			}
@@ -142,7 +142,7 @@ class EntityActionMenu extends XComponent {
 	}
 	renderSubmenu() {
 		switch (this.state.submenu) {
-			case 'add': return <AddEntityForm entity={this.props.entity} onSubmit={this.props.onClose} />;
+			case 'add': return <AddEntityForm entity={this.props.entity} onSubmit={(entity) => { this.props.onCreate && this.props.onCreate(entity); this.props.onClose() }} />;
 			case 'start': return <StartEntity entity={this.props.entity} onSubmit={this.props.onClose} />;
 		}
 	}
@@ -198,7 +198,7 @@ class _EntityName extends XComponent {
 						}
 						var menuEl = $('<div></div>');
 						var el = $(this.refs.el);
-						ReactDOM.render(<EntityActionMenu onClose={this.closeMenu} entity={this.props.entity} />, menuEl[0]);
+						ReactDOM.render(<EntityActionMenu onClose={this.closeMenu} entity={this.props.entity} onCreate={this.props.onCreate} />, menuEl[0]);
 						menuEl.appendTo('body');
 
 						menuEl.css({
@@ -208,13 +208,20 @@ class _EntityName extends XComponent {
 							left: el.offset().left - menuEl.outerWidth() + el.outerWidth(),
 							top: el.offset().top + el.outerHeight()
 						})
-
 					}
 				},
 				done() {
 					this.setState({
 						menu: false
 					})
+				},
+				toggleSelect() {
+					if (this.props.selected.indexOf(this.props.entity) != -1) {
+						this.props.onDeselected(this.props.entity);
+					}
+					else {
+						this.props.onSelected(this.props.entity);
+					}
 				}
 			}
 		});
@@ -224,8 +231,9 @@ class _EntityName extends XComponent {
 		return this.props.connectDropTarget(this.props.connectDragSource(
 			<div className={classNames('name', {'showing-menu':this.state.showingMenu})}>
 				<Link to={`/entities/${this.props.entity._id}`}>{Models.Entity.display(this.props.entity)}</Link>
+				{this.props.selectable && <input type="checkbox" defaultChecked={this.props.selected.indexOf(this.props.entity) != -1} onClick={this.actions.toggleSelect} />}
 				<button ref="el" className="add" onClick={this.actions.menu}>...</button>
-				{this.state.menu && <EntityActionMenu entity={this.props.entity} onSubmit={() => this.setState({menu:false})} />}
+				{this.state.menu && <EntityActionMenu entity={this.props.entity} onSubmit={() => this.setState({menu:false})} onCreate={this.props.onCreate} />}
 			</div>
 		));
 	}
@@ -322,29 +330,45 @@ EntityName = DropTarget('entity', {
 
 class EntityOverview extends XComponent {
 	xRender() {
-		var relationships = Models.Entity.relationships(this.props.entity, null, true).filter((rel) => rel.internal);
-		var containers = relationships.filter((rel) => {
-			var entity = Models.Entity.relatedEntity(this.props.entity, rel);
+		let relationships = Models.Entity.relationships(this.props.entity, false).filter((rel) => rel.internal && (this.props.filter ? this.props.filter.indexOf(Models.Relationship.otherEntity(rel, this.props.entity)) != -1 : true));
+
+		let containers = relationships.filter((rel) => {
+			let entity = Models.Entity.relatedEntity(this.props.entity, rel);
 			if (entity.object) return true;
-			return Models.Entity.relationships(entity, null, true).find((rel) => rel.internal);
+			return Models.Entity.relationships(entity, false).find((rel) => rel.internal);
 		}).map((rel) => {
 			return Models.Entity.relatedEntity(this.props.entity, rel);
 		});
 
-		var other = relationships.filter((rel) => {
+		let other = relationships.filter((rel) => {
 			return !containers.find((entity) => entity._id == rel.entities[1]);
 		}).map((rel) => {
 			return Models.Entity.relatedEntity(this.props.entity, rel);
 		});
 
-
 		return (
 			<div className={classNames('entity-overview', {object:this.props.entity.object})}>
-				<EntityName parent={this.props.parent} entity={this.props.entity} />
+				<EntityName
+					parent={this.props.parent}
+					entity={this.props.entity}
+					selectable={this.props.selectable}
+					selected={this.props.selected}
+					onSelected={this.props.onSelected}
+					onDeselected={this.props.onDeselected}
+					onCreate={this.props.onCreate} />
 				{containers.length > 0 && <div className="containers">
 					{containers.map((object) => {
 						return (
-							<EntityOverview parent={this.props.entity} key={object._id} entity={object} />
+							<EntityOverview 
+								parent={this.props.entity} 
+								key={object._id} 
+								entity={object} 
+								selectable={this.props.selectable} 
+								filter={this.props.filter} 
+								selected={this.props.selected} 
+								onSelected={this.props.onSelected} 
+								onDeselected={this.props.onDeselected} 
+								onCreate={this.props.onCreate} />
 						);
 					})}
 				</div>}
@@ -352,7 +376,16 @@ class EntityOverview extends XComponent {
 				{other.length > 0 && <div className="related">
 					{other.map((entity) => {
 						return (
-							<div key={entity._id}><EntityName parent={this.props.entity} entity={entity} /></div>
+							<div key={entity._id}>
+								<EntityName
+									parent={this.props.entity}
+									entity={entity}
+									selectable={this.props.selectable}
+									selected={this.props.selected}
+									onSelected={this.props.onSelected}
+									onDeselected={this.props.onDeselected}
+									onCreate={this.props.onCreate} />
+							</div>
 						);
 					})}
 				</div>}
@@ -368,12 +401,21 @@ class Overview extends XComponent {
 		overview = this;
 	}
 	xRender() {
+		let filter = this.props.filter && this.props.filter.map((entity) => entity._id);
 		// var rootEntities = ['59c3779c18ce9200007aa485', '59c30b66aceeab00008c9694', '59c2cc1be31edc00009abf68'];
 		return (
 			<div className="overview">
 				{this.props.entities.map((entity) => {
 					return (
-						<EntityOverview key={entity._id} entity={entity} />
+						<EntityOverview
+							key={entity._id}
+							entity={entity}
+							selectable={this.props.selectable}
+							filter={filter}
+							selected={this.props.selected}
+							onSelected={this.props.onSelected}
+							onDeselected={this.props.onDeselected}
+							onCreate={this.props.onCreate} />
 					);
 				})}
 			</div>
