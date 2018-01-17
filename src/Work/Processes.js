@@ -12,7 +12,7 @@ export class WorkProcesses extends XComponent {
 					db.work_processes.splice(db.work_processes.indexOf(workProcess), 1);
 				},
 				add() {
-					db.work_processes.push(XObject.obj({state:'Running'}));
+					db.work_processes.push(XObject.obj({state:'Created'}));
 				}
 			}
 		})	
@@ -21,7 +21,7 @@ export class WorkProcesses extends XComponent {
 		return (
 			<div>
 				<ul>
-					{db.work_processes.filter((workProcess) => ['Running', 'Paused', 'Waiting'].indexOf(workProcess.state) != -1).map((workProcess) => {
+					{db.work_processes.filter((workProcess) => ['Running', 'Paused', 'Waiting', 'Created'].indexOf(workProcess.state) != -1).map((workProcess) => {
 						return (
 							<li key={workProcess._id}>
 								{workProcess.state}

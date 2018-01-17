@@ -516,7 +516,7 @@ export class Entity extends XComponent {
         addProcess() {
           db.work_processes.push(XObject.obj({
             focusEntity: this.props.entity._id,
-            state: 'Running',
+            state: 'Created',
           }));
         }
       }

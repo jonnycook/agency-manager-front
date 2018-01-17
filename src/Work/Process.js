@@ -33,7 +33,7 @@ export class WorkProcess extends XComponent {
 		return (
 			<div>
 				<PropertyField object={this.props.workProcess} property="focusEntity" type="entity" />
-				<PropertyField object={this.props.workProcess} property="state" type="dropdown" options={['Running', 'Paused', 'Waiting', 'Completed', 'Ended']} />
+				<PropertyField object={this.props.workProcess} property="state" type="dropdown" options={['Created', 'Running', 'Paused', 'Waiting', 'Completed', 'Ended']} />
 
 				<h2>Tasks</h2>
 				<ul>
