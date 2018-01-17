@@ -16,7 +16,16 @@ export class WorkProcess extends XComponent {
 				},
 				deleteLog(log) {
 					this.props.workProcess.log.splice(this.props.workProcess.log.indexOf(log), 1);
-				}
+				},
+				addTask() {
+					if (!this.props.workProcess.tasks) {
+						this.props.workProcess.tasks = XMap([]);
+					}
+					this.props.workProcess.tasks.push(XObject.obj({timestamp:new Date()}));
+				},
+				deleteTask(task) {
+					this.props.workProcess.tasks.splice(this.props.workProcess.tasks.indexOf(task), 1);
+				},
 			}
 		})	
 	}
@@ -26,6 +35,19 @@ export class WorkProcess extends XComponent {
 				<PropertyField object={this.props.workProcess} property="focusEntity" type="entity" />
 				<PropertyField object={this.props.workProcess} property="state" type="dropdown" options={['Running', 'Paused', 'Waiting', 'Completed', 'Ended']} />
 
+				<h2>Tasks</h2>
+				<ul>
+					{(this.props.workProcess.tasks || []).map((task) => {
+						return (
+							<li key={task._id}>
+								<PropertyField object={task} property="completed" type="bool" />
+								<PropertyField object={task} property="description" type="text/line" />
+								<button onClick={this.actions.deleteTask.bind(task)}>Delete</button>
+							</li>
+						);
+					})}
+				</ul>
+				<button onClick={this.actions.addTask}>Add</button>
 				<h2>Log</h2>
 				<ul>
 					{(this.props.workProcess.log || []).map((log) => {
