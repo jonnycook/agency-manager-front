@@ -511,6 +511,13 @@ export class Entity extends XComponent {
 
         removeFromWorkLog(entry) {
           this.props.entity.workLog.splice(this.props.entity.workLog.indexOf(entry), 1);
+        },
+
+        addProcess() {
+          db.work_processes.push(XObject.obj({
+            focusEntity: this.props.entity._id,
+            state: 'Running',
+          }));
         }
       }
     });
@@ -875,6 +882,7 @@ export class Entity extends XComponent {
               );
             })}   
           </ul>
+          <button onClick={this.actions.addProcess}>Add</button>
           <h3>Milestones</h3>
           <ul>
             {(this.props.entity.milestones || []).map((milestone) => {
