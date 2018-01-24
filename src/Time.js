@@ -31,6 +31,21 @@ export class Time extends XComponent {
 		this.state = {};
 	}
 
+	componentDidMount() {
+		const updateCont = () => {
+			let mainEl = jQuery('main');
+			mainEl.outerHeight(jQuery(window).height() - mainEl.offset().top - 20);
+		}
+		jQuery(window).resize(updateCont);
+		updateCont();
+	}
+
+	componentWillUnmount() {
+		super.componentWillUnmount();
+		jQuery('main').height('');
+	}
+
+
 	time(start, end, schedule) {
 		let current = start.clone()./*addDays(1).*/beginningOfDay();
 		let time = 0;
@@ -50,23 +65,6 @@ export class Time extends XComponent {
 			current.addDays(1);
 			if (current.getTime() > end.getTime()) return total;
 		}
-	}
-
-	updateCont() {
-		let mainEl = jQuery('main');
-		mainEl.outerHeight(jQuery(window).height() - mainEl.offset().top - 20);
-	}
-
-	componentDidMount() {
-		jQuery(window).resize(() => {
-			this.updateCont();
-		});
-		this.updateCont();
-	}
-
-	componentWillUnmount() {
-		super.componentWillUnmount();
-		jQuery('main').height('');
 	}
 
 	dates() {
@@ -137,79 +135,88 @@ export class Time extends XComponent {
 		return dates;
 	}
 
+	dayBreakdown({date, currentTime, schedules, dayTotals}) {
+		let totalWorkTime = 0;
+		for (let entry of date.entries) {
+			if (entry.milestone) {
+				totalWorkTime += entry.milestone.time;							
+			}
+			else if (entry.workBlock) {
+				totalWorkTime += Math.max(0, entry.workBlock.time - entry.workedTime);
+			}
+		}
+
+		let times = [];
+		for (let schedule in schedules) {
+			let time = this.time(currentTime, date.date, schedules[schedule]);
+			times.push({
+				name: schedule,
+				time: time,
+			});
+		}
+
+		let a = [];
+		for (let daysCounter of dayTotals) {
+			let totalDays = this.countDays(currentTime, date.date, daysCounter.test);
+			times.push({
+				name: `${juration.stringify(Math.ceil(totalWorkTime/totalDays / 60)*60)}/${daysCounter.name}`,
+				time: totalWorkTime
+			})
+		}
+		times.sort((a, b) => b.time - a.time);
+
+		let maxTime = times[0].time;
+
+		let clusteredTimes = {};
+		for (let time of times) {
+			let key = Math.floor(Math.round(time.time/maxTime*100)/2);
+			if (!clusteredTimes[key]) {
+				clusteredTimes[key] = {times:[], value:Math.round(time.time/maxTime*100), time: time.time};
+			}
+			clusteredTimes[key].times.push(time);
+		}
+
+		return {clusteredTimes, totalWorkTime, maxTime};
+	}
+
 	xRender() {
-		let dates = this.dates();
-		let minDate, maxDate;
-		for (let date of dates) {
-			for (let entry of date.entries) {
-				if (entry.milestone) {
-					if (!minDate || entry.milestone.deadline.isBefore(minDate)) {
-						minDate = entry.milestone.deadline;
-					}
-					if (!maxDate || entry.milestone.deadline.isAfter(maxDate)) {
-						maxDate = entry.milestone.deadline;
-					}
-				}
-				else if (entry.workBlock) {
-					if (!minDate || entry.workBlock.start.isBefore(minDate)) {
-						minDate = entry.workBlock.start;
-					}
-					if (entry.workBlock.end.isBefore(minDate)) {
-						minDate = entry.workBlock.end;
-					}
-					if (!maxDate || entry.workBlock.start.isAfter(maxDate)) {
-						maxDate = entry.workBlock.start;
-					}
-					if (entry.workBlock.end.isAfter(maxDate)) {
-						maxDate = entry.workBlock.end;
+		let timeByDay = (() => {
+			let trailingDays = new Date().beginningOfDay().addDays(-20);
+			let timeByDay = {};
+			let currentDay = trailingDays.clone();
+			while (true) {
+				let dayBegin = currentDay;
+				let dayEnd = currentDay.clone().endOfDay();
+				let totalTime = Math.round(db.work_log_entries.filter((entry) => {
+					return (entry.end || new Date()).isBetween(dayBegin, dayEnd);
+				}).reduce((total, entry) => {
+					return total + (entry.end || new Date()).getTime() - entry.start.getTime();
+				}, 0)/1000);
+
+				timeByDay[dayBegin.getTime()] = totalTime
+
+				currentDay.addDays(1);
+				if (currentDay.isAfter(new Date())) break;
+			}
+
+			return timeByDay;
+		})();
+
+		const addWorkedTimeToDates = (dates) => {
+			for (let date of dates) {
+				for (let entry of date.entries) {
+					if (entry.workBlock) {
+						let calc = new WorkTimeCalculator(entry.workBlock.start, entry.workBlock.end, []);
+						entry.workedTime = calc.totalTime(entry.entity).totalTime;
 					}
 				}
 			}
+			return dates;
 		}
 
-		let trailingDays = new Date().beginningOfDay().addDays(-20);
+		let dates = addWorkedTimeToDates(this.dates());
 
-		if (trailingDays.isBefore(minDate)) {
-			minDate = trailingDays;
-		}
-
-		let allWorkLogEntries = db.work_log_entries.filter((entry) => {
-			return (entry.end || new Date()).isBetween(minDate, maxDate);
-		});
-
-		let timeByDay = {};
-		let currentDay = trailingDays.clone();
-		while (true) {
-			let dayBegin = currentDay;
-			let dayEnd = currentDay.clone().endOfDay();
-			let totalTime = Math.round(db.work_log_entries.filter((entry) => {
-				return (entry.end || new Date()).isBetween(dayBegin, dayEnd);
-			}).reduce((total, entry) => {
-				return total + (entry.end || new Date()).getTime() - entry.start.getTime();
-			}, 0)/1000);
-
-			timeByDay[dayBegin.getTime()] = totalTime
-
-			currentDay.addDays(1);
-			if (currentDay.isAfter(new Date())) break;
-		}
-
-		for (let date of dates) {
-			for (let entry of date.entries) {
-				if (entry.workBlock) {
-					let calc = new WorkTimeCalculator(entry.workBlock.start, entry.workBlock.end, []);
-					entry.workedTime = calc.totalTime(entry.entity).totalTime;
-
-					// entry.workedTime = allWorkLogEntries.filter((workLogEntry) => {
-					// 	return workLogEntry.activity.object.entity == entry.entity._id && (workLogEntry.end || new Date()).isBetween(entry.workBlock.start, entry.workBlock.end);
-					// }).reduce((total, workLogEntry) => {
-					// 	return total + ((workLogEntry.end || new Date()).getTime() - workLogEntry.start.getTime())
-					// }, 0)/1000;
-				}
-			}
-		}
-
-		let dayTotals = [
+		const dayTotals = [
 			{
 				name: 'Day',
 				test(date) {
@@ -224,38 +231,38 @@ export class Time extends XComponent {
 			},
 		];
 
-		let schedules = {
-			'24hrs/Day': (date) => {
+		const schedules = {
+			['24 hrs/Day'](date) {
 				return 24;
 			},
-			'24 hrs/Workday': (date) => {
+			['24 hrs/Workday'](date) {
 				if (date.getDay() == 0 || date.getDay() == 6) return 0;
 				return 24;
 			},
-			'14 hrs/Day': (date) => {
+			['14 hrs/Day'](date) {
 				return 14;
 			},
-			'14 hrs/Workday': (date) => {
+			['14 hrs/Workday'](date) {
 				if (date.getDay() == 0 || date.getDay() == 6) return 0;
 				return 14;
 			},
-			'6 hrs/Workday': (date) => {
+			['6 hrs/Workday'](date) {
 				if (date.getDay() == 0 || date.getDay() == 6) return 0;
 				return 6;
 			},
-			'7 hrs/Workday': (date) => {
+			['7 hrs/Workday'](date) {
 				if (date.getDay() == 0 || date.getDay() == 6) return 0;
 				return 7;
 			},
-			'7 hrs/Day': (date) => {
+			['7 hrs/Day'](date) {
 				return 7;
 			},
-			'6 hrs/Day': (date) => {
+			['6 hrs/Day'](date) {
 				return 6;
 			},
 		};
 
-		let currentTime = new Date();
+		const currentTime = new Date();
 
 		return (
 			<div className="time-view">
@@ -280,54 +287,15 @@ export class Time extends XComponent {
 				</div>}
 				<div className="dates">
 					{dates.map((date) => {
-						let totalWorkTime = 0;
-						for (let entry of date.entries) {
-							if (entry.milestone) {
-								totalWorkTime += entry.milestone.time;							
-							}
-							else if (entry.workBlock) {
-								totalWorkTime += Math.max(0, entry.workBlock.time - entry.workedTime);
-							}
-						}
-
-						let times = [];
-						for (let schedule in schedules) {
-							let time = this.time(currentTime, date.date, schedules[schedule]);
-							times.push({
-								name: schedule,
-								time: time,
-							});
-						}
-
-
-						let a = [];
-						for (let daysCounter of dayTotals) {
-							let totalDays = this.countDays(currentTime, date.date, daysCounter.test);
-							times.push({
-								name: `${juration.stringify(Math.ceil(totalWorkTime/totalDays / 60)*60)}/${daysCounter.name}`,
-								time: totalWorkTime
-							})
-						}
-						times.sort((a, b) => b.time - a.time);
-
-						let maxTime = times[0].time;
-
-
-
-						let clusteredTimes = {};
-						for (let time of times) {
-							let key = Math.floor(Math.round(time.time/maxTime*100)/2);
-							if (!clusteredTimes[key]) {
-								clusteredTimes[key] = {times:[], value:Math.round(time.time/maxTime*100), time: time.time};
-							}
-							clusteredTimes[key].times.push(time);
-						}
-
+						const {clusteredTimes, totalWorkTime, maxTime} = this.dayBreakdown({date, currentTime, schedules, dayTotals});
+						const totalWorkTimeHeight = Math.round((totalWorkTime/maxTime)*100) + '%';
+						const isSelected = this.state.selectedWorkTime && date.date.getTime() == this.state.selectedWorkTime.getTime();
+						
 						return (
 							<div className="date" key={date.date.getTime()}>
 								<div className="date__date">{date.date.format('{Mon} {d}')}</div>
 								<div className="date__times">
-									<div onClick={this.actions.selectWorkTime.bind(date.date)} className={classNames('work-time', {selected:this.state.selectedWorkTime && date.date.getTime() == this.state.selectedWorkTime.getTime()})} style={{height:Math.round((totalWorkTime/maxTime)*100) + '%'}} />
+									<div onClick={this.actions.selectWorkTime.bind(date.date)} className={classNames('work-time', {selected:isSelected})} style={{height:totalWorkTimeHeight}} />
 									{_.map(clusteredTimes, (entry, key) => {
 										return (
 											key > 0 ? <div className="time" style={{height:entry.value + '%'}} key={key}>
