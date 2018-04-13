@@ -85,7 +85,8 @@
   var stringify = function(seconds, options) {
     
     if(!_isNumeric(seconds)) {
-      throw "juration.stringify(): Unable to stringify a non-numeric value";
+      console.log("juration.stringify(): Unable to stringify a non-numeric value (" + seconds + ")");
+      return '(invalid)';
     }
     
     if((typeof options === 'object' && options.format !== undefined) && (options.format !== 'micro' && options.format !== 'short' && options.format !== 'long' && options.format !== 'chrono')) {

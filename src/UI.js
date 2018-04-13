@@ -14,10 +14,9 @@ import juration from './juration';
 import pluralize from 'pluralize';
 
 function withRef(ref, component) {
-      return new Proxy({}, {
-        get(target, prop) { return prop == 'ref' ? ref : component[prop] }
-      });
-
+  return new Proxy({}, {
+    get(target, prop) { return prop == 'ref' ? ref : component[prop] }
+  });
 }
 
 export class EditableValue extends XComponent {
@@ -624,7 +623,7 @@ export class Entity extends XComponent {
           <Link to={`/entities/${this.props.entity._id}`}>{Models.Entity.display(this.props.entity)}</Link>
           <span className="start-timer">
             <select ref="activity">
-              {['Communication', 'Development', 'Management', 'Estimation', 'Scoping', 'Orienting'].map((activity) => {
+              {['Development', 'Communication', 'Management', 'Estimation', 'Scoping', 'Orienting'].map((activity) => {
                 return (
                   <option key={activity}>{activity}</option>
                 );

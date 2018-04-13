@@ -240,8 +240,6 @@ export var Models = {
         entities = entities.filter((e) => e.type === query.type);
       }
 
-
-
       return entities;
     },
     queryRelatedEntity(entity, query) {
